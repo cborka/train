@@ -1,24 +1,42 @@
-
-<form action="/user/update" method="POST">
-  <table>
+<form action="/users/update" method="POST">
+  <table class="form">
     <tr>
       <td><label>Id:</label></td>
-      <td><input  name="id" readonly value="{{id}}" ></td>
+      <td><input  id="id" name="id" readonly value="{{id}}" ></td>
     </tr>
     <tr>
       <td><label>Login:</label></td>
-      <td><input type="text" name="login" value={{login}} ></td>
+      <td><input id="login" type="text" name="login" value={{login}} ></td>
     </tr>
     <tr>
       <td><label>Телефон:</label></td>
-      <td><input type="text" id="phone" name="phone" value={{phone}} ></td>
+      <td><input id="phone" type="text" name="phone" value={{phone}} ></td>
     </tr>
     <tr>
       <td></td>
       <td>
         <button type="submit" >Сохранить</button>
-        <button id=adduser type="button" onclick='document.getElementById("phone").value="w324566"'>Добавить</button>
+        <button id=adduser type="button" onclick='clear_form()'>Добавить</button>
       </td>
     </tr>
+    <tr>
+      <td></td>
+      <td>
+          <div id="hint" ></div>
+      </td>
+      </tr>
     </table>
 </form>
+
+<script>
+
+function clear_form()
+{
+//  alert(document.getElementById("login").value);
+    document.getElementById("id").value="0";
+    document.getElementById("login").value="";
+    document.getElementById("phone").value="";
+    document.getElementById("hint").innerHTML="Добавление нового пользователя";
+}
+
+</script>

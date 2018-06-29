@@ -3,11 +3,31 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+td {
+    border: 0px solid black;
+    padding: 5px;
+}
+
+table.form {
+  border: 0 solid black;
+  border-collapse: collapse;
+}
+
+table.list {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+td.list {
+  padding: 3px;
+  border: 1px solid black;
+}
+
+
 .center {
   text-align: center;
 #  background-color: #ddd;
 }
 
 a {
-#  color: #00B7FF;
+  color: #00B7FF;
 }
