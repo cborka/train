@@ -3,12 +3,10 @@ var router = express.Router();
 
 var pgp = require("pg-promise")(/*options*/);
 var db = pgp(process.env.PG_CONNECT);
-//var db = pgp('postgresql://postgres:@127.0.0.1:5432/zkpde');
-
 
 /* GET users list */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource'+process.env.PG_CONNECT);
+  res.send('Строка подключения к БД: '+process.env.PG_CONNECT);
 });
 
 router.get('/tst/:parqq', function(req, res, next) {
@@ -16,9 +14,9 @@ router.get('/tst/:parqq', function(req, res, next) {
   res.send('param param: '+parqq);
 });
 
-//
-// Показать пользователя из БД
-//
+/*
+** Показать пользователя из БД
+*/
 router.get('/select/:id', function(req, res, next) {
   var id = req.params.id; // получаем id
   db.one("SELECT id, login, phone FROM users WHERE id=$1", id)
@@ -27,7 +25,36 @@ router.get('/select/:id', function(req, res, next) {
       res.render('users/user', data); // Показ формы
     })
     .catch(function (error) {
-      res.send("код ошибки: "+error.code+"<br> получено: "+error.received+"<br> запрос: "+error.query);
+      res.send(error);
+//      res.send("код ошибки: "+error.code+"<br> получено: "+error.received+"<br> запрос: "+error.query);
+    });
+});
+
+/*
+** Добавить пользователя в БД
+*/
+router.get('/addnew', function(req, res, next) {
+  db.one("SELECT 0 AS id, '' AS login, '' AS phone")
+    .then(function (data) {
+      res.render('users/user', data); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+/*
+** Удалить пользователя из БД
+*/
+router.get('/delete/:id', function(req, res, next) {
+  var id = req.params.id; // получаем id
+  db.none("DELETE FROM users WHERE id=$1", id)
+    .then(function () {
+      res.redirect('/users/all'); // Обновление списка пользователей
+    })
+    .catch(function (error) {
+//      res.send("код ошибки: "+error.code+"<br> получено: "+error.received+"<br> запрос: "+error.query);
+      res.send(error);
     });
 });
 
@@ -44,21 +71,19 @@ router.post('/update', function(req, res, next) {
     db.none("UPDATE users SET phone=$1 WHERE id=$2", [phone, id])
       .then (function () {
         res.redirect('/users/select/'+id);
-//        res.send("Обновления записаны в БД.");
       })
       .catch(function (error) {
-//      res.send("код ошибки: "+error.code+"<br> получено: "+error.received+"<          br> запрос: "+error.query);
         res.send(error);
       });
   }
   else {
 //    res.send("Добавление нового пользователя");
-    db.none("INSERT INTO users (login, phone) VALUES ($1, $2)", [login, phone])
-      .then (function () {
-        res.send("Запись добавлена в БД.");
+    db.one("INSERT INTO users (login, phone) VALUES ($1, $2) RETURNING id;", [login, phone])
+      .then (function (data) {
+        res.redirect('/users/select/'+data.id);
+
       })
       .catch(function (error) {
-//        res.send("код ошибки: "+error.code+"<br> получено: "+error.received+"<          br> запрос: "+error.query);
         res.send(error);
       });
   }
@@ -70,9 +95,6 @@ router.post('/update', function(req, res, next) {
 router.get('/all', function(req, res, next) {
   db.any("SELECT id, login, phone FROM users ORDER BY 2")
     .then(function (data) {
-//      res.send(data[1].login);
-//      res.send(data);
-      var usr2 = "qwweerrr"; //data[1].login;
       res.render('users/users', {data: data}); // Показ формы
     })
     .catch(function (error) {
@@ -81,11 +103,4 @@ router.get('/all', function(req, res, next) {
 });
 
 
-
-//{{#each data}}
-//<br>     {{login}} - {{phone}} - {{id}}.
-//{{/each}}
-
-
-
-  module.exports = router;
+module.exports = router;

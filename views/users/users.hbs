@@ -1,14 +1,27 @@
+<div>Список пользователей<br><br></div>
 <table class="list">
+    <tr>
+        <td class="list"><b>Id</b></td>
+        <td class="list"><b>Логин</b></td>
+        <td class="list"><b>Телефон</b></td>
+        <td class="list">Изменить</td>
+        <td class="list">Удалить</td>
+        <td class="list">Добавить</td>
+    </tr>
 {{#each data}}
         <tr>
+            <td class="list">{{id}}</td>
             <td class="list">{{login}}</td>
             <td class="list">{{phone}}</td>
-            <td class="list"><a href="/users/select/{{id}}" > >>> </a></td>
-            <td><button hidden type="button" onclick='show_user({{id}})'>Изменить</button></td>
+            <td class="list"><a href="/users/select/{{id}}" title="Показать" > >> </a></td>
+            <td class="list"><a href="/users/delete/{{id}}" title="Удалить совсем" > X </a></td>
+            <td class="list"><a href="/users/addnew" title="Добавить нового" > + </a></td>
+<!--            <td><button hidden type="button" onclick='show_user({{id}})'>Изменить</button></td> -->
         </tr>
 {{/each}}
 </table>
 <div id="hint" ></div>
+
 
 <script>
 function show_user(id)
