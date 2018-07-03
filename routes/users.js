@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var md5 = require('crypto-md5/md5');
+var mys = require('../bin/mys');
 
 var pgp = require("pg-promise")(/*options*/);
 var db = pgp(process.env.PG_CONNECT);
@@ -7,6 +9,8 @@ var db = pgp(process.env.PG_CONNECT);
 /* GET users list */
 router.get('/', function(req, res, next) {
   res.send('Строка подключения к БД: '+process.env.PG_CONNECT);
+  req.mys.pass = md5("users.js");
+  req.mys.xxx = "xxx";
 });
 
 router.get('/tst/:parqq', function(req, res, next) {

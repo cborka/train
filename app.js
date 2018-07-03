@@ -5,6 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var hbs = require("hbs");
 
+var mys = require('./bin/mys');
+//  app.use(./bin/mys());
+// catch 404 and forward to error handler
+
+
+
 //var pgp = require("pg-promise")(/*options*/);
 //var db = pgp(process.env.PG_CONNECT);
 //console.log("Подключена база данных: "+db.toString());
@@ -22,11 +28,18 @@ app.set('view engine', 'hbs');
 // устанавливаем путь к каталогу с частичными представлениями
 hbs.registerPartials(__dirname + "/views/partials");
 
+app.use(function(req, res, next) {
+  req.mys = mys;
+  next();
+});
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.disable('x-powered-by');
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
