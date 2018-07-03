@@ -6,7 +6,6 @@ var mys = {
   role: "myrole",
   access_rights: {}
 
-
-}
+};
 
 module.exports = mys;

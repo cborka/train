@@ -8,10 +8,18 @@ var db = pgp(process.env.PG_CONNECT);
 
 /* GET users list */
 router.get('/', function(req, res, next) {
+  req.session.pass = md5("users.js");
+  req.session.xxxpass += "x12345";
+  req.session.xxx = "xxkddddddd";
   res.send('Строка подключения к БД: '+process.env.PG_CONNECT);
-  req.mys.pass = md5("users.js");
-  req.mys.xxx = "xxx";
 });
+router.get('/m', function(req, res, next) {
+  req.session.save(function(err) {
+    // session saved
+  });
+  res.send("users: req.mys.pass:"+req.session.pass+", xxxpass="+req.session.xxxpass+","+req.session.xxx);
+});
+
 
 router.get('/tst/:parqq', function(req, res, next) {
   var parqq = req.params["parqq"]; // получаем id
@@ -106,5 +114,18 @@ router.get('/all', function(req, res, next) {
     });
 });
 
+//
+// Регистрация пользователя
+//
+router.get('/reg', function(req, res, next) {
+  res.render('users/reg', {id: "0"});
+});
+
+//
+// Вход в систему
+//
+router.get('/login', function(req, res, next) {
+  res.render('users/login', {});
+});
 
 module.exports = router;

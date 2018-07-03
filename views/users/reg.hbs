@@ -1,0 +1,49 @@
+<form action="/users/reg" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Логин (имя для входа):</label></td>
+            <td><input id="login" type="text" name="login" placeholder="Такое как Alex или Vlad" value="" ></td>
+        </tr>
+        <tr>
+            <td><label>Пароль:</label></td>
+            <td><input id="password" type="password" name="password" value="" ></td>
+        </tr>
+        <tr>
+            <td><label>Подтверждение пароля:</label></td>
+            <td><input id="password2" type="password" name="password2" value="" ></td>
+        </tr>
+        <tr>
+            <td><label>Полное имя (ФИО):</label></td>
+            <td><input id="fullname" type="text" name="fullname" placeholder="Иванов Иван" value="" ></td>
+        </tr>
+        <tr>
+            <td><label>А ты не робот? Проверка:</label></td>
+            <td><input id="test" type="text" name="test" placeholder="12 х 12 =" value="" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" disabled="true" >Регистрация</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    function clear_form()
+    {
+//  alert(document.getElementById("login").value);
+        document.getElementById("id").value="0";
+        document.getElementById("login").value="";
+        document.getElementById("phone").value="";
+        document.getElementById("hint").innerHTML="Добавление нового пользователя";
+    }
+
+</script>
