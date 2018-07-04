@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Ajax-запросы к серверу. Тест</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <style>	</style>
+
+        <script src="/javascripts/ajaxlib.js"> </script>
+</head>
+<body>
+
+
+<a href="/">[ На главную ]</a><br>
+
+<button type="button" name="b1" onclick="erro('Hello world!')" >Кнопка</button>
+
+<div id="erro"> </div>
+<div id="hint" ></div>
+
+<a href="/">[ На главную ]</a><br>
+
+
+<button onclick="loadPhones()" id="button">Загрузить исходник!</button>
+
+<script>
+  function loadPhones()
+  {
+      doquery ('/ajax', '');
+  }
+</script>
+
+
+
+
+</body>
+</html>

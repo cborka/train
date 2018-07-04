@@ -9,6 +9,18 @@ router.get('/', function(req, res, next) {
   res.render('index', { });
 });
 
+router.get('/ajax', function(req, res, next) {
+  res.send("Hello from server!");
+});
+
+
+router.get('/phones.json', function(req, res, next) {
+function accept(req, res) {
+    file.serve(req, res);
+  }
+});
+
+
 router.get('/m', function(req, res, next) {
   res.send("req.session.id="+req.session.id+
     ", req.session.cookie.expires="+req.session.cookie.expires+

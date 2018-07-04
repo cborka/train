@@ -120,10 +120,35 @@ router.get('/all', function(req, res, next) {
 router.get('/reg', function(req, res, next) {
   res.render('users/reg', {id: "0"});
 });
+router.post('/reg', function(req, res, next) {
+  var login = req.body.login;
+  var password = req.body.password;
+  var fullname = req.body.fullname;
+//  res.send("pass="+password+"("+md5(password)+"), login="+login+", fullname="+ fullname);
+//    res.send("Добавление нового пользователя");
+  db.one("INSERT INTO users (login, password, fullname) VALUES ($1, $2, $3) RETURNING id;", [login, md5(password), fullname])
+    .then (function (data) {
+      data.xxx = "xxx";
+      res.redirect('/users/home/'+data.id);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+//  res.render('users/reg', {});
+//  res.send('Регистрация ОК');
+});
 
 //
 // Вход в систему
 //
+router.get('/home/:id', function(req, res, next) {
+  var id = req.params.id; // получаем id
+  var s = '';
+  s = s + "s";
+  res.send(req.params);
+//  res.send('Здравствуй, пользователь №'+ id);
+});
+
 router.get('/login', function(req, res, next) {
   res.render('users/login', {});
 });
