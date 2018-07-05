@@ -14,22 +14,43 @@
 
 <button type="button" name="b1" onclick="erro('Hello world!')" >Кнопка</button>
 
-<div id="erro"> </div>
+<div id="erro"></div>
 <div id="hint" ></div>
 
 <a href="/">[ На главную ]</a><br>
 
 
-<button onclick="loadPhones()" id="button">Загрузить исходник!</button>
+<button onclick="PostQuery()" id="button">POST запрос</button>
+<button onclick="GetQuery()" id="button">GET запрос</button>
 
 <script>
-  function loadPhones()
+
+  function myOK()
   {
-      doquery ('/ajax', '');
+    document.getElementById("hint").innerHTML = "<b>"+xhr.responseText+"</b>";
+    document.getElementById("erro").innerHTML = xhr.getResponseHeader('Content-Type'); //xhr.getAllResponseHeaders();
   }
+  onOK = myOK;
+
+  function PostQuery()
+  {
+    doPostQuery ('/ajax', '&msg=' + encodeURIComponent("Это пост-запрос!"));
+  }
+  function GetQuery()
+  {
+    doGetQuery ('/ajax');
+  }
+
+/*
+  ЭТО ПРИКОЛЬНО :)
+  function sleep(ms) {
+    ms += new Date().getTime();
+    while (new Date() < ms){}
+  }
+  sleep(7000);
+ */
+
 </script>
-
-
 
 
 </body>

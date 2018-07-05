@@ -8,10 +8,12 @@ var db = pgp(process.env.PG_CONNECT);
 
 /* GET users list */
 router.get('/', function(req, res, next) {
+  // Здесь просто тест работы сессий
   req.session.pass = md5("users.js");
   req.session.xxxpass += "x12345";
   req.session.xxx = "xxkddddddd";
-  res.send('Строка подключения к БД: '+process.env.PG_CONNECT);
+  res.redirect('/users/all/');
+//  res.send('Строка подключения к БД: '+process.env.PG_CONNECT);
 });
 router.get('/m', function(req, res, next) {
   req.session.save(function(err) {
@@ -128,29 +130,80 @@ router.post('/reg', function(req, res, next) {
 //    res.send("Добавление нового пользователя");
   db.one("INSERT INTO users (login, password, fullname) VALUES ($1, $2, $3) RETURNING id;", [login, md5(password), fullname])
     .then (function (data) {
-      data.xxx = "xxx";
-      res.redirect('/users/home/'+data.id);
+      res.redirect('/users/login?login='+login);
     })
     .catch(function (error) {
       res.send(error);
     });
-//  res.render('users/reg', {});
-//  res.send('Регистрация ОК');
 });
 
 //
 // Вход в систему
 //
-router.get('/home/:id', function(req, res, next) {
-  var id = req.params.id; // получаем id
-  var s = '';
-  s = s + "s";
-  res.send(req.params);
+router.get('/login', function(req, res, next) {
+  var login = req.params.login;
+  res.render('users/login', {login: login});
+});
+
+router.post('/login', function(req, res, next) {
+  var login = req.body.login;
+  var password = req.body.password;
+
+  req.session.pass = password;
+  req.session.password = md5(password);
+  req.session.login = login;
+
+//  res.render('users/home', {login: login});
+  res.redirect('/');
+//  res.redirect('/users/home/'+login);
+//  res.redirect('/sess');
+
+//  res.send(login+"---"+password);
+//  res.render('users/login', {login: login});
+});
+
+router.get('/home', function(req, res, next) {
+//  var id = req.params.id; // получаем id
+
+  res.render('users/home', {login: "bro"});
+//  res.render('/users/home', {login: login});
+//  res.send("Добро пожаловать в систему, "+ id +'!<br><a href="/users/logout">Выход</a>');
 //  res.send('Здравствуй, пользователь №'+ id);
 });
 
-router.get('/login', function(req, res, next) {
-  res.render('users/login', {});
+router.get('/logout', function(req, res, next) {
+  req.session.destroy(function(err) {
+    res.redirect('/');
+  })
+});
+
+//
+// Проверка, свободно ли имя?
+//
+router.post('/isLoginFree', function(req, res, next) {
+  var login = req.body.login;
+  db.one("SELECT count(*) AS cnt FROM users WHERE login = $1", login)
+    .then (function (data) {
+      res.send(data.cnt);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Проверка, есть ли такой пользователь?
+//
+router.post('/isValidUser', function(req, res, next) {
+  var login = req.body.login;
+  var password = req.body.password;
+  db.one("SELECT count(*) AS cnt FROM users WHERE login = $1 and password = $2", [login, md5(password)])
+    .then (function (data) {
+      res.send(data.cnt);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
 });
 
 module.exports = router;

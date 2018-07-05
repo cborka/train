@@ -5,29 +5,37 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  req.session.pass = "index.js";
-  res.render('index', { });
+  login = req.session.login;
+//  res.send("("+login+")");
+
+  if (login == "" || login == undefined)
+    res.render('index', { });
+  else
+    res.redirect('/users/home');
 });
 
 router.get('/ajax', function(req, res, next) {
   res.send("Hello from server!");
 });
 
-
-router.get('/phones.json', function(req, res, next) {
-function accept(req, res) {
-    file.serve(req, res);
-  }
+router.post('/ajax', function(req, res, next) {
+  var msg = req.body.msg;
+  res.send("Hello from server! "+msg);
 });
 
 
+
 router.get('/m', function(req, res, next) {
-  res.send("req.session.id="+req.session.id+
+    res.send("req.session.id="+req.session.id+
     ", req.session.cookie.expires="+req.session.cookie.expires+
     ", req.session.cookie.maxAge="+req.session.cookie.maxAge+
     ", req.session.store="+req.session.store+
     ", req.session.name="+req.session.name+
     ", cookie.path="+req.session.cookie.path);
+});
+
+router.get('/sess', function(req, res, next) {
+  res.send(req.session);
 });
 
 module.exports = router;
