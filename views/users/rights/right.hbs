@@ -1,0 +1,48 @@
+<form action="/users/right/update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="id" name="id" readonly value="{{id}}" >
+            <input  id="old_id" name="old_id"  readonly value="{{id}}" > </td>
+        </tr>
+        <tr>
+            <td><label>Login:</label></td>
+            <td><input id="login" type="text" name="login" value={{login}} ></td>
+        </tr>
+        <tr>
+            <td><label>Название права:</label></td>
+            <td><input id="right_name" type="text" name="right_name" value={{right_name}} ></td>
+        </tr>
+        <tr>
+            <td><label>Адрес (URL):</label></td>
+            <td><input id="url" type="text" name="url" value={{url}} >
+            <input id="old_url" type="text" name="old_url" hidden readonly value={{url}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    function clear_form()
+    {
+//  alert(document.getElementById("login").value);
+        document.getElementById("id").value="0";
+        document.getElementById("login").value="Вася";
+        document.getElementById("user_right").value="Домой";
+        document.getElementById("url").innerHTML="/";
+    }
+
+</script>

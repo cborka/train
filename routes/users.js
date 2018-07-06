@@ -140,11 +140,13 @@ router.post('/reg', function(req, res, next) {
 //
 // Вход в систему
 //
+// Вводим логин и пароль
 router.get('/login', function(req, res, next) {
   var login = req.params.login;
   res.render('users/login', {login: login});
 });
 
+// Настраиваем сессию
 router.post('/login', function(req, res, next) {
   var login = req.body.login;
   var password = req.body.password;
@@ -153,21 +155,25 @@ router.post('/login', function(req, res, next) {
   req.session.password = md5(password);
   req.session.login = login;
 
-//  res.render('users/home', {login: login});
-  res.redirect('/');
-//  res.redirect('/users/home/'+login);
-//  res.redirect('/sess');
+  db.one("SELECT id, fullname FROM users WHERE login = $1 and password = $2", [login, md5(password)])
+    .then (function (data) {
+      req.session.uid = data.id;
+      req.session.fullname = data.fullname;
 
-//  res.send(login+"---"+password);
-//  res.render('users/login', {login: login});
+      res.redirect('/');
+//      res.send(data.cnt);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
 });
-
+// Идём на СВОЮ домашнюю страницу
 router.get('/home', function(req, res, next) {
-//  var id = req.params.id; // получаем id
 
-  res.render('users/home', {login: "bro"});
-//  res.render('/users/home', {login: login});
-//  res.send("Добро пожаловать в систему, "+ id +'!<br><a href="/users/logout">Выход</a>');
+  if (req.session.login == undefined)
+      res.redirect('/');
+
+  res.render('users/home', req.session);
 //  res.send('Здравствуй, пользователь №'+ id);
 });
 
@@ -204,6 +210,110 @@ router.post('/isValidUser', function(req, res, next) {
     .catch(function (error) {
       res.send(error);
     });
+});
+
+
+//
+// Сформирвоать и возвратить меню пользователя на основе имеющихся у него ПРАВ
+//
+router.get('/get_user_menu', function(req, res, next) {
+  var id = req.session.uid;
+
+  if (id == "" || id == undefined)
+    res.send('Пользователь неизвестен.');
+
+  db.any("SELECT right_name, url FROM user_rights WHERE user_rf = $1", id)
+    .then (function (data) {
+
+      var result = 'Меню пользователя '+ req.session.login +
+        ':  <a href="/" >Домой</a> | <a href="/users/logout">Выход</a> |';
+      for (var i = 0; i < data.length; i++) {
+        result = result + '<a href="'+ data[i].url +'" >'+data[i].right_name + '</a> |';
+      }
+//      res.send(data[0]);
+      res.send(result);
+
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+
+});
+
+//
+// Показать список ПРАВ пользователей
+//
+router.get('/rights/all', function(req, res, next) {
+  db.any("SELECT u.id, u.login, ur.right_name, ur.url FROM user_rights ur LEFT JOIN users u ON u.id = ur.user_rf ORDER BY 2, 3")
+    .then(function (data) {
+      res.render('users/rights/rights', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+/*
+** Добавить новое ПРАВО пользователя
+*/
+router.get('/rights/addnew', function(req, res, next) {
+  db.one("SELECT 0 AS id, '' AS login, '' AS right_name, '' AS url")
+    .then(function (data) {
+      res.render('users/rights/right', data); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+/*
+** Показать/обновить ПРАВО пользователя
+*/
+router.get('/rights/:id/:right_name', function(req, res, next) {
+  var id = req.params.id;
+  var right_name = req.params.right_name;
+  db.one("SELECT u.id, u.login, ur.right_name, ur.url FROM user_rights ur LEFT JOIN users u ON u.id = ur.user_rf WHERE ur.user_rf=$1 AND ur.right_name=$2" , [id, right_name])
+    .then(function (data) {
+//      res.send(data);
+      res.render('users/rights/right', data); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+//      res.send("код ошибки: "+error.code+"<br> получено: "+error.received+"<br> запрос: "+error.query);
+    });
+});
+
+//
+// Добавление и корректировка ПРАВА пользователя
+//
+router.post('/right/update', function(req, res, next) {
+  var id = req.body.id;
+  var login = req.body.login;
+  var right_name = req.body.right_name;
+  var url = req.body.url;
+  var old_id = req.body.old_id;
+  var old_url = req.body.old_url;
+  if (id > 0 ) {
+//  Обновление
+    db.none("UPDATE user_rights SET user_rf=$1, right_name=$2, url=$3 WHERE user_rf=$4 AND url=$5", [id, right_name, url, old_id, old_url])
+      .then (function () {
+        res.redirect('/users/rights/all/');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none("INSERT INTO user_rights (user_rf, right_name, url) VALUES ((SELECT id FROM users WHERE login = $1), $2, $3);", [login, right_name, url])
+      .then (function (data) {
+        res.redirect('/users/rights/all/');
+
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
 });
 
 module.exports = router;

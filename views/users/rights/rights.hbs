@@ -1,0 +1,23 @@
+<h1>Права доступа пользователей</h1>
+<table class="list">
+    <tr>
+        <td class="list"><b>Пользователь</b></td>
+        <td class="list"><b>Право</b></td>
+        <td class="list"><b>Страница</b></td>
+        <td class="list">Изменить</td>
+        <td class="list">Удалить</td>
+        <td class="list">Добавить</td>
+    </tr>
+    {{#each data}}
+        <tr>
+            <td class="list">{{login}}</td>
+            <td class="list">{{right_name}}</td>
+            <td class="list">{{url}}</td>
+            <td class="list"><a href="/users/rights/{{id}}/{{right_name}}" title="Изменить" > >> </a></td>
+            <td class="list"><a href="/users/rights/delete/{{id}}/{{right_name}}" title="Удалить" > X </a></td>
+            <td class="list"><a href="/users/rights/addnew" title="Добавить" > + </a></td>
+        </tr>
+    {{/each}}
+</table>
+<a href="/users/rights/addnew" title="Добавить" > Добавить </a>
+<div id="hint" ></div>
