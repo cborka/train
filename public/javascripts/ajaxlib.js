@@ -8,54 +8,57 @@ function erro(message)
   show_msg("erro", message);
 }
 
-//<script> function x() {  x = 1; } </script>
-
-var xhr = new XMLHttpRequest();
-
-xhr.timeout = 30000; // 30 секунд (в миллисекундах)
-
-xhr.ontimeout = function() {
-  alert( 'Извините, запрос превысил максимальное время '+xhr.timeout/1000+" секунд." );
-}
-
-xhr.onreadystatechange = function()
+function onERRdefault(msg)
 {
-  if (xhr.readyState != 4)
-    return;
-
-  if (xhr.status != 200)
-  {
-    onErr();  // обработать ошибку
-  }
-  else
-  {
-    onOK();   // вывести результат //(xhr.responseText);
-  }
+  erro(msg);
 }
-
-function onOKdefault()
-{
-  erro(xhr.responseText);
-}
-var onOK = onOKdefault;
-
-function onERRdefault()
-{
-  erro('Ошибка:'+xhr.status + ': ' + xhr.statusText);
-}
-var onErr = onERRdefault;
 
 //
 // Запуск асинхронного запроса на выполнение
 //
-function doPostQuery (url, params)
+function doQuery (url, onOK, params)
 {
-  xhr.open("POST", url);
-  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-  xhr.send(params);
+  let xhr = new XMLHttpRequest();
+
+  xhr.timeout = 30000; // 30 секунд (в миллисекундах)
+
+  xhr.ontimeout = function() {
+    alert( 'Извините, запрос превысил максимальное время '+xhr.timeout/1000+" секунд." );
+  }
+
+  xhr.onreadystatechange = function()
+  {
+    if (xhr.readyState != 4)
+      return;
+
+    if (xhr.status != 200)
+    {
+      onERRdefault('Ошибка:'+xhr.status + ': ' + xhr.statusText);  // обработать ошибку
+    }
+    else
+    {
+      onOK(xhr.responseText);   // вывести результат //(xhr.responseText);
+    }
+  }
+
+  if (params == '' || params == undefined) {
+    xhr.open("GET", url);
+    xhr.send();
+  }
+  else {
+    xhr.open("POST", url);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    xhr.send(params);
+  }
 }
-function doGetQuery (url)
+
+
+function doGetQuery (url, onOK)
 {
-  xhr.open("GET", url);
-  xhr.send();
+  doQuery (url, onOK, '');
+}
+
+function doPostQuery (url, onOK, params)
+{
+  doQuery (url, onOK, params);
 }

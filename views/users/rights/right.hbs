@@ -19,6 +19,14 @@
             <input id="old_url" type="text" name="old_url" hidden readonly value={{url}} ></td>
         </tr>
         <tr>
+            <td><label>Разделитель пунктов меню:</label></td>
+            <td><input id="menu_delimiter" type="text" name="menu_delimiter" value={{menu_delimiter}} ></td>
+        </tr>
+        <tr>
+            <td><label>Порядковый номер в меню:</label></td>
+            <td><input id="menu_order" type="number" name="menu_order" value={{menu_order}} ></td>
+        </tr>
+        <tr>
             <td></td>
             <td>
                 <button type="submit" >Сохранить</button>
@@ -35,14 +43,5 @@
 </form>
 
 <script>
-
-    function clear_form()
-    {
-//  alert(document.getElementById("login").value);
-        document.getElementById("id").value="0";
-        document.getElementById("login").value="Вася";
-        document.getElementById("user_right").value="Домой";
-        document.getElementById("url").innerHTML="/";
-    }
 
 </script>

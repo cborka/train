@@ -1,1 +1,26 @@
+<div id="main_menu">
+    <nav>
+        <a href="/">Главная</a> |
+        <a href="/users/login">Вход</a> |
+        <a href="/users/reg">Регистрация</a>
+    </nav>
+</div>
+<div id="user_menu"></div>
+<hr>
 </div>  <div id="xxx"></div>
+
+<script>
+
+    let mmenuOK = function (reply)
+    {
+        document.getElementById("main_menu").innerHTML = "<nav>"+reply+"</nav>";
+    }
+
+    function get_main_menu()
+    {
+        doQuery ('/users/get_main_menu', mmenuOK);
+    }
+
+    get_main_menu();
+
+</script>

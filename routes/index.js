@@ -7,7 +7,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   var login = req.session.login;
 
-  if (login == "" || login == undefined)
+  if (login == undefined || login == "")
     res.render('index', { });
   else
     res.redirect('/users/home');

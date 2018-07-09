@@ -76,9 +76,8 @@
         document.getElementById("hint").innerHTML=str;
     }
 
-    function check_login()
+    let check_login = function (reply)
     {
-        var reply = xhr.responseText;
 
         if (reply == "0") {
             show_msg("isloginfree", "Имя '" + userreg.login.value + "' свободно!");
@@ -88,7 +87,7 @@
             show_msg("isloginfree", "Имя '"+userreg.login.value+"' уже занято.");
 
     }
-    onOK = check_login;
+
     function check_login_query()
     {
         userreg.button_submit.disabled = true;
@@ -98,7 +97,7 @@
             return false;
         }
         // Запрос серверу на проверку не занят ли этот логин
-        doPostQuery ("/users/isLoginFree", "&login=" + encodeURIComponent(userreg.login.value));
+        doQuery ("/users/isLoginFree", check_login, "&login=" + encodeURIComponent(userreg.login.value));
     }
 
 

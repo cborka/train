@@ -1,5 +1,3 @@
-<div id="user_menu"></div>
-<hr>
 
 Добро пожаловать в систему, {{login}}!<br>
 твой Id - {{uid}}<br>
@@ -13,24 +11,6 @@
 <div id="erro"></div>
 
 <script>
-    function init_user()
-    {
-//        document.getElementById("main_menu").innerHTML='<nav><a href="/" >Главная</a> | <a href="/users/logout">Выход</a></nav>';
-    }
-
-//    init_user();
-    get_user_menu();
-
-    function menuOK()
-    {
-        document.getElementById("user_menu").innerHTML = "<nav>"+xhr.responseText+"</nav>";
-    }
-    onOK = menuOK;
-
-    function get_user_menu()
-    {
-        doGetQuery ('/users/get_user_menu');
-    }
 
 
 </script>

@@ -31,6 +31,20 @@
 
 <script>
 
+    let check_logpass = function (reply)
+    {
+        userlogin.button_submit.disabled = true;
+
+        if (reply == "0") {
+            info("Неправильное имя или пароль, попробуйте ещё раз!");
+            return false;
+        }
+
+        info('');
+        userlogin.button_submit.disabled = false;
+        return true;
+    }
+
     function check_data()
     {
         userlogin.button_submit.disabled = true;
@@ -50,9 +64,8 @@
             info("А не робот ли ты?");
             return false;
         }
-
         // Запрос серверу, есть ли пользователь с такими логином и паролем
-        doPostQuery ("/users/isValidUser",
+        doQuery ("/users/isValidUser", check_logpass,
                 "&login=" + encodeURIComponent(userlogin.login.value)+
                 "&password=" + encodeURIComponent(userlogin.password.value)
         );
@@ -63,22 +76,5 @@
     {
         document.getElementById("hint").innerHTML=str;
     }
-
-    function check_logpass()
-    {
-        var reply = xhr.responseText;
-
-        userlogin.button_submit.disabled = true;
-
-        if (reply == "0") {
-            info("Неправильное имя или пароль, попробуйте ещё раз!");
-            return false;
-        }
-
-        info(reply);
-        userlogin.button_submit.disabled = false;
-        return true;
-    }
-    onOK = check_logpass;
 
 </script>
