@@ -2,8 +2,9 @@ var express = require('express');
 var router = express.Router();
 var md5 = require('crypto-md5/md5');
 
-var pgp = require("pg-promise")(/*options*/);
-var db = pgp(process.env.PG_CONNECT);
+var db = require("../db");
+//var pgp = require("pg-promise")(/*options*/);
+//var db = pgp(process.env.PG_CONNECT);
 
 /* GET users list */
 router.get('/', function(req, res, next) {

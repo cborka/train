@@ -1,0 +1,50 @@
+<h1>Список подразделений</h1>
+<div>
+<table class="list">
+    <tr>
+        <td class="list"><b>Id</b></td>
+        <td class="list"><b>Название</b></td>
+        <td class="list"><b>Входит в</b></td>
+        <td class="list"><b>Сокращение</b></td>
+        <td class="list"><b>Полное название</b></td>
+        <td class="list">Кнопки</td>
+    </tr>
+    {{#each data}}
+        <tr>
+            <td class="list">{{sd_id}}</td>
+            <td class="list">{{sd_name}}</td>
+            <td class="list">{{psd_name}}</td>
+            <td class="list">{{sd_short_name}}</td>
+            <td class="list">{{sd_full_name}}</td>
+            <td class="list">
+                <button type="button" onclick="edit_sd({{sd_id}})">Изменить</button>
+                <button type="button" onclick="delete_sd({{sd_id}},'{{sd_name}}')">Удалить</button>
+            </td>
+        </tr>
+    {{/each}}
+</table>
+</div>
+<a href="/pro/sd_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_sd(sd_id, sd_name) {
+
+        var result = confirm("Удалить, "+sd_id+"?");
+        if (result) {
+            location.href = '/pro/sd_delete/'+sd_id;
+//            window.open('/pro/sd_delete/'+sd_id);
+        }
+        else
+            erro("Оставляю "+sd_name+"!");
+    }
+
+    function edit_sd(sd_id) {
+        location.href = '/pro/sd/'+sd_id;
+    }
+
+</script>

@@ -1,0 +1,57 @@
+<form name="sd" action="/pro/sd_update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="sd_id" name="sd_id" readonly value="{{sd_id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Название:</label></td>
+            <td><input id="sd_name" type="text" name="sd_name" value="{{sd_name}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Входит в:</label></td>
+            <td>
+            <select width="100%" size="1" name='psd_name' id='psd_name' value="{{psd_name}}"></select>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Сокращение:</label></td>
+            <td><input id="sd_short_name" type="text" name="sd_short_name" value="{{sd_short_name}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Полное имя:</label></td>
+            <td><input id="sd_full_name" type="text" name="sd_full_name" value="{{sd_full_name}}" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+
+    // Изготовить список подразделений для выбора
+    let set_psd_names = function (reply)
+    {
+        document.getElementById("psd_name").innerHTML = reply;
+        document.getElementById("psd_name").value = '{{psd_name}}';
+    }
+    function get_psd_names()
+    {
+        doQuery ("/pro/get_sd_names", set_psd_names, "&selected=" + encodeURIComponent('{{psd_name}}'));
+    }
+    get_psd_names();
+
+
+</script>

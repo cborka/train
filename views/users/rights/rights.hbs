@@ -17,7 +17,7 @@
             <td class="list">{{menu_order}}</td>
             <td class="list">
               <button type="button" onclick="edit_right({{id}},'{{right_name}}')">Изменить</button>
-              <button type="button" onclick="delete_right({{id}},'{{login}}','{{right_name}}')">Удалить</button></td>
+              <button type="button" onclick="delete_right({{id}},'{{login}}','{{right_name}}')">Удалить</button>
 <!--            <td class="list"><a href="/users/right/delete/{{id}}/{{right_name}}" title="Удалить" > X </a>
               <td class="list"><a href="/users/rights/addnew" title="Добавить" > + </a></td>-->
             </td>
@@ -32,10 +32,10 @@
 
 function delete_right(id, login, rn) {
 
-    result = confirm("Удалить, "+login+","+rn+"?");
+    let result = confirm("Удалить, "+login+","+rn+"?");
     if (result) {
-        erro("Удалено "+login+", "+rn+"!");
-        window.open('/users/right/delete/'+id+'/'+rn);
+        location.href = '/users/right/delete/'+id+'/'+rn;
+//        window.open('/users/right/delete/'+id+'/'+rn);
     }
     else
       erro("Оставляю "+login+", "+rn+"!");

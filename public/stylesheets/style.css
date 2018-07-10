@@ -11,11 +11,14 @@ td {
 table.form {
   border: 0 solid black;
   border-collapse: collapse;
+#  width: 92%;
 }
 
 table.list {
   border: 1px solid black;
   border-collapse: collapse;
+  margin: auto;
+  width: 85%;
 }
 td.list {
   padding: 3px;
@@ -29,5 +32,6 @@ td.list {
 }
 
 a {
+#  color: blueviolet;
   color: #00B7FF;
 }

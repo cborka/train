@@ -21,24 +21,23 @@
 
 
 <button onclick="PostQuery()" id="button">POST запрос</button>
-<button onclick="GetQuery()" id="button">GET запрос</button>
+<button onclick="GetQuery()" id="button2">GET запрос</button>
 
 <script>
 
-  function myOK()
+  myOK = function (msg)
   {
-    document.getElementById("hint").innerHTML = "<b>"+xhr.responseText+"</b>";
-    document.getElementById("erro").innerHTML = xhr.getResponseHeader('Content-Type'); //xhr.getAllResponseHeaders();
+    document.getElementById("hint").innerHTML = "<b>"+msg+"</b>";
   }
-  onOK = myOK;
+
 
   function PostQuery()
   {
-    doPostQuery ('/ajax', '&msg=' + encodeURIComponent("Это пост-запрос!"));
+    doQuery ('/ajax', myOK, '&msg=' + encodeURIComponent("Это пост-запрос!"));
   }
   function GetQuery()
   {
-    doGetQuery ('/ajax');
+    doQuery ('/ajax', myOK);
   }
 
 /*
