@@ -11,7 +11,8 @@
         <tr>
             <td><label>Входит в:</label></td>
             <td>
-            <select width="100%" size="1" name='psd_name' id='psd_name' value="{{psd_name}}"></select>
+                <input id="psd_name" type="text" name="psd_name" value="{{psd_name}}" >
+            <select width="100%" size="1" name='psd_names' id='psd_names' value="{{psd_names}}"></select>
             </td>
         </tr>
         <tr>
@@ -42,10 +43,10 @@
 
 
     // Изготовить список подразделений для выбора
-    let set_psd_names = function (reply)
+    var set_psd_names = function (reply)
     {
-        document.getElementById("psd_name").innerHTML = reply;
-        document.getElementById("psd_name").value = '{{psd_name}}';
+        document.getElementById("psd_names").innerHTML = reply;
+        document.getElementById("psd_names").value = '{{psd_name}}';
     }
     function get_psd_names()
     {
