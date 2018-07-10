@@ -11,8 +11,8 @@
         <tr>
             <td><label>Входит в:</label></td>
             <td>
-                <input id="psd_name" type="text" name="psd_name" value="{{psd_name}}" >
-            <select width="100%" size="1" name='psd_names' id='psd_names' value="{{psd_names}}"></select>
+
+            <select width="100%" size="1" name='psd_name' id='psd_name' value="{{psd_name}}"></select>
             </td>
         </tr>
         <tr>
@@ -50,7 +50,7 @@
     }
     function get_psd_names()
     {
-        doQuery ("/pro/get_sd_names", set_psd_names, "&selected=" + encodeURIComponent('{{psd_name}}'));
+        doQuery ("/pro/get_sd_names", set_psd_names);
     }
     get_psd_names();
 
