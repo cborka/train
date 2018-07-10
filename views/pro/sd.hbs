@@ -45,8 +45,10 @@
     // Изготовить список подразделений для выбора
     var set_psd_names = function (reply)
     {
-        document.getElementById("psd_names").innerHTML = reply;
-        document.getElementById("psd_names").value = '{{psd_name}}';
+
+      alert(reply);
+        document.getElementById("psd_name").innerHTML = reply;
+        document.getElementById("psd_name").value = '{{psd_name}}';
     }
     function get_psd_names()
     {
