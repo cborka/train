@@ -1,0 +1,53 @@
+<h1>Список ЖБИ</h1>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Id</b></td>
+            <td class="list"><b>Название</b></td>
+            <td class="list"><b>Объём</b></td>
+            <td class="list"><b>Объём бетона</b></td>
+            <td class="list"><b>Вес</b></td>
+            <td class="list"><b>Осадка конуса</b></td>
+            <td class="list"><b>Примечания</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{fc_id}}</td>
+                <td class="list">{{fc_name}}</td>
+                <td class="list">{{fc_v}}</td>
+                <td class="list">{{bet_v}}</td>
+                <td class="list">{{fc_w}}</td>
+                <td class="list">{{ok}}</td>
+                <td class="list">{{notes}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_fc({{fc_id}})">Изменить</button>
+                    <button type="button" onclick="delete_fc({{fc_id}},'{{fc_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/pro/fc_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_fc(fc_id, fc_name) {
+
+        var result = confirm("Удалить, "+fc_name+"?");
+        if (result) {
+            location.href = '/pro/fc_delete/'+fc_id;
+        }
+        else
+            erro("Оставляю "+fc_name+"!");
+    }
+
+    function edit_fc(fc_id) {
+        location.href = '/pro/fc/'+fc_id;
+    }
+
+</script>

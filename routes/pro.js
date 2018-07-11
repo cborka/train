@@ -116,8 +116,106 @@ router.get('/get_sd_names', function(req, res, next) {
 
 });
 
+//=================== ЖБИ =====================
 
+//
+// Показать список ЖБИ
+//
+router.get('/fcs', function(req, res, next) {
+  db.any(
+    "SELECT fc_id, fc_name, fc_v, bet_v, fc_w, concrete_rf, ok, notes " +
+    " FROM fc_list " +
+    " WHERE fc_id > 1 " +
+    " ORDER BY fc_name")
+    .then(function (data) {
+      res.render('pro/fcs', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
+//
+// Добавить новое ЖБИ
+//
+router.get('/fc_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS fc_id, '' AS fc_name, 0 AS fc_v, 0 AS bet_v, 0 AS fc_w, 1 AS concrete_rf, '' AS ok, '' AS notes ")
+    .then(function (data) {
+      res.render('pro/fc', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ЖБИ
+//
+router.get('/fc/:fc_id', function(req, res, next) {
+  var fc_id = req.params.fc_id;
+  db.one(
+    "SELECT fc_id, fc_name, fc_v, bet_v, fc_w, concrete_rf, ok, notes " +
+    " FROM fc_list " +
+    " WHERE fc_id = $1", fc_id)
+    .then(function (data) {
+      res.render('pro/fc', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Добавление и корректировка ЖБИ
+//
+router.post('/fc_update', function(req, res, next) {
+  var fc_id = req.body.fc_id;
+  var fc_name = req.body.fc_name;
+  var fc_v = req.body.fc_v;
+  var bet_v = req.body.bet_v;
+  var fc_w = req.body.fc_w;
+  var ok = req.body.ok;
+  var notes = req.body.notes;
+  if (fc_id > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE fc_list " +
+      "SET fc_name=$1, fc_v=$2, bet_v=$3, fc_w=$4, concrete_rf=1, ok=$5, notes=$6 " +
+      "WHERE fc_id=$7",
+      [fc_name, fc_v, bet_v, fc_w, ok, notes, fc_id])
+      .then (function () {
+        res.redirect('/pro/fcs');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO fc_list (fc_name, fc_v, bet_v, fc_w, concrete_rf, ok, notes) " +
+      "VALUES ($1, $2, $3, $4, 1, $5, $6)",
+      [fc_name, fc_v, bet_v, fc_w, ok, notes])
+      .then (function (data) {
+        res.redirect('/pro/fcs');
+
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить ЖБИ
+router.get('/fc_delete/:fc_id', function(req, res, next) {
+  var fc_id = req.params.fc_id;
+  db.none("DELETE FROM fc_list WHERE fc_id=$1", fc_id)
+    .then(function () {
+      res.redirect('/pro/fcs'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
 
 

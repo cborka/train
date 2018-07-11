@@ -1,0 +1,50 @@
+<form name="fc" action="/pro/fc_update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="fc_id" name="fc_id" readonly value="{{fc_id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Название:</label></td>
+            <td><input id="fc_name" type="text" name="fc_name" value="{{fc_name}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Объём ЖБИ:</label></td>
+            <td><input id="fc_v" type="number" size="12" step="0.001" name="fc_v" value="{{fc_v}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Объём бетона:</label></td>
+            <td><input id="bet_v" type="number" size="12" step="0.001" name="bet_v" value="{{bet_v}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Вес ЖБИ:</label></td>
+            <td><input id="fc_w" type="number" size="12" step="0.001" name="fc_w" value="{{fc_w}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Осадка конуса:</label></td>
+            <td><input id="ok" type="text" name="ok" value="{{ok}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Примечания:</label></td>
+            <td><input id="notes" type="text" name="notes" value="{{notes}}" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+
+</script>
