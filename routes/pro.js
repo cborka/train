@@ -313,7 +313,101 @@ router.get('/form_delete/:form_id', function(req, res, next) {
     });
 });
 
+//=================== ПЛАНЫ (периоды планирования) =====================
 
+//
+// Показать список ПЛАНОВ
+//
+router.get('/plans', function(req, res, next) {
+  db.any(
+    "SELECT plan_id, plan_name " +
+    " FROM plan_list " +
+    " WHERE plan_id > 1 " +
+    " ORDER BY plan_name")
+    .then(function (data) {
+      res.render('pro/plans', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новый ПЛАН
+//
+router.get('/plan_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS plan_id, '' AS plan_name ")
+    .then(function (data) {
+      res.render('pro/plan', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ПЛАН
+//
+router.get('/plan/:plan_id', function(req, res, next) {
+  var plan_id = req.params.plan_id;
+  db.one(
+    "SELECT plan_id, plan_name " +
+    " FROM plan_list " +
+    " WHERE plan_id = $1", plan_id)
+    .then(function (data) {
+      res.render('pro/plan', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Добавление и корректировка ПЛАНА
+//
+router.post('/plan_update', function(req, res, next) {
+  var plan_id = req.body.plan_id;
+  var plan_name = req.body.plan_name;
+  if (plan_id > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE plan_list " +
+      "SET plan_name=$1 " +
+      "WHERE plan_id=$2",
+      [plan_name, plan_id])
+      .then (function () {
+        res.redirect('/pro/plans');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO plan_list (plan_name) " +
+      "VALUES ($1)",
+      [plan_name])
+      .then (function (data) {
+        res.redirect('/pro/plans');
+
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить ПЛАН
+router.get('/plan_delete/:plan_id', function(req, res, next) {
+  var plan_id = req.params.plan_id;
+  db.none("DELETE FROM plan_list WHERE plan_id=$1", plan_id)
+    .then(function () {
+      res.redirect('/pro/plans'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
 
 module.exports = router;

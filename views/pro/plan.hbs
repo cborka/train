@@ -1,0 +1,37 @@
+<h1>Добавление и корректировка планов (периодов планирования)</h1>
+<div><p>Название плана должно начинаться с ГГГГ-ММ <br>
+где ГГГГ - год, ММ - месяц. Примеры: <br>
+    2018-07<br>
+    2018-07 пробный план<br>
+    2018-07 первый вариант<br>
+</p></div>
+<form name="form" action="/pro/plan_update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="plan_id" name="plan_id" readonly value="{{plan_id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Название:</label></td>
+            <td><input id="plan_name" type="text" name="plan_name" value="{{plan_name}}" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+
+</script>

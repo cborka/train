@@ -1,0 +1,43 @@
+<h1>Список планов (периодов планирования)</h1>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Id</b></td>
+            <td class="list"><b>Название</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{plan_id}}</td>
+                <td class="list">{{plan_name}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_plan({{plan_id}})">Изменить</button>
+                    <button type="button" onclick="delete_plan({{plan_id}},'{{plan_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/pro/plan_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_plan(plan_id, plan_name) {
+
+        var result = confirm("Удалить, "+plan_name+"?");
+        if (result) {
+            location.href = '/pro/plan_delete/'+plan_id;
+        }
+        else
+            erro("Оставляю "+plan_name+"!");
+    }
+
+    function edit_plan(plan_id) {
+        location.href = '/pro/plan/'+plan_id;
+    }
+
+</script>
