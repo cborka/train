@@ -113,7 +113,21 @@ router.get('/get_sd_names', function(req, res, next) {
     .catch(function (error) {
       res.send(error);
     });
+});
 
+// Сформировать и возвратить список ПРОЛЕТОВ для выбора
+  router.get('/get_prolet_names', function(req, res, next) {
+    db.any("SELECT sd_name FROM sd_list WHERE sd_name LIKE 'Пролет%' ORDER BY 1 ")
+      .then (function (data) {
+        var result = '';
+        for (var i = 0; i < data.length; i++) {
+          result = result + ' <option value="'+data[i].sd_name+'">'+data[i].sd_name+'</option>';
+        }
+        res.send(result);
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
 });
 
 //=================== ЖБИ =====================
@@ -216,6 +230,23 @@ router.get('/fc_delete/:fc_id', function(req, res, next) {
       res.send(error);
     });
 });
+
+//
+// Сформировать и возвратить список ЖБИ для выбора
+//
+  router.get('/get_fc_names', function(req, res, next) {
+    db.any("SELECT fc_name FROM fc_list ORDER BY 1 ")
+      .then (function (data) {
+        var result = '';
+        for (var i = 0; i < data.length; i++) {
+          result = result + ' <option value="'+data[i].fc_name+'">'+data[i].fc_name+'</option>';
+        }
+        res.send(result);
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  });
 
 //=================== ФОРМЫ для формовки ЖБИ =====================
 
@@ -409,5 +440,110 @@ router.get('/plan_delete/:plan_id', function(req, res, next) {
     });
 });
 
+//=================== ПРОЛЁТ-ЖБИ-ТРУДОЁМКОСТЬ =====================
+
+//
+// Показать список ПРОЛЁТ-ЖБИ
+//
+router.get('/sd_fc_s', function(req, res, next) {
+  db.any(
+    "SELECT sd_rf, sd_name, fc_rf, fc_name, trk " +
+    " FROM ((sd_fc sf " +
+    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
+    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
+    " ORDER BY sd_name, fc_name ")
+    .then(function (data) {
+      res.render('pro/sd_fc_s', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новый ПРОЛЁТ-ЖБИ
+//
+router.get('/sd_fc_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS sd_rf, '' AS sd_name, 0 AS fc_rf, '' AS fc_name ")
+    .then(function (data) {
+      res.render('pro/sd_fc', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ПРОЛЁТ-ЖБИ
+//
+router.get('/sd_fc/:sd_rf/:fc_rf', function(req, res, next) {
+  var sd_rf = req.params.sd_rf;
+  var fc_rf = req.params.fc_rf;
+  db.one(
+    "SELECT sd_rf, sd_name, fc_rf, fc_name, trk " +
+    " FROM ((sd_fc sf " +
+    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
+    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
+    " WHERE sd_rf = $1 AND fc_rf = $2", [sd_rf, fc_rf])
+    .then(function (data) {
+      res.render('pro/sd_fc', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавление и корректировка ПРОЛЁТ-ЖБИ
+//
+router.post('/sd_fc/update', function(req, res, next) {
+  var sd_rf = req.body.sd_rf;
+  var fc_rf = req.body.fc_rf;
+  var sd_name = req.body.sd_name;
+  var fc_name = req.body.fc_name;
+  var trk = req.body.trk;
+  var old_sd_rf = req.body.old_sd_rf;
+  var old_fc_rf = req.body.old_fc_rf;
+  if (sd_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE sd_fc " +
+      "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), fc_rf=(SELECT fc_id FROM fc_list WHERE fc_name=$2), trk=$3 " +
+      "WHERE sd_rf=$4 AND fc_rf=$5",
+      [sd_name, fc_name, trk, old_sd_rf, old_fc_rf])
+      .then (function () {
+        res.redirect('/pro/sd_fc_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO  sd_fc (sd_rf, fc_rf, trk) " +
+      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT fc_id FROM fc_list WHERE fc_name=$2), $3)",
+      [sd_name, fc_name, trk])
+      .then (function (data) {
+        res.redirect('/pro/sd_fc_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить  ПРОЛЁТ-ЖБИ
+router.get('/sd_fc_delete/:sd_rf/:fc_rf', function(req, res, next) {
+  var sd_rf = req.body.sd_rf;
+  var fc_rf = req.body.fc_rf;
+  db.none("DELETE FROM sd_fc WHERE sd_rf=$1 AND fc_rf=$2", [sd_rf, fc_rf])
+    .then(function () {
+      res.redirect('/pro/sd_fc_s'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
 module.exports = router;

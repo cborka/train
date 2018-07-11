@@ -1,0 +1,46 @@
+<h1>Пролёт-ЖБИ-Трудоёмкость</h1>
+<div><p>Таблица рассказывает в каком пролёте какие ЖБИ делают и какова трудоёмксть изготовления в минутах.<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Пролёт</b></td>
+            <td class="list"><b>ЖБИ (железобетонное изделие)</b></td>
+            <td class="list"><b>Трудоёмкость (минут)</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{sd_name}}</td>
+                <td class="list">{{fc_name}}</td>
+                <td class="list">{{trk}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_sd_fc({{sd_rf}}, {{fc_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_sd_fc({{sd_rf}},{{fc_rf}})">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/pro/sd_fc_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_sd_fc(sd_rf, fc_rf) {
+
+        var result = confirm("Удалить строку?"+sd_rf+'/'+fc_rf);
+        if (result) {
+            location.href = '/pro/sd_fc_delete/'+sd_rf+'/'+fc_rf;
+        }
+        else
+            erro("Оставляю "+form_name+"!");
+    }
+
+    function edit_sd_fc(sd_rf, fc_rf) {
+        location.href = '/pro/sd_fc/'+sd_rf+'/'+fc_rf;
+    }
+
+</script>
