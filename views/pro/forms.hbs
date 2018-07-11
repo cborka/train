@@ -1,0 +1,43 @@
+<h1>Список форм (оснасток)</h1>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Id</b></td>
+            <td class="list"><b>Название</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{form_id}}</td>
+                <td class="list">{{form_name}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_form({{form_id}})">Изменить</button>
+                    <button type="button" onclick="delete_form({{form_id}},'{{form_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/pro/form_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_form(form_id, form_name) {
+
+        var result = confirm("Удалить, "+form_name+"?");
+        if (result) {
+            location.href = '/pro/form_delete/'+form_id;
+        }
+        else
+            erro("Оставляю "+form_name+"!");
+    }
+
+    function edit_form(form_id) {
+        location.href = '/pro/form/'+form_id;
+    }
+
+</script>

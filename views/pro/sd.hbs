@@ -1,3 +1,4 @@
+<h1>Добавление и корректировка подразделений</h1>
 <form name="sd" action="/pro/sd_update" method="POST">
     <table class="form">
         <tr>
@@ -44,8 +45,6 @@
     // Изготовить список подразделений для выбора
     var set_psd_names = function (reply)
     {
-
-//      alert(reply);
         document.getElementById("psd_name").innerHTML = reply;
         document.getElementById("psd_name").value = '{{psd_name}}';
     }
@@ -54,6 +53,5 @@
         doQuery ("/pro/get_sd_names", set_psd_names);
     }
     get_psd_names();
-
 
 </script>

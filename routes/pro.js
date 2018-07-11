@@ -217,10 +217,101 @@ router.get('/fc_delete/:fc_id', function(req, res, next) {
     });
 });
 
+//=================== ФОРМЫ для формовки ЖБИ =====================
 
+//
+// Показать список ФОРМ
+//
+router.get('/forms', function(req, res, next) {
+  db.any(
+    "SELECT form_id, form_name " +
+    " FROM form_list " +
+    " WHERE form_id > 1 " +
+    " ORDER BY form_name")
+    .then(function (data) {
+      res.render('pro/forms', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
+//
+// Добавить новую ФОРМУ
+//
+router.get('/form_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS form_id, '' AS form_name ")
+    .then(function (data) {
+      res.render('pro/form', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
+//
+// Показать/обновить ФОРМУ
+//
+router.get('/form/:form_id', function(req, res, next) {
+  var form_id = req.params.form_id;
+  db.one(
+    "SELECT form_id, form_name " +
+    " FROM form_list " +
+    " WHERE form_id = $1", form_id)
+    .then(function (data) {
+      res.render('pro/form', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Добавление и корректировка ФОРМЫ
+//
+router.post('/form_update', function(req, res, next) {
+  var form_id = req.body.form_id;
+  var form_name = req.body.form_name;
+  if (form_id > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE form_list " +
+      "SET form_name=$1 " +
+      "WHERE form_id=$2",
+      [form_name, form_id])
+      .then (function () {
+        res.redirect('/pro/forms');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO form_list (form_name) " +
+      "VALUES ($1)",
+      [form_name])
+      .then (function (data) {
+        res.redirect('/pro/forms');
 
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить ФОРМУ
+router.get('/form_delete/:form_id', function(req, res, next) {
+  var form_id = req.params.form_id;
+  db.none("DELETE FROM form_list WHERE form_id=$1", form_id)
+    .then(function () {
+      res.redirect('/pro/forms'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
 
 
