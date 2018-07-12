@@ -1,21 +1,23 @@
 <h1>Права доступа пользователей</h1>
-<table class="list">
+<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp xclass="list">
+<thead>
     <tr>
-        <td class="list"><b>Пользователь</b></td>
-        <td class="list"><b>Право</b></td>
-        <td class="list"><b>Страница</b></td>
-        <td class="list"><b>Разделитель меню</b></td>
-        <td class="list"><b>Номер в меню</b></td>
-        <td class="list">Кнопки</td>
+        <th class="mdl-data-table__cell--non-numeric" xclass="list"><b>Пользователь</b></th>
+        <th class="mdl-data-table__cell--non-numeric" xclass="list"><b>Право</b></th>
+        <th class="mdl-data-table__cell--non-numeric" xclass="list"><b>Страница</b></th>
+        <th class="mdl-data-table__cell--non-numeric" xclass="list"><b>Разделитель меню</b></th>
+        <th class="mdl-data-table__cell--non-numeric" class="list"><b>Номер в меню</b></th>
+        <th class="mdl-data-table__cell--non-numeric" class="list">Кнопки</th>
     </tr>
+</thead>
     {{#each data}}
         <tr>
-            <td class="list">{{login}}</td>
-            <td class="list">{{right_name}}</td>
-            <td class="list">{{url}}</td>
-            <td class="list">{{menu_delimiter}}</td>
-            <td class="list">{{menu_order}}</td>
-            <td class="list">
+            <td class="mdl-data-table__cell--non-numeric" xclass="list">{{login}}</td>
+            <td class="mdl-data-table__cell--non-numeric" xclass="list">{{right_name}}</td>
+            <td class="mdl-data-table__cell--non-numeric" xclass="list">{{url}}</td>
+            <td class="mdl-data-table__cell--non-numeric" xclass="list">{{menu_delimiter}}</td>
+            <td class="mdl-data-table__cell--numeric" class="list">{{menu_order}}</td>
+            <td class="mdl-data-table__cell--non-numeric" class="list">
               <button type="button" onclick="edit_right({{id}},'{{right_name}}')">Изменить</button>
               <button type="button" onclick="delete_right({{id}},'{{login}}','{{right_name}}')">Удалить</button>
 <!--            <td class="list"><a href="/users/right/delete/{{id}}/{{right_name}}" title="Удалить" > X </a>
@@ -42,7 +44,7 @@ function delete_right(id, login, rn) {
 }
 
 function edit_right(id, rn) {
-    window.open('/users/rights/'+id+'/'+rn);
+    location.href = '/users/rights/'+id+'/'+rn;
 }
 
 
