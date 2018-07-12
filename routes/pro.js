@@ -349,6 +349,24 @@ router.get('/form_delete/:form_id', function(req, res, next) {
     });
 });
 
+//
+// Сформировать и возвратить список ФОРМ для выбора
+//
+router.get('/get_form_names', function(req, res, next) {
+  db.any("SELECT form_name FROM form_list ORDER BY 1 ")
+    .then (function (data) {
+      var result = '';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].form_name+'">'+data[i].form_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
 //=================== ПЛАНЫ (периоды планирования) =====================
 
 //
@@ -545,6 +563,112 @@ router.get('/sd_fc_delete/:sd_rf/:fc_rf', function(req, res, next) {
   db.none("DELETE FROM sd_fc WHERE sd_rf=$1 AND fc_rf=$2", [sd_rf, fc_rf])
     .then(function () {
       res.redirect('/pro/sd_fc_s'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//=================== ПРОЛЁТ-ФОРМА (ОСНАСТКА) =====================
+
+//
+// Показать список ПРОЛЁТ-ФОРМА
+//
+router.get('/sd_form_s', function(req, res, next) {
+  db.any(
+    "SELECT sd_rf, sd_name, form_rf, form_name, form_num " +
+    " FROM ((sd_form sf " +
+    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
+    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
+    " ORDER BY sd_name, form_name ")
+    .then(function (data) {
+      res.render('pro/sd_form_s', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новый ПРОЛЁТ-ФОРМА
+//
+router.get('/sd_form_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS sd_rf, '' AS sd_name, 0 AS form_rf, '' AS form_name ")
+    .then(function (data) {
+      res.render('pro/sd_form', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ПРОЛЁТ-ФОРМА
+//
+router.get('/sd_form/:sd_rf/:form_rf', function(req, res, next) {
+  var sd_rf = req.params.sd_rf;
+  var form_rf = req.params.form_rf;
+  db.one(
+    "SELECT sd_rf, sd_name, form_rf, form_name, form_num " +
+    " FROM ((sd_form sf " +
+    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
+    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
+    " WHERE sd_rf = $1 AND form_rf = $2", [sd_rf, form_rf])
+    .then(function (data) {
+      res.render('pro/sd_form', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавление и корректировка ПРОЛЁТ-ФОРМА
+//
+router.post('/sd_form/update', function(req, res, next) {
+  var sd_rf = req.body.sd_rf;
+  var form_rf = req.body.form_rf;
+  var sd_name = req.body.sd_name;
+  var form_name = req.body.form_name;
+  var form_num = req.body.form_num;
+  var old_sd_rf = req.body.old_sd_rf;
+  var old_form_rf = req.body.old_form_rf;
+  if (sd_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE sd_form " +
+      "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), form_rf=(SELECT form_id FROM form_list WHERE form_name=$2), form_num=$3 " +
+      "WHERE sd_rf=$4 AND form_rf=$5",
+      [sd_name, form_name, form_num, old_sd_rf, old_form_rf])
+      .then (function () {
+        res.redirect('/pro/sd_form_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO  sd_form (sd_rf, form_rf, form_num) " +
+      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT form_id FROM form_list WHERE form_name=$2), $3)",
+      [sd_name, form_name, form_num])
+      .then (function (data) {
+        res.redirect('/pro/sd_form_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить  ПРОЛЁТ-ФОРМА
+router.get('/sd_form_delete/:sd_rf/:form_rf', function(req, res, next) {
+  var sd_rf = req.params.sd_rf;
+  var form_rf = req.params.form_rf;
+  db.none("DELETE FROM sd_form WHERE sd_rf=$1 AND form_rf=$2", [sd_rf, form_rf])
+    .then(function () {
+      res.redirect('/pro/sd_form_s'); // Обновление списка
     })
     .catch(function (error) {
       res.send(error);

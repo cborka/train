@@ -1,4 +1,6 @@
-<form action="/pro/sd_fc/update" method="POST" >
+<h1>Пролёт-Форма-Количество</h1>
+<div><p>Количество форм (оснасток) в пролётах.<br>
+<form action="/pro/sd_form/update" method="POST" >
     <table class="form">
         <tr>
             <td><label>Пролёт:</label></td>
@@ -8,15 +10,15 @@
             </td>
         </tr>
         <tr>
-            <td><label>ЖБИ:</label></td>
+            <td><label>Форма (оснастка):</label></td>
             <td>
-                <select width="100%" size="1" name='fc_name' id='fc_name' value="{{fc_name}}"></select>
-                <input id="old_fc_rf" type="text" name="old_fc_rf" readonly value={{fc_rf}} hidden >
+                <select width="100%" size="1" name='form_name' id='form_name' value="{{form_name}}"></select>
+                <input id="old_form_rf" type="text" name="old_form_rf" readonly value={{form_rf}} hidden >
             </td>
         </tr>
         <tr>
-            <td><label>Трудоёмкость:</label></td>
-            <td><input id="trk" type="text" name="trk" value={{trk}} ></td>
+            <td><label>Количество форм:</label></td>
+            <td><input id="form_num" type="text" name="form_num" value={{form_num}} ></td>
         </tr>
         <tr>
             <td></td>
@@ -36,7 +38,7 @@
 
 <script>
 
-    // Изготовить список подразделений для выбора
+    // Изготовить список пролётов для выбора
     var set_sd_names = function (reply)
     {
         document.getElementById("sd_name").innerHTML = reply;
@@ -47,17 +49,17 @@
         doQuery ("/pro/get_prolet_names", set_sd_names);
     }
 
-    // Изготовить список ЖБИ для выбора
-    var set_fc_names = function (reply)
+    // Изготовить список форм для выбора
+    var set_form_names = function (reply)
     {
-        document.getElementById("fc_name").innerHTML = reply;
-        document.getElementById("fc_name").value = '{{fc_name}}';
+        document.getElementById("form_name").innerHTML = reply;
+        document.getElementById("form_name").value = '{{form_name}}';
     }
-    function get_fc_names()
+    function get_form_names()
     {
-        doQuery ("/pro/get_fc_names", set_fc_names);
+        doQuery ("/pro/get_form_names", set_form_names);
     }
     get_sd_names();
-    get_fc_names();
+    get_form_names();
 
 </script>
