@@ -3,27 +3,26 @@
     <table class="form">
         <tr>
             <td><label>Login:</label></td>
-            <td><input class="mdl-textfield__input" id="login" type="text" name="login" value="{{login}}" onchange="check_data()">{{login}}</td>
+            <td><input id="login" type="text" name="login" value="{{login}}" onchange="check_data()">{{login}}</td>
         </tr>
         <tr>
             <td><label>Пароль:</label></td>
-            <td><input class="mdl-textfield__input" id="password" type="password" name="password" value="" onchange="check_data()" ></td>
+            <td><input id="password" type="password" name="password" value="" onchange="check_data()" ></td>
         </tr>
         <tr>
             <td><label>А ты не робот? Проверка:</label></td>
-            <td><input class="mdl-textfield__input" id="test" type="text" name="test" placeholder="11 х 11 =" value="" onchange="check_data()" ></td>
+            <td><input id="test" type="text" name="test" placeholder="11 х 11 =" value="" onchange="check_data()" ></td>
         </tr>
         <tr>
             <td></td>
             <td>
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-                        name="button_submit" type="submit" disabled="true" >Вход</button>
+                <button name="button_submit" type="submit" disabled="true" >Вход</button>
             </td>
         </tr>
         <tr>
             <td></td>
             <td>
-                <div class="mdl-card__supporting-text" id="hint" ></div>
+                <div id="hint" ></div>
                 <div id="erro"></div>
             </td>
         </tr>
