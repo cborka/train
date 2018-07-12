@@ -10,6 +10,7 @@ router.get('/sds', function(req, res, next) {
   db.any(
     "SELECT sd.sd_id, sd.sd_name, sd.psd_rf, psd.sd_name AS psd_name, sd.sd_short_name, sd.sd_full_name " +
       " FROM sd_list sd LEFT JOIN sd_list psd ON sd.psd_rf = psd.sd_id " +
+      " WHERE sd.sd_id > 1" +
       " ORDER BY sd.sd_name")
     .then(function (data) {
       res.render('pro/sds', {data: data}); // Показ формы
@@ -117,7 +118,11 @@ router.get('/get_sd_names', function(req, res, next) {
 
 // Сформировать и возвратить список ПРОЛЕТОВ для выбора
   router.get('/get_prolet_names', function(req, res, next) {
-    db.any("SELECT sd_name FROM sd_list WHERE sd_name LIKE 'Пролет%' ORDER BY 1 ")
+    db.any(
+      "SELECT sd_name " +
+      "  FROM sd_list " +
+      "  WHERE sd_id = 1 OR sd_name LIKE 'Пролет%'" +
+      "  ORDER BY 1 ")
       .then (function (data) {
         var result = '';
         for (var i = 0; i < data.length; i++) {
@@ -535,8 +540,8 @@ router.post('/sd_fc/update', function(req, res, next) {
 
 // Удалить  ПРОЛЁТ-ЖБИ
 router.get('/sd_fc_delete/:sd_rf/:fc_rf', function(req, res, next) {
-  var sd_rf = req.body.sd_rf;
-  var fc_rf = req.body.fc_rf;
+  var sd_rf = req.params.sd_rf;
+  var fc_rf = req.params.fc_rf;
   db.none("DELETE FROM sd_fc WHERE sd_rf=$1 AND fc_rf=$2", [sd_rf, fc_rf])
     .then(function () {
       res.redirect('/pro/sd_fc_s'); // Обновление списка

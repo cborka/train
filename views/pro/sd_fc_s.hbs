@@ -16,7 +16,7 @@
                 <td class="list">{{trk}}</td>
                 <td class="list">
                     <button type="button" onclick="edit_sd_fc({{sd_rf}}, {{fc_rf}} )">Изменить</button>
-                    <button type="button" onclick="delete_sd_fc({{sd_rf}},{{fc_rf}})">Удалить</button>
+                    <button type="button" onclick="delete_sd_fc({{sd_rf}},{{fc_rf}},'{{sd_name}}','{{fc_name}}')">Удалить</button>
                 </td>
             </tr>
         {{/each}}
@@ -29,14 +29,14 @@
 
 <script>
 
-    function delete_sd_fc(sd_rf, fc_rf) {
+    function delete_sd_fc(sd_rf, fc_rf, sd_name, fc_name) {
 
-        var result = confirm("Удалить строку?"+sd_rf+'/'+fc_rf);
+        var result = confirm("Удалить "+sd_name+'/'+fc_name+ " ?");
         if (result) {
             location.href = '/pro/sd_fc_delete/'+sd_rf+'/'+fc_rf;
         }
         else
-            erro("Оставляю "+form_name+"!");
+            erro("Оставляю "+sd_name+'/'+fc_name+" !");
     }
 
     function edit_sd_fc(sd_rf, fc_rf) {

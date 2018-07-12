@@ -1,17 +1,16 @@
-<form action="/pro/sd_fc/update" method="POST">
+<form action="/pro/sd_fc/update" method="POST" >
     <table class="form">
         <tr>
             <td><label>Пролёт:</label></td>
-            <td><input id="sd_rf" type="text" name="sd_rf" readonly value={{sd_rf}} >
-                <input id="old_sd_rf" type="text" name="old_sd_rf" readonly value={{sd_rf}} >
-                <select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}"></select>
+            <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}"></select>
+                <input id="old_sd_rf" type="text" name="old_sd_rf" readonly value={{sd_rf}} hidden >
             </td>
         </tr>
         <tr>
             <td><label>ЖБИ:</label></td>
-            <td><input id="fc_rf" type="text" name="fc_rf" readonly value={{fc_rf}} >
-                <input id="old_fc_rf" type="text" name="old_fc_rf" readonly value={{fc_rf}} >
+            <td>
                 <select width="100%" size="1" name='fc_name' id='fc_name' value="{{fc_name}}"></select>
+                <input id="old_fc_rf" type="text" name="old_fc_rf" readonly value={{fc_rf}} hidden >
             </td>
         </tr>
         <tr>
