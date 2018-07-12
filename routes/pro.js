@@ -675,4 +675,111 @@ router.get('/sd_form_delete/:sd_rf/:form_rf', function(req, res, next) {
     });
 });
 
+//=================== ФОРМА-ЖБИ =====================
+
+//
+// Показать список ФОРМА-ЖБИ
+//
+router.get('/form_fc_s', function(req, res, next) {
+  db.any(
+    "SELECT form_rf, form_name, fc_rf, fc_name,  cast(fc_num AS float), forming_time " +
+    " FROM ((form_fc ff " +
+    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
+    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
+    " ORDER BY form_name, fc_name ")
+    .then(function (data) {
+      res.render('pro/form_fc_s', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новый ФОРМА-ЖБИ
+//
+router.get('/form_fc_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS form_rf, '' AS form_name, 0 AS fc_rf, '' AS fc_name, 0 AS forming_time ")
+    .then(function (data) {
+      res.render('pro/form_fc', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ФОРМА-ЖБИ
+//
+router.get('/form_fc/:form_rf/:fc_rf', function(req, res, next) {
+  var form_rf = req.params.form_rf;
+  var fc_rf = req.params.fc_rf;
+  db.one(
+    "SELECT form_rf, form_name, fc_rf, fc_name,  cast(fc_num AS float), forming_time " +
+    " FROM ((form_fc ff " +
+    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
+    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
+    " WHERE form_rf = $1 AND fc_rf = $2", [form_rf, fc_rf])
+    .then(function (data) {
+      res.render('pro/form_fc', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавление и корректировка ФОРМА-ЖБИ
+//
+router.post('/form_fc/update', function(req, res, next) {
+  var form_rf = req.body.form_rf;
+  var forming_time = req.body.forming_time;
+  var form_name = req.body.form_name;
+  var fc_name = req.body.fc_name;
+  var fc_num = req.body.fc_num;
+  var old_form_rf = req.body.old_form_rf;
+  var old_fc_rf = req.body.old_fc_rf;
+  if (form_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE form_fc " +
+      "SET form_rf=(SELECT form_id FROM form_list WHERE form_name=$1), fc_rf=(SELECT fc_id FROM fc_list WHERE fc_name=$2), fc_num=$3, forming_time=$4 " +
+      "WHERE form_rf=$5 AND fc_rf=$6",
+      [form_name, fc_name, fc_num, forming_time, old_form_rf, old_fc_rf])
+      .then (function () {
+        res.redirect('/pro/form_fc_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO  form_fc (form_rf, fc_rf, fc_num, forming_time) " +
+      "VALUES ((SELECT form_id FROM form_list WHERE form_name=$1), (SELECT fc_id FROM fc_list WHERE fc_name=$2), $3, $4)",
+      [form_name, fc_name, fc_num, forming_time])
+      .then (function (data) {
+        res.redirect('/pro/form_fc_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить ФОРМА-ЖБИ
+router.get('/form_fc_delete/:form_rf/:fc_rf', function(req, res, next) {
+  var form_rf = req.params.form_rf;
+  var fc_rf = req.params.fc_rf;
+  db.none("DELETE FROM form_fc WHERE form_rf=$1 AND fc_rf=$2", [form_rf, fc_rf])
+    .then(function () {
+      res.redirect('/pro/form_fc_s'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
 module.exports = router;

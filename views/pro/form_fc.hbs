@@ -1,0 +1,68 @@
+<h1>Форма (оснастка) - ЖБИ - Время пропарки</h1>
+<form action="/pro/form_fc/update" method="POST" >
+    <table class="form">
+        <tr>
+            <td><label>Форма (оснастка):</label></td>
+            <td><select width="100%" size="1" name='form_name' id='form_name' value="{{form_name}}"></select>
+                <input id="form_rf" type="text" name="form_rf" readonly value={{form_rf}} hidden >
+                <input id="old_form_rf" type="text" name="old_form_rf" readonly value={{form_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>ЖБИ:</label></td>
+            <td>
+                <select width="100%" size="1" name='fc_name' id='fc_name' value="{{fc_name}}"></select>
+                <input id="old_fc_rf" type="text" name="old_fc_rf" readonly value={{fc_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Количество ЖБИ на 1 форму:</label></td>
+            <td><input id="fc_num" type="number" size="5" step="0.5" name="fc_num" value={{fc_num}} ></td>
+        </tr>
+        <tr>
+            <td><label>Время пропарки (формовки), минут:</label></td>
+            <td><input id="forming_time" type="number" name="forming_time" value={{forming_time}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список форм для выбора
+    var set_form_names = function (reply)
+    {
+        document.getElementById("form_name").innerHTML = reply;
+        document.getElementById("form_name").value = '{{form_name}}';
+    }
+    function get_form_names()
+    {
+        doQuery ("/pro/get_form_names", set_form_names);
+    }
+
+    // Изготовить список ЖБИ для выбора
+    var set_fc_names = function (reply)
+    {
+        document.getElementById("fc_name").innerHTML = reply;
+        document.getElementById("fc_name").value = '{{fc_name}}';
+    }
+    function get_fc_names()
+    {
+        doQuery ("/pro/get_fc_names", set_fc_names);
+    }
+    get_form_names();
+    get_fc_names();
+
+</script>

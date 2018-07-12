@@ -1,0 +1,48 @@
+<h1>Форма (оснастка) - ЖБИ - Время пропарки</h1>
+<div><p>Какие ЖБИ в какой форме делают, количество ЖБИ на одну форму, время пропарки.<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Форма (оснастка)</b></td>
+            <td class="list"><b>ЖБИ (железобетонное изделие)</b></td>
+            <td class="list"><b>Кол-во ЖБИ на 1 форму</b></td>
+            <td class="list"><b>Время пропарки (формовки)</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{form_name}}</td>
+                <td class="list">{{fc_name}}</td>
+                <td class="list">{{fc_num}}</td>
+                <td class="list">{{forming_time}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_form_fc({{form_rf}}, {{fc_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_form_fc({{form_rf}},{{fc_rf}},'{{form_name}}','{{fc_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/pro/form_fc_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_form_fc(form_rf, fc_rf, form_name, fc_name) {
+
+        var result = confirm("Удалить "+form_name+'/'+fc_name+ " ?");
+        if (result) {
+            location.href = '/pro/form_fc_delete/'+form_rf+'/'+fc_rf;
+        }
+        else
+            erro("Оставляю "+form_name+'/'+fc_name+" !");
+    }
+
+    function edit_form_fc(form_rf, fc_rf) {
+        location.href = '/pro/form_fc/'+form_rf+'/'+fc_rf;
+    }
+
+</script>
