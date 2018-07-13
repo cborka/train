@@ -25,8 +25,8 @@
 
 /* ТЕЛО */
 body {
-#  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
-  font-family: "Segoe UI", Arial, Tahoma, Verdana, Georgia, 'Times New Roman', Times, serif;
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+#  font-family: "Segoe UI", Arial, Tahoma, Verdana, Georgia, 'Times New Roman', Times, serif;
 #  font-family: Tahoma;
 
   font-size: var(--main-font-size, medium);
