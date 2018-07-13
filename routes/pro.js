@@ -463,6 +463,24 @@ router.get('/plan_delete/:plan_id', function(req, res, next) {
     });
 });
 
+//
+// Сформировать и возвратить список ПЛАНОВ для выбора
+//
+router.get('/get_plan_names', function(req, res, next) {
+  db.any("SELECT plan_name FROM plan_list ORDER BY 1 ")
+    .then (function (data) {
+      var result = '';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].plan_name+'">'+data[i].plan_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
 //=================== ПРОЛЁТ-ЖБИ-ТРУДОЁМКОСТЬ =====================
 
 //

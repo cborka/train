@@ -1,0 +1,50 @@
+<h1>План производства ЖБИ</h1>
+<div><p>По пролётам.<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>План</b></td>
+            <td class="list"><b>Пролёт</b></td>
+            <td class="list"><b>ЖБИ </b></td>
+            <td class="list"><b>Количество ЖБИ</b></td>
+            <td class="list"><b>Объём ЖБИ</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{plan_name}}</td>
+                <td class="list">{{sd_name}}</td>
+                <td class="list">{{fc_name}}</td>
+                <td class="list">{{fc_num}}</td>
+                <td class="list">{{fc_v}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_plan_sd_fc({{plan_rf}},{{sd_rf}},{{fc_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_plan_sd_fc({{plan_rf}},{{sd_rf}},{{fc_rf}},'{{plan_name}}','{{sd_name}}','{{fc_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/plan/plan_sd_fc_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_plan_sd_fc(plan_rf, sd_rf, fc_rf, plan_name, sd_name, fc_name) {
+
+        var result = confirm("Удалить "+plan_name+'/'+sd_name+'/'+fc_name+ " ?");
+        if (result) {
+            location.href = '/plan/plan_sd_fc_delete/'+plan_rf+'/'+sd_rf+'/'+fc_rf;
+        }
+        else
+            erro("Оставляю "+plan_name+'/'+sd_name+'/'+fc_name+" !");
+    }
+
+    function edit_plan_sd_fc(plan_rf,sd_rf, fc_rf) {
+        location.href = '/plan/plan_sd_fc/'+plan_rf+'/'+sd_rf+'/'+fc_rf;
+    }
+
+</script>
