@@ -1,15 +1,14 @@
+<div class="list">
 <h1>Права доступа пользователей</h1>
 <table class="list">
-<thead>
     <tr>
-        <th class="list"><b>Пользователь</b></th>
-        <th class="list"><b>Право</b></th>
-        <th class="list"><b>Страница</b></th>
-        <th class="list"><b>Разделитель меню</b></th>
-        <th class="list"><b>Номер в меню</b></th>
-        <th class="list">Кнопки</th>
+        <td class="list"><b>Пользователь</b></td>
+        <td class="list"><b>Право</b></td>
+        <td class="list"><b>Страница</b></td>
+        <td class="list"><b>Разделитель меню</b></td>
+        <td class="list"><b>Номер в меню</b></td>
+        <td class="list">Кнопки</td>
     </tr>
-</thead>
     {{#each data}}
         <tr>
             <td class="list">{{login}}</td>
@@ -26,9 +25,10 @@
         </tr>
     {{/each}}
 </table>
-<a href="/users/rights/addnew" title="Добавить" > Добавить </a>
+<a href="/users/rights/addnew" title="Добавить строку" > Добавить строку </a>
 <div id="hint" ></div>
 <div id="erro" ></div>
+</div>
 
 <script>
 
@@ -46,6 +46,5 @@ function delete_right(id, login, rn) {
 function edit_right(id, rn) {
     location.href = '/users/rights/'+id+'/'+rn;
 }
-
 
 </script>
