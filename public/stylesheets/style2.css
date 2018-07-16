@@ -1,0 +1,109 @@
+
+:root {
+    --main-font-size: 16px;
+    --table-font-size: 16px;
+    --text-font-size: 16px;
+}
+
+/* ТЕЛО */
+body {
+    font-size: var(--main-font-size, 16px);
+
+    padding: 1%;
+    margin: auto;
+}
+
+div {
+    xfont-size: var(--main-font-size, 16px);
+}
+p {
+    font-size: var(--text-font-size, 16px);
+}
+/* Заголовок */
+div.header {
+    text-align: center;
+    padding: 0;
+    margin: auto;
+}
+
+
+/* Таблицы */
+table {
+    border: 0;
+    border-collapse: collapse;
+    width: 100%;
+    padding: 0;
+    margin: auto;
+    font-size: var(--table-font-size, medium);
+}
+td {
+    border: 0;
+    border-collapse: collapse;
+    padding: 3px;
+}
+
+/* Таблицы-формы */
+table.form {
+    width: auto;
+    padding: 1%;
+    margin: 0;
+
+    align: left;
+}
+td.right {
+    text-align: right;
+    padding-right: 5px;
+}
+td.left {
+    text-align: left;
+}
+
+/* Таблицы-списки */
+table.list, thead.list {
+    border: 1px solid lightgrey;
+    border-collapse: collapse;
+}
+td.list {
+    border: 1px solid lightgrey;
+}
+tbody tr:hover {
+    background: #eee; /* Цвет фона при наведении */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media print { /* Стиль для печати */
+    BODY {
+        font-family: Times, 'Times New Roman', serif; /* Шрифт с засечками */
+        font: 72px "Lucida Grande", Helvetica, Arial, sans-serif;
+    }
+}
+
+

@@ -4,7 +4,7 @@
   --table-font-size: 16px;
 }
 
-/* Смартфон - вертикально */
+/* Смартфон - вертикально * /
 @media screen and (min-width:100px) and (max-width: 800px) and (orientation: portrait) {
 
   :root {
@@ -13,7 +13,7 @@
   }
 
 }
-/* Смартфон - горизонтально */
+/* Смартфон - горизонтально * /
 @media screen and (min-width:100px) and (max-width:800px) and (orientation: landscape) {
 
   :root {
@@ -22,7 +22,7 @@
   }
 
 }
-
+*/
 /* ТЕЛО */
 body {
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
