@@ -1,0 +1,38 @@
+<h1>Отчёт. План производства ЖБИ</h1>
+<div><p>Пока по одному пролёту.<br>
+
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>План</b></td>
+            <td class="list"><b>Пролёт</b></td>
+            <td class="list"><b>ЖБИ </b></td>
+            <td class="list"><b>Количество ЖБИ</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{plan_name}}</td>
+                <td class="list">{{sd_name}}</td>
+                <td class="list">{{fc_name}}</td>
+                <td class="list">{{fc_num}}</td>
+                <td class="list">
+
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+Время всего = {{data.time_all}}<br>
+Время формовки = {{data.time_sum}}<br>
+
+<a href="/plan/plan_sd_fc_pro_report" title="Добавить" > Обновить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+
+</script>

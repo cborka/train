@@ -18,7 +18,7 @@ router.get('/plan_sd_fc_s', function(req, res, next) {
     "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
     " ORDER BY plan_name, sd_name, fc_name ")
     .then(function (data) {
-      res.render('pro/plan_sd_fc_s', {data: data}); // Показ формы
+      res.render('plan/plan_sd_fc_s', {data: data}); // Показ формы
     })
     .catch(function (error) {
       res.send(error);
@@ -31,7 +31,7 @@ router.get('/plan_sd_fc_s', function(req, res, next) {
 router.get('/plan_sd_fc_addnew', function(req, res, next) {
   db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name, 0 AS fc_rf, '' AS fc_name, 0 AS fc_num, 0 AS fc_v ")
     .then(function (data) {
-      res.render('pro/plan_sd_fc', data);
+      res.render('plan/plan_sd_fc', data);
     })
     .catch(function (error) {
       res.send(error);
@@ -53,7 +53,7 @@ router.get('/plan_sd_fc/:plan_rf/:sd_rf/:fc_rf', function(req, res, next) {
     "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
     " WHERE plan_rf=$1 AND sd_rf = $2 AND fc_rf = $3", [plan_rf, sd_rf, fc_rf])
     .then(function (data) {
-      res.render('pro/plan_sd_fc', data);
+      res.render('plan/plan_sd_fc', data);
     })
     .catch(function (error) {
       res.send(error);
@@ -122,43 +122,71 @@ router.get('/plan_sd_fc_delete/:plan_rf/:sd_rf/:fc_rf', function(req, res, next)
 // РАСЧЁТ ПЛАНА ПРОИЗВОДСТВА В ЗАВИСИМОСТИ ОТ МОЩНОСТЕЙ ПОДРАЗДЕЛЕНИЙ
 //
 router.get('/plan_pro_calc', function(req, res, next) {
-  var ret = '>>> ';
+  var ret = '<br>';
   var ret1 = '';
-  var ret2 = '';
-  var ret3 = '';
+  var ret2 = '<br>';
+  var ret3 = '<br>';
+  var ret_trk = '<br>';
+  var time_all = 0;
+  var trk_all = 0;
+  var gdata;
   db.any(
-    "SELECT plan_rf, plan_name, sd_rf, sd_name, fc_rf, fc_name, fc_num, pp.fc_v " +
-    " FROM (((plan_fc_pro pp " +
-    "   LEFT JOIN plan_list p ON plan_rf = plan_id) " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
-    " ORDER BY plan_name, sd_name, fc_name ")
+    "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
+    " ff.fc_num AS ffc_num, ff.forming_time,  ps.days_num, ps.workers_num, sf.form_num" +
+    " FROM ((((((plan_fc_pro pp " +
+    "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
+    "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
+    "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf) " +
+    "   LEFT JOIN plan_sd ps ON pp.plan_rf = ps.plan_rf AND pp.sd_rf = ps.sd_rf) " +
+    "   LEFT JOIN sd_list sd ON pp.sd_rf = sd.sd_id) " +
+    "   LEFT JOIN fc_list fc ON pp.fc_rf = fc.fc_id) " +
+    " ORDER BY p.plan_name, sd.sd_name, fc.fc_name ")
     .then(function (data) {
-//      res.send(data);
+
       for (var i = 0; i < data.length; i++) {
-        ret = ret + data[i].fc_name+' ---  '+data[i].fc_num+'<br>';
+        ret = ret + data[i].fc_name+' ---  '+data[i].fc_num+
+          '--жб/форму='+data[i].ffc_num+
+          '-- время формовки одного изделия='+data[i].forming_time+
+          '--дней/часов='+data[i].days_num+'/'+data[i].days_num*24+
+          '--рабочих в смене='+data[i].workers_num+'|||||'+
+          '-- итого время формовки на ПЛАН=кол-воЖБИ*Кол-воФорм*ВремяПропарки/Кол-воЖБИв1форме=='+
+                data[i].fc_num+'*'+data[i].ffc_num+'*'+data[i].forming_time+'/'+data[i].form_num+'='+
+                data[i].forming_time * data[i].fc_num * data[i].ffc_num / data[i].form_num +
+          '<br>';
+        time_all = data[i].days_num*24;
+        trk_all = data[i].days_num*24*data[i].workers_num;
+        data.time_all = time_all;
+        gdata = data;
+
       }
     })
-    .then(function (r1) {
-
-      return(
-      db.any(
-        "SELECT plan_rf, plan_name, sd_rf, sd_name, fc_rf, fc_name, fc_num, pp.fc_v " +
-        " FROM (((plan_fc_pro pp " +
-        "   LEFT JOIN plan_list p ON plan_rf = plan_id) " +
-        "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-        "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
-        " ORDER BY plan_name, sd_name, fc_name ")
+    .then(function () {
+      db.one(
+        "SELECT SUM(ff.forming_time * pp.fc_num * ff.fc_num / sf.form_num) AS time_sum " +
+        " FROM ((((((plan_fc_pro pp " +
+        "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
+        "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
+        "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf) " +
+        "   LEFT JOIN plan_sd ps ON pp.plan_rf = ps.plan_rf AND pp.sd_rf = ps.sd_rf) " +
+        "   LEFT JOIN sd_list sd ON pp.sd_rf = sd.sd_id) " +
+        "   LEFT JOIN fc_list fc ON pp.fc_rf = fc.fc_id) ")
         .then(function (data) {
-//      res.send(data);
-          for (var i = 0; i < data.length; i++) {
-            ret1 = ret1 + data[i].fc_name+' =1=  '+data[i].fc_num+'<br>';
-          }
+            ret1 = '<br><br>Общее время для пропарки = '+data.time_sum + 'часов <br>'+
+                   'Общее рабочее время за месяц = '+time_all + 'часов <br>'
+            gdata.time_sum = data.time_sum;
         })
-       )
-
+     })
+    .then(function () {
+      db.one(
+        "SELECT SUM(pp.fc_num * sf.trk) AS trk_sum " +
+        " FROM (plan_fc_pro pp " +
+        "   LEFT JOIN sd_fc sf ON pp.fc_rf = sf.fc_rf) " )
+        .then(function (data) {
+          ret_trk = '<br><br>Итого трудоёмкость производства ЖБИ на план = '+data.trk_sum + ' человеко-часов <br>'+
+                    'Общее кол-во человеко-часов за месяц = '+trk_all + ' человеко-часов <br>'
+        })
     })
-    .then(function (r1) {
+     .then(function (r1) {
 
       return(
         db.any(
@@ -176,7 +204,7 @@ router.get('/plan_pro_calc', function(req, res, next) {
               db.one("SELECT fullname FROM users WHERE login = 'bororo'")
                 .then(function (data) {
                    ret3 = ret3 + data.fullname+ '<br>';
-                  console.log(ret3);
+//                  console.log(ret3);
                 })
                 .then(ret3 = ret3 + 'zxcv-')
                 .then(ret3 = ret3 + 'asdf-')
@@ -195,7 +223,10 @@ router.get('/plan_pro_calc', function(req, res, next) {
     .then(function () {
 
       // Обработка всех полученных последовательно результатов
-      res.send(ret+'<<<<br>ret1='+ret1+'<br>ret2='+ret2+'<br>ret3='+ret3+'!!!');
+//      res.send(ret+'<<<<br>ret1='+ret1+'<br>ret2='+ret2+'<br>'+ret_trk);
+//      res.send(ret+ret1+ret_trk);
+
+      res.render('plan/plan_fc_pro_report', {data: gdata});
 
     })
     .catch(function (error) {
