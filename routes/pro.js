@@ -262,7 +262,7 @@ router.get('/fc_load', function(req, res, next) {
   file_name = 'c:\\cborka\\fcl.txt';
 
 
-// Считываем содержание файла в память
+  // Считываем содержание файла в память
   fs.readFile(file_name, function (err, logData) {
 
     // Если возникла ошибка, мы кидаем исключение
@@ -277,8 +277,7 @@ router.get('/fc_load', function(req, res, next) {
 
     // Разбиваем текст на массив из строчек
     var lines = text.split('\n');
-
-    var arr = ["Яблоко", "Апельсин", "Груша"];
+//    var arr = ["Яблоко", "Апельсин", "Груша"];
 
     for (var i = 0; i < lines.length; i++) {
       var parts = lines[i].split('|');

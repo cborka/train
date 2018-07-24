@@ -1,0 +1,70 @@
+<h1>План - Пролёт</h1>
+<div><p>Настройка плана производства ЖБИ по пролётам.<br>
+    <form action="/plan/plan_sd/update" method="POST" >
+    <table class="form">
+        <tr>
+            <td><label>План-месяц:</label></td>
+            <td><select width="100%" size="1" name='plan_name' id='plan_name' value="{{plan_name}}"></select>
+                <input id="plan_rf" type="text" name="plan_rf" readonly value={{plan_rf}} hidden >
+                <input id="old_plan_rf" type="text" name="old_plan_rf" readonly value={{plan_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Пролёт:</label></td>
+            <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}"></select>
+                <input id="sd_rf" type="text" name="sd_rf" readonly value={{sd_rf}} hidden >
+                <input id="old_sd_rf" type="text" name="old_sd_rf" readonly value={{sd_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Дней:</label></td>
+            <td><input id="days_num" type="number" size="5" step="0.01" name="days_num" value={{days_num}} ></td>
+        </tr>
+        <tr>
+            <td><label>Работников:</label></td>
+            <td><input id="workers_num" type="number" size="7" step="0.01" name="workers_num" value={{workers_num}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список планов для выбора
+    var set_plan_names = function (reply)
+    {
+        document.getElementById("plan_name").innerHTML = reply;
+        document.getElementById("plan_name").value = '{{plan_name}}';
+    }
+    function get_plan_names()
+    {
+        doQuery ("/pro/get_plan_names", set_plan_names);
+    }
+
+    // Изготовить список подразделений для выбора
+    var set_sd_names = function (reply)
+    {
+        document.getElementById("sd_name").innerHTML = reply;
+        document.getElementById("sd_name").value = '{{sd_name}}';
+    }
+    function get_sd_names()
+    {
+        doQuery ("/pro/get_prolet_names", set_sd_names);
+    }
+
+    get_plan_names();
+    get_sd_names();
+
+</script>
