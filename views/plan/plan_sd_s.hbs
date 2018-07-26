@@ -19,6 +19,8 @@
                 <td class="list">
                     <button type="button" onclick="edit_plan_sd({{plan_rf}},{{sd_rf}} )">Изменить</button>
                     <button type="button" onclick="delete_plan_sd({{plan_rf}},{{sd_rf}},'{{plan_name}}','{{sd_name}}')">Удалить</button>
+                    <a href="/plan/plan_pro_calc/{{plan_rf}}/{{sd_rf}}" title="План производства" > Показать отчёт </a>
+
                 </td>
             </tr>
         {{/each}}

@@ -1,22 +1,35 @@
 <h1>Отчёт. План производства ЖБИ</h1>
-<div><p>Пока по одному пролёту.<br>
-
+<div><p>
+    <br>
 </p></div>
+
+План:   <b>{{data.plan_name}}</b><br>
+Пролёт: <b>{{data.sd_name}}</b><br>
+<br>
 <div>
     <table class="list">
         <tr>
-            <td class="list"><b>План</b></td>
-            <td class="list"><b>Пролёт</b></td>
-            <td class="list"><b>ЖБИ </b></td>
+            <td class="list"><b>ЖБИ (железо-бетонное изделие)</b></td>
             <td class="list"><b>Количество ЖБИ</b></td>
+            <td class="list"><b>Количество форм</b></td>
+            <td class="list"><b>Количество ЖБИ в одной форме</b></td>
+            <td class="list"><b>Время одной пропарки</b></td>
+            <td class="list"><b>Время пропарки всего</b></td>
+            <td class="list"><b>Трудоёмкость изготовления 1 шт.</b></td>
+            <td class="list"><b>Итого трудоёмкость (человеко-часов)</b></td>
             <td class="list">Кнопки</td>
         </tr>
         {{#each data}}
             <tr>
-                <td class="list">{{plan_name}}</td>
-                <td class="list">{{sd_name}}</td>
                 <td class="list">{{fc_name}}</td>
                 <td class="list">{{fc_num}}</td>
+                <td class="list">{{form_num}}</td>
+                <td class="list">{{ffc_num}}</td>
+                <td class="list">{{forming_time}}</td>
+                <td class="list"><b>{{sum_forming_time}}</b></td>
+                <td class="list">{{trk}}</td>
+                <td class="list"><b>{{sum_trk}}</b></td>
+
                 <td class="list">
 
                 </td>
@@ -24,10 +37,11 @@
         {{/each}}
     </table>
 </div>
-Время всего = {{data.time_all}}<br>
-Время формовки = {{data.time_sum}}<br>
-
-<a href="/plan/plan_sd_fc_pro_report" title="Добавить" > Обновить </a>
+<br>
+Всего рабочих часов в план-месяце: {{data.time_all}}<br>
+<br>
+Всего имеется человеко-часов в пролёте: <b>{{data.trk_all}}</b> = {{data.days_num}} рабочих дней * 24 часа * {{data.workers_num}} рабочих в смене<br>
+Трудоёмкость формовки изделий из плана: <b>{{data.trk_sum}}</b> человеко-часов<br>
 <br>
 <div id="hint" ></div>
 <div id="erro" ></div>
