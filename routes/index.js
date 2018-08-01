@@ -13,6 +13,15 @@ router.get('/', function(req, res, next) {
     res.redirect('/users/home');
 });
 
+//
+// О программе
+//
+router.get('/notes', function(req, res, next) {
+    res.render('notes', { });
+});
+
+
+
 /*
 ** Тестовые страницы
  */

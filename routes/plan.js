@@ -118,9 +118,9 @@ router.get('/plan_sd_fc_delete/:plan_rf/:sd_rf/:fc_rf', function(req, res, next)
     });
 });
 
-//
+//=====================================================================
 // РАСЧЁТ ПЛАНА ПРОИЗВОДСТВА В ЗАВИСИМОСТИ ОТ МОЩНОСТЕЙ ПОДРАЗДЕЛЕНИЙ
-//
+//=====================================================================
 router.get('/plan_pro_calc/:plan_rf/:sd_rf', function(req, res, next) {
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
@@ -132,6 +132,9 @@ router.get('/plan_pro_calc/:plan_rf/:sd_rf', function(req, res, next) {
   var time_all = 0;
   var trk_all = 0;
   var gdata;
+
+  // !!! Формы берутся и из других пролётов, что дублирует строки, ИСПРАВИТЬ !!!
+
   db.any(
     "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
     " ff.fc_num AS ffc_num, ff.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sdf.trk, sdf.trk*pp.fc_num AS sum_trk, " +
@@ -139,7 +142,7 @@ router.get('/plan_pro_calc/:plan_rf/:sd_rf', function(req, res, next) {
     " FROM (((((((plan_fc_pro pp " +
     "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
     "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
-    "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf) " +
+    "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf AND pp.sd_rf = sf.sd_rf) " +
     "   LEFT JOIN plan_sd ps ON pp.plan_rf = ps.plan_rf AND pp.sd_rf = ps.sd_rf) " +
     "   LEFT JOIN sd_list sd ON pp.sd_rf = sd.sd_id) " +
     "   LEFT JOIN fc_list fc ON pp.fc_rf = fc.fc_id) " +
