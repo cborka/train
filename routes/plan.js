@@ -235,6 +235,123 @@ router.get('/plan_pro_calc/:plan_rf/:sd_rf', function(req, res, next) {
     });
 });
 
+//=====================================================================
+// РАСЧЁТ ПЛАНА ПРОИЗВОДСТВА В ЗАВИСИМОСТИ ОТ МОЩНОСТЕЙ ПОДРАЗДЕЛЕНИЙ
+//=====================================================================
+router.get('/plan_pro_calc/:plan_rf/:sd_rf', function(req, res, next) {
+  var plan_rf = req.params.plan_rf;
+  var sd_rf = req.params.sd_rf;
+  var ret = '<br>';
+  var ret1 = '';
+  var ret2 = '<br>';
+  var ret3 = '<br>';
+  var ret_trk = '<br>';
+  var time_all = 0;
+  var trk_all = 0;
+  var gdata;
+
+  // !!! Формы берутся и из других пролётов, что дублирует строки, ИСПРАВИТЬ !!!
+
+  db.any(
+    "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
+    " ff.fc_num AS ffc_num, ff.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sdf.trk, sdf.trk*pp.fc_num AS sum_trk, " +
+    " (ceil(ceil(pp.fc_num / ff.fc_num) / sf.form_num) * ff.forming_time) AS sum_forming_time" +
+    " FROM (((((((plan_fc_pro pp " +
+    "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
+    "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
+    "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf AND pp.sd_rf = sf.sd_rf) " +
+    "   LEFT JOIN plan_sd ps ON pp.plan_rf = ps.plan_rf AND pp.sd_rf = ps.sd_rf) " +
+    "   LEFT JOIN sd_list sd ON pp.sd_rf = sd.sd_id) " +
+    "   LEFT JOIN fc_list fc ON pp.fc_rf = fc.fc_id) " +
+    "   LEFT JOIN sd_fc sdf ON pp.fc_rf = sdf.fc_rf) " +
+    " WHERE pp.plan_rf = $1 AND pp.sd_rf = $2 " +
+    " ORDER BY fc.fc_name ",
+    [plan_rf, sd_rf])
+    .then(function (data) {
+
+      for (var i = 0; i < data.length; i++) {
+        ret = ret + data[i].fc_name+' ---  '+data[i].fc_num+
+          '--жб/форму='+data[i].ffc_num+
+          '-- время формовки одного изделия='+data[i].forming_time+
+          '--дней/часов='+data[i].days_num+'/'+data[i].days_num*24+
+          '--рабочих в смене='+data[i].workers_num+'|||||'+
+          '-- итого время формовки на ПЛАН=кол-воЖБИ*Кол-воФорм*ВремяПропарки/Кол-воЖБИв1форме=='+
+                data[i].fc_num+'*'+data[i].ffc_num+'*'+data[i].forming_time+'/'+data[i].form_num+'='+
+                data[i].forming_time * data[i].fc_num * data[i].ffc_num / data[i].form_num +
+          '<br>';
+
+        data.plan_name = data[i].plan_name;
+        data.sd_name = data[i].sd_name;
+        data.days_num = data[i].days_num;
+        data.workers_num = data[i].workers_num;
+        data.time_all = data[i].days_num*24;
+        data.trk_all = data[i].days_num*24*data[i].workers_num;
+
+        gdata = data;
+
+      }
+    })
+    .then(function () {
+      db.one(
+        "SELECT SUM(pp.fc_num * sf.trk) AS trk_sum " +
+        " FROM (plan_fc_pro pp " +
+        "   LEFT JOIN sd_fc sf ON pp.fc_rf = sf.fc_rf) " )
+        .then(function (data) {
+          gdata.trk_sum = data.trk_sum;
+
+          ret_trk = '<br><br>Итого трудоёмкость производства ЖБИ на план = '+data.trk_sum + ' человеко-часов <br>'+
+                    'Общее кол-во человеко-часов за месяц = '+trk_all + ' человеко-часов <br>';
+        })
+    })
+     .then(function (r1) {
+
+      return(
+        db.any(
+          "SELECT plan_rf, plan_name, sd_rf, sd_name, fc_rf, fc_name, fc_num, pp.fc_v " +
+          " FROM (((plan_fc_pro pp " +
+          "   LEFT JOIN plan_list p ON plan_rf = plan_id) " +
+          "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
+          "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
+          " ORDER BY plan_name, sd_name, fc_name ")
+        .then(function (data) {
+            for (var i = 0; i < data.length; i++) {
+              ret2 = ret2 + data[i].fc_name+' *2*  '+data[i].fc_num+'<br>';
+
+
+              db.one("SELECT fullname FROM users WHERE login = 'bororo'")
+                .then(function (data) {
+                   ret3 = ret3 + data.fullname+ '<br>';
+//                  console.log(ret3);
+                })
+                .then(ret3 = ret3 + 'zxcv-')
+                .then(ret3 = ret3 + 'asdf-')
+                .then(console.log(ret3))
+                .catch(function (error) {
+                  console.log(":"+error);
+                });
+
+//                .catch(console.log('Ошибочка вышла!'));
+
+            }
+        })
+      )
+
+    })
+    .then(function () {
+
+      // Обработка всех полученных последовательно результатов
+//      res.send(ret+'<<<<br>ret1='+ret1+'<br>ret2='+ret2+'<br>'+ret_trk);
+//      res.send(ret+ret1+ret_trk);
+
+      res.render('plan/plan_fc_pro_report', {data: gdata});
+
+    })
+    .catch(function (error) {
+//      res.send(error);
+      res.send(":"+error);
+    });
+});
+
 
 
 
@@ -347,6 +464,65 @@ router.get('/plan_sd_delete/:plan_rf/:sd_rf', function(req, res, next) {
 
 
 
+
+//=====================================================================
+// РАСЧЁТ ПЛАНА ПРОИЗВОДСТВА В ЗАВИСИМОСТИ ОТ МОЩНОСТЕЙ ПОДРАЗДЕЛЕНИЙ
+// Вариант 2 демо
+// Вариант когда в одном пролёте формуется ОДИН вид изделий
+// Работа в 2 смены по 11 часов
+//=====================================================================
+router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
+  var plan_rf = req.params.plan_rf;
+  var sd_rf = req.params.sd_rf;
+  var ret = '<br>';
+  var ret1 = '';
+  var ret2 = '<br>';
+  var ret3 = '<br>';
+  var ret_trk = '<br>';
+  var time_all = 0;
+  var trk_all = 0;
+  var gdata;
+
+  db.one(
+    "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
+    " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sdf.trk, sdf.kob " +
+    " FROM (((((((plan_fc_pro pp " +
+    "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
+    "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
+    "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf AND pp.sd_rf = sf.sd_rf) " +
+    "   LEFT JOIN plan_sd ps ON pp.plan_rf = ps.plan_rf AND pp.sd_rf = ps.sd_rf) " +
+    "   LEFT JOIN sd_list sd ON pp.sd_rf = sd.sd_id) " +
+    "   LEFT JOIN fc_list fc ON pp.fc_rf = fc.fc_id) " +
+    "   LEFT JOIN sd_fc sdf ON pp.fc_rf = sdf.fc_rf) " +
+    " WHERE pp.plan_rf = $1 AND pp.sd_rf = $2 " +
+    " ORDER BY fc.fc_name " +
+    " LIMIT 1 ",
+    [plan_rf, sd_rf])
+    .then(function (data) {
+      ret = '';
+//      data.sum_forming_time = data.forming_time * data.fc_num; //
+      // Итого трудоёмкость на план
+      data.sum_trk = data.trk * data.fc_num; //
+
+      // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
+      data.need_workers_num = data.sum_trk / (22 * data.days_num)
+
+      // мощность за сутки
+      data.day_power = data.form_num * data.kob;
+
+      // мощность за месяц с учётом рем.дней
+      data.month_power = data.day_power * (data.days_num - data.days_num/7.00) +  (data.days_num/7.00 * data.day_power*0.25);
+
+      gdata = data;
+    })
+    .then(function () {
+       res.render('plan/plan_fc_pro_report2', {data: gdata});
+    })
+    .catch(function (error) {
+//      res.send(error);
+      res.send(":"+error);
+    });
+});
 
 
 

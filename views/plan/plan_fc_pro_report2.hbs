@@ -1,0 +1,72 @@
+<h1>Отчёт. План производства ЖБИ.</h1>
+<div><p>
+    Вариант 2.<br>
+</p></div>
+
+План:   <b>{{data.plan_name}}</b><br>
+Пролёт: <b>{{data.sd_name}}</b><br>
+<br>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>ЖБИ (железо-бетонное изделие)</b></td>
+            <td class="list">{{data.fc_name}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Количество ЖБИ</b></td>
+            <td class="list">{{data.fc_num}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Количество форм</b></td>
+            <td class="list">{{data.form_num}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Количество ЖБИ в одной форме</b></td>
+            <td class="list">{{data.ffc_num}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Коэф-т оборачиваемости</b></td>
+            <td class="list">{{data.kob}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Кол-во рабочих дней</b></td>
+            <td class="list">{{data.days_num}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Мощность за сутки = Кол-во форм * КОб</b> (сколько можем изготовить на данном оборудовании)</td>
+            <td class="list">{{data.day_power}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Мощность за месяц с учётом рем. дней</b></td>
+            <td class="list">{{data.month_power}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Трудоёмкость изготовления 1 шт.</b></td>
+            <td class="list">{{data.trk}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Итого трудоёмкость (человеко-часов)</b></td>
+            <td class="list">{{data.sum_trk}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Кол-во рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)</b></td>
+            <td class="list"><b>{{data.need_workers_num}}</b></td>
+        </tr>
+        <tr>
+            <td class="list">Кнопки</td>
+        </tr>
+    </table>
+</div>
+<br>
+Всего рабочих часов в план-месяце: {{data.time_all}}<br>
+<br>
+Всего имеется человеко-часов в пролёте: <b>{{data.trk_all}}</b> = {{data.days_num}} рабочих дней * 24 часа * {{data.workers_num}} рабочих в смене<br>
+Трудоёмкость формовки изделий из плана: <b>{{data.trk_sum}}</b> человеко-часов<br>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+
+</script>
