@@ -1,0 +1,35 @@
+<form action="/users/profile" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="id" name="id" readonly value="{{id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Login:</label></td>
+            <td><input id="login" type="text" name="login" value={{login}} ></td>
+        </tr>
+        <tr>
+            <td><label>Телефон:</label></td>
+            <td><input id="phone" type="text" name="phone" value={{phone}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+                <!--    <button id=adduser type="button" onclick='clear_form()'>Добавить</button>
+        <a href="/users/id/{{login}}">Показать ид, логин = {{login}}  </a> -->
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+
+</script>

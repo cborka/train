@@ -485,7 +485,7 @@ router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
 
   db.one(
     "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
-    " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sdf.trk, sdf.kob " +
+    " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sf.form_num_max, sdf.trk, sdf.kob " +
     " FROM (((((((plan_fc_pro pp " +
     "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
     "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
@@ -500,18 +500,30 @@ router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
     [plan_rf, sd_rf])
     .then(function (data) {
       ret = '';
+
+      data.days_num = Math.round(data.days_num) ;
+
+
 //      data.sum_forming_time = data.forming_time * data.fc_num; //
       // Итого трудоёмкость на план
       data.sum_trk = data.trk * data.fc_num; //
 
       // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
-      data.need_workers_num = data.sum_trk / (22 * data.days_num)
+      data.need_workers_num = Math.round(data.sum_trk / (22 * data.days_num)*10) / 10;
+//      data.need_workers_num = data.sum_trk / (22 * data.days_num);
 
       // мощность за сутки
       data.day_power = data.form_num * data.kob;
+      data.day_power_max = data.form_num_max * data.kob;
 
       // мощность за месяц с учётом рем.дней
-      data.month_power = data.day_power * (data.days_num - data.days_num/7.00) +  (data.days_num/7.00 * data.day_power*0.25);
+      data.month_power =  data.day_power * (data.days_num - data.days_num/7.00) +  (data.days_num/7.00 * data.day_power*0.25);
+      data.month_power_max =  data.day_power_max * (data.days_num - data.days_num/7.00) +  (data.days_num/7.00 * data.day_power_max*0.25);
+
+      data.efficiency =  (data.month_power /  data.month_power_max) * 100.00;
+
+      data.month_power = Math.round(data.month_power * 100) / 100 ;
+      data.month_power_max = Math.round(data.month_power_max * 100) / 100 ;
 
       gdata = data;
     })

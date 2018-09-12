@@ -648,7 +648,7 @@ router.get('/sd_fc_delete/:sd_rf/:fc_rf', function(req, res, next) {
 //
 router.get('/sd_form_s', function(req, res, next) {
   db.any(
-    "SELECT sd_rf, sd_name, form_rf, form_name, form_num " +
+    "SELECT sd_rf, sd_name, form_rf, form_name, form_num, form_num_max " +
     " FROM ((sd_form sf " +
     "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
     "   LEFT JOIN form_list frm ON form_rf = form_id) " +
@@ -681,7 +681,7 @@ router.get('/sd_form/:sd_rf/:form_rf', function(req, res, next) {
   var sd_rf = req.params.sd_rf;
   var form_rf = req.params.form_rf;
   db.one(
-    "SELECT sd_rf, sd_name, form_rf, form_name, form_num " +
+    "SELECT sd_rf, sd_name, form_rf, form_name, form_num, form_num_max " +
     " FROM ((sd_form sf " +
     "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
     "   LEFT JOIN form_list frm ON form_rf = form_id) " +
@@ -703,15 +703,16 @@ router.post('/sd_form/update', function(req, res, next) {
   var sd_name = req.body.sd_name;
   var form_name = req.body.form_name;
   var form_num = req.body.form_num;
+  var form_num_max = req.body.form_num_max;
   var old_sd_rf = req.body.old_sd_rf;
   var old_form_rf = req.body.old_form_rf;
   if (sd_rf > 0 ) {
 //  Обновление
     db.none(
       "UPDATE sd_form " +
-      "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), form_rf=(SELECT form_id FROM form_list WHERE form_name=$2), form_num=$3 " +
-      "WHERE sd_rf=$4 AND form_rf=$5",
-      [sd_name, form_name, form_num, old_sd_rf, old_form_rf])
+      "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), form_rf=(SELECT form_id FROM form_list WHERE form_name=$2), form_num=$3, form_num_max=$4 " +
+      "WHERE sd_rf=$5 AND form_rf=$6",
+      [sd_name, form_name, form_num, form_num_max, old_sd_rf, old_form_rf])
       .then (function () {
         res.redirect('/pro/sd_form_s');
       })
@@ -722,9 +723,9 @@ router.post('/sd_form/update', function(req, res, next) {
   else {
 //  Добавление
     db.none(
-      "INSERT INTO  sd_form (sd_rf, form_rf, form_num) " +
-      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT form_id FROM form_list WHERE form_name=$2), $3)",
-      [sd_name, form_name, form_num])
+      "INSERT INTO  sd_form (sd_rf, form_rf, form_num, form_num_max) " +
+      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT form_id FROM form_list WHERE form_name=$2), $3, $4)",
+      [sd_name, form_name, form_num, form_num_max])
       .then (function (data) {
         res.redirect('/pro/sd_form_s');
       })

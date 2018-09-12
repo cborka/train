@@ -7,6 +7,7 @@
             <td class="list"><b>Пролёт</b></td>
             <td class="list"><b>Форма (оснастка)</b></td>
             <td class="list"><b>Количество форм</b></td>
+            <td class="list"><b>Количество форм максимальное</b></td>
             <td class="list">Кнопки</td>
         </tr>
         {{#each data}}
@@ -14,6 +15,7 @@
                 <td class="list">{{sd_name}}</td>
                 <td class="list">{{form_name}}</td>
                 <td class="list">{{form_num}}</td>
+                <td class="list">{{form_num_max}}</td>
                 <td class="list">
                     <button type="button" onclick="edit_sd_form({{sd_rf}}, {{form_rf}} )">Изменить</button>
                     <button type="button" onclick="delete_sd_form({{sd_rf}},{{form_rf}},'{{sd_name}}','{{form_name}}')">Удалить</button>
