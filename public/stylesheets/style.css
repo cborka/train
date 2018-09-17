@@ -23,6 +23,79 @@
 
 }
 */
+
+/* РАЗМЕТКА */
+
+DIV.header {
+  text-align: center;
+  padding: 0;
+  margin: auto;
+  margin-top: 3px;
+  margin-bottom: 0px;
+}
+DIV.footer {
+  margin-bottom: 3px;
+  position: relative; /* Нужно для задания абсолютной позиции внутренних блоков */
+}
+
+DIV.header, DIV.footer, DIV.wrapper_1 {
+  margin-left: 1%;
+  margin-right: 1%;
+  width: 100%;
+}
+
+DIV.wrapper_1 {
+  overflow: auto;
+}
+
+DIV.leftcol {
+  float: left;
+  width: 18%;
+#  background-color: #ffffdf;
+
+  margin-right: 15px;
+
+  /*background-color: #eee;*/
+}
+DIV.rightcol {
+  float: right;
+  width: 15%;
+#  background-color: #ffffcf;
+}
+DIV.center {
+  float: left;
+  width: 80%;
+}
+
+/* А ЕСЛИ СМАРТФОН */
+@media screen and (min-width:100px) and (max-width: 800px)
+{
+  DIV.leftcol {
+    width: 100%;
+  }
+  DIV.rightcol {
+    width: 100%;
+  }
+  DIV.center {
+    width: 100%;
+  }
+
+
+}
+
+
+
+
+
+/* ГЛАВНОЕ МЕНЮ */
+div.main_menu {
+  padding: 13px;
+  margin: auto;
+}
+
+
+
+
 /* ТЕЛО */
 body {
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -36,7 +109,7 @@ body {
 }
 
 /* Заголовок */
-div.header {
+div.headerz {
   text-align: center;
   padding: 0;
   margin: auto;

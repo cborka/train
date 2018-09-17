@@ -15,20 +15,16 @@
 <div>
     <table class="list">
         <tr>
-            <td class="list"><b>ЖБИ (железо-бетонное изделие)</b></td>
-            <td class="list">{{data.fc_name}}</td>
+            <td class="list"><b>ЖБИ</b></td>
+            <td class="list"><b>{{data.fc_name}}</b></td>
         </tr>
         <tr>
             <td class="list"><b>Количество ЖБИ на план</b></td>
-            <td class="list"><b>{{data.fc_num}}</b></td>
+            <td class="list"><b>{{data.fc_num}}</b> (можем сделать {{data.month_power}} / {{data.month_power_max}})</td>
         </tr>
         <tr>
-            <td class="list"><b>Количество форм</b></td>
-            <td class="list">{{data.form_num}}</td>
-        </tr>
-        <tr>
-            <td class="list"><b>Максимальное количество форм</b></td>
-            <td class="list">{{data.form_num_max}}</td>
+            <td class="list"><b>Количество форм</b> (фактическое / максимальное / требуемое) </td>
+            <td class="list">{{data.form_num}} / {{data.form_num_max}} / {{data.need_form_num}} ({{data.need_form_num_clc}})</td>
         </tr>
         <tr>
             <td class="list"><b>Количество ЖБИ в одной форме</b></td>
@@ -46,27 +42,20 @@
             <td class="list"><b></b></td>
         </tr>
         <tr>
-            <td class="list"><b>Мощность за сутки = Кол-во форм * КОб</b> (сколько можем изготовить на данном оборудовании)</td>
-            <td class="list">{{data.day_power}}</td>
+            <td class="list"><b>Мощность / Макс. мощность за сутки</b> = Кол-во форм * КОб <br>
+                (сколько можем изготовить на данном оборудовании)</td>
+            <td class="list">{{data.day_power}} / {{data.day_power_max}}</td>
         </tr>
         <tr>
-            <td class="list"><b>Мощность за месяц с учётом рем. дней</b></td>
-            <td class="list">{{data.month_power}}</td>
+            <td class="list"><b>Мощность / Макс. мощность за месяц</b> (с учётом рем. дней (<b>{{data.days_rem}}</b>))</td>
+            <td class="list">{{data.month_power}} / {{data.month_power_max}}</td>
         </tr>
         <tr>
             <td class="list"><b></b></td>
         </tr>
         <tr>
-            <td class="list"><b>Максимальная мощность за сутки = Кол-во форм макс. * КОб</b></td>
-            <td class="list">{{data.day_power_max}}</td>
-        </tr>
-        <tr>
-            <td class="list"><b>Максимальная мощность за месяц с учётом рем. дней</b></td>
-            <td class="list">{{data.month_power_max}}</td>
-        </tr>
-        <tr>
-            <td class="list"><b>Эффективность = Максимальная мощность / Мощность * 100%</b></td>
-            <td class="list">{{data.efficiency}}</td>
+            <td class="list"><b>Эффективность</b> = Максимальная мощность за месяц / Плановое кол-во * 100%</td>
+            <td class="list">{{data.efficiency}}%</td>
         </tr>
         <tr>
             <td class="list"><b></b></td>
@@ -80,8 +69,8 @@
             <td class="list">{{data.sum_trk}}</td>
         </tr>
         <tr>
-            <td class="list"><b>Кол-во рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)</b></td>
-            <td class="list"><b>{{data.need_workers_num}}</b></td>
+            <td class="list"><b>Кол-во рабочих в смене</b> = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)</td>
+            <td class="list"><b>{{data.fact_workers_num}}</b> (расчётное {{data.need_workers_num}}, имеем {{data.workers_num}})</td>
         </tr>
         <tr>
 

@@ -503,6 +503,7 @@ router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
 
       data.days_num = Math.round(data.days_num) ;
 
+      data.workers_num = Math.round(data.workers_num*100)/100 ;
 
 //      data.sum_forming_time = data.forming_time * data.fc_num; //
       // Итого трудоёмкость на план
@@ -511,19 +512,32 @@ router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
       // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
       data.need_workers_num = Math.round(data.sum_trk / (22 * data.days_num)*10) / 10;
 //      data.need_workers_num = data.sum_trk / (22 * data.days_num);
+      data.fact_workers_num  = Math.round(data.need_workers_num);
+      if (data.need_workers_num < 3)  data.fact_workers_num = 3;
+      if (data.need_workers_num > 17) data.fact_workers_num = 17;
+
 
       // мощность за сутки
       data.day_power = data.form_num * data.kob;
       data.day_power_max = data.form_num_max * data.kob;
 
       // мощность за месяц с учётом рем.дней
-      data.month_power =  data.day_power * (data.days_num - data.days_num/7.00) +  (data.days_num/7.00 * data.day_power*0.25);
-      data.month_power_max =  data.day_power_max * (data.days_num - data.days_num/7.00) +  (data.days_num/7.00 * data.day_power_max*0.25);
+      data.days_rem = Math.floor(data.days_num/7);
+      data.month_power =  data.day_power * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power*0.25);
+      data.month_power_max =  data.day_power_max * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power_max*0.25);
 
-      data.efficiency =  (data.month_power /  data.month_power_max) * 100.00;
+      data.efficiency =  Math.round((data.fc_num /  data.month_power_max) * 10000) / 100;
 
       data.month_power = Math.round(data.month_power * 100) / 100 ;
       data.month_power_max = Math.round(data.month_power_max * 100) / 100 ;
+
+      // Требуется форм на план
+      data.need_form_num_clc = data.fc_num / (data.kob * ((data.days_num - 0.75*data.days_rem))) ;
+      data.need_form_num = Math.ceil(data.need_form_num_clc) ;
+
+      // Если не можем сделать нужное по плану кол-во ЖБИ, то выводим красным цветом
+      if (data.fc_num > data.month_power) data.fc_num = '(!!!)' + data.fc_num;
+
 
       gdata = data;
     })

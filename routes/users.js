@@ -215,7 +215,7 @@ router.get('/get_main_menu', function(req, res, next) {
       "ORDER BY menu_order, right_name", id)
     .then (function (data) {
         var result = 'Меню '+ req.session.login +
-          ':  <a href="/" >Домой</a> | <a href="/users/logout">Выход</a> || ';
+          ':<br>  <a href="/" >Домой</a> | <a href="/users/logout">Выход</a> | ';
         for (var i = 0; i < data.length; i++) {
           result = result + ' <a href="'+ data[i].url +'" >'+data[i].right_name + '</a> '+data[i].menu_delimiter;
         }

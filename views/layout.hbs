@@ -9,12 +9,25 @@
   </head>
   <body>
     {{> header}}
-    {{> menu}}
 
-    {{{body}}}
+    <div class="wrapper_1">
+
+        <div class="leftcol">
+            {{> menu}}
+        </div>
+
+        <div class="center">
+            {{{body}}}
+        </div>
+
+        <div class="rightcol">
+           x<br>
+        </div>
+
+    </div>
 
     {{> footer}}
-    </body>
+  </body>
 
 
 
