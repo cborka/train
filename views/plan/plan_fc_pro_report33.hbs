@@ -1,0 +1,87 @@
+<h1>Отчёт. План производства ЖБИ.</h1>
+<div>
+
+  <p>
+    Вариант 2.<br>
+  </p>
+    <p>
+        Демо, когда когда в одном пролёте формуется ОДИН вид изделий и работа в 2 смены по 11 часов.<br>
+    </p>
+</div>
+
+План:   <b>{{data.plan_name}}</b><br>
+Пролёт: <b>{{data.sd_name}}</b><br>
+<br>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>ЖБИ</b></td>
+            <td class="list"><b>{{data.fc_name}}</b></td>
+        </tr>
+        <tr>
+            <td class="list"><b>Количество ЖБИ на план</b></td>
+            <td class="list"><b>{{data.fc_num}}</b> (можем сделать {{data.month_power}} / {{data.month_power_max}})</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Количество форм</b> (фактическое / максимальное / требуемое) </td>
+            <td class="list">{{data.form_num}} / {{data.form_num_max}} / {{data.need_form_num}} ({{data.need_form_num_clc}})</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Количество ЖБИ в одной форме</b></td>
+            <td class="list">{{data.ffc_num}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Коэф-т оборачиваемости</b></td>
+            <td class="list">{{data.kob}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Кол-во рабочих дней</b></td>
+            <td class="list"><b>{{data.days_num}}</b></td>
+        </tr>
+        <tr>
+            <td class="list"><b></b></td>
+        </tr>
+        <tr>
+            <td class="list"><b>Мощность / Макс. мощность за сутки</b> = Кол-во форм * КОб <br>
+                (сколько можем изготовить на данном оборудовании)</td>
+            <td class="list">{{data.day_power}} / {{data.day_power_max}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Мощность / Макс. мощность за месяц</b> (с учётом рем. дней (<b>{{data.days_rem}}</b>))</td>
+            <td class="list">{{data.month_power}} / {{data.month_power_max}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b></b></td>
+        </tr>
+        <tr>
+            <td class="list"><b>Эффективность</b> = (Плановое кол-во / Максимальная мощность за месяц) * 100%</td>
+            <td class="list">{{data.efficiency}}%</td>
+        </tr>
+        <tr>
+            <td class="list"><b></b></td>
+        </tr>
+        <tr>
+            <td class="list"><b>Трудоёмкость изготовления 1 шт.</b></td>
+            <td class="list">{{data.trk}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Итого трудоёмкость (человеко-часов)</b></td>
+            <td class="list">{{data.sum_trk}}</td>
+        </tr>
+        <tr>
+            <td class="list"><b>Кол-во рабочих в смене</b> = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)</td>
+            <td class="list"><b>{{data.fact_workers_num}}</b> (расчётное {{data.need_workers_num}}, имеем {{data.workers_num}})</td>
+        </tr>
+        <tr>
+
+        </tr>
+    </table>
+</div>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+
+</script>

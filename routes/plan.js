@@ -463,15 +463,37 @@ router.get('/plan_sd_delete/:plan_rf/:sd_rf', function(req, res, next) {
 });
 
 
+//=====================================================================
+//     РАСЧЁТ ПЛАНА ПРОИЗВОДСТВА В ЗАВИСИМОСТИ ОТ ПОДРАЗДЕЛЕНИЙ
+// для каждого пролёта свой отчёт
+//=====================================================================
+router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
+  var plan_rf = req.params.plan_rf;
+  var sd_rf = req.params.sd_rf;
+  db.one(
+    "SELECT sd_name FROM sd_list WHERE sd_id = $1 ",
+    [sd_rf])
+    .then(function (data) {
+      var report_url = '/plan/plan_pro_calc33/'+ plan_rf + '/' + sd_rf;
+      if (data.sd_name == 'Пролет 33')  res.redirect('/plan/plan_pro_calc33/'+ plan_rf + '/' + sd_rf);
+      if (data.sd_name == 'Пролет 34')  res.redirect('/plan/plan_pro_calc34/'+ plan_rf + '/' + sd_rf);
 
+      res.send("Нет отчёта для пролёта <b>" + data.sd_name + "</b>");
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
 //=====================================================================
 // РАСЧЁТ ПЛАНА ПРОИЗВОДСТВА В ЗАВИСИМОСТИ ОТ МОЩНОСТЕЙ ПОДРАЗДЕЛЕНИЙ
 // Вариант 2 демо
 // Вариант когда в одном пролёте формуется ОДИН вид изделий
 // Работа в 2 смены по 11 часов
+//
+//                       Пролёт 33
 //=====================================================================
-router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
+router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
   var ret = '<br>';
@@ -512,37 +534,135 @@ router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
       // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
       data.need_workers_num = Math.round(data.sum_trk / (22 * data.days_num)*10) / 10;
 //      data.need_workers_num = data.sum_trk / (22 * data.days_num);
+      // Округляю и проверяю на минимальное и максимальное кол-во рабочих
       data.fact_workers_num  = Math.round(data.need_workers_num);
       if (data.need_workers_num < 3)  data.fact_workers_num = 3;
       if (data.need_workers_num > 17) data.fact_workers_num = 17;
 
 
-      // мощность за сутки
-      data.day_power = data.form_num * data.kob;
-      data.day_power_max = data.form_num_max * data.kob;
+      // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
+      data.day_power = data.form_num * data.ffc_num * data.kob;
+      data.day_power_max = data.form_num_max * data.ffc_num * data.kob;
 
-      // мощность за месяц с учётом рем.дней
+      // мощность за месяц с учётом рем.дней,
+      // рем.день - один раз в неделю, в дальнейшем надо будет поставить конкретно ЧЕТВЕРГ и считать кол-во четвергов
       data.days_rem = Math.floor(data.days_num/7);
       data.month_power =  data.day_power * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power*0.25);
       data.month_power_max =  data.day_power_max * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power_max*0.25);
 
+      // Эффективность работы пролёта
       data.efficiency =  Math.round((data.fc_num /  data.month_power_max) * 10000) / 100;
 
+      // Округляю до двух цифр после запятой для вывода на экран
       data.month_power = Math.round(data.month_power * 100) / 100 ;
       data.month_power_max = Math.round(data.month_power_max * 100) / 100 ;
 
-      // Требуется форм на план
+      // Требуется форм на план с учётом рем.дней
       data.need_form_num_clc = data.fc_num / (data.kob * ((data.days_num - 0.75*data.days_rem))) ;
+      // Округляю в верхнюю сторону
       data.need_form_num = Math.ceil(data.need_form_num_clc) ;
 
-      // Если не можем сделать нужное по плану кол-во ЖБИ, то выводим красным цветом
+      // Если не можем сделать нужное по плану кол-во ЖБИ, то выводим красным цветом (пока ставлю !!!)
       if (data.fc_num > data.month_power) data.fc_num = '(!!!)' + data.fc_num;
 
 
       gdata = data;
     })
     .then(function () {
-       res.render('plan/plan_fc_pro_report2', {data: gdata});
+       res.render('plan/plan_fc_pro_report33', {data: gdata});
+    })
+    .catch(function (error) {
+//      res.send(error);
+      res.send(":"+error);
+    });
+});
+
+
+//=====================================================================
+// РАСЧЁТ ПЛАНА ПРОИЗВОДСТВА В ЗАВИСИМОСТИ ОТ МОЩНОСТЕЙ ПОДРАЗДЕЛЕНИЙ
+// Вариант 2 демо
+// Вариант когда в одном пролёте формуется ОДИН вид изделий
+// Работа в 2 смены по 11 часов
+//
+//                       Пролёт 34
+//=====================================================================
+router.get('/plan_pro_calc34/:plan_rf/:sd_rf', function(req, res, next) {
+  var plan_rf = req.params.plan_rf;
+  var sd_rf = req.params.sd_rf;
+  var ret = '<br>';
+  var ret1 = '';
+  var ret2 = '<br>';
+  var ret3 = '<br>';
+  var ret_trk = '<br>';
+  var time_all = 0;
+  var trk_all = 0;
+  var gdata;
+
+  db.one(
+    "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
+    " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sf.form_num_max, sdf.trk, sdf.kob " +
+    " FROM (((((((plan_fc_pro pp " +
+    "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
+    "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
+    "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf AND pp.sd_rf = sf.sd_rf) " +
+    "   LEFT JOIN plan_sd ps ON pp.plan_rf = ps.plan_rf AND pp.sd_rf = ps.sd_rf) " +
+    "   LEFT JOIN sd_list sd ON pp.sd_rf = sd.sd_id) " +
+    "   LEFT JOIN fc_list fc ON pp.fc_rf = fc.fc_id) " +
+    "   LEFT JOIN sd_fc sdf ON pp.fc_rf = sdf.fc_rf) " +
+    " WHERE pp.plan_rf = $1 AND pp.sd_rf = $2 " +
+    " ORDER BY fc.fc_name " +
+    " LIMIT 1 ",
+    [plan_rf, sd_rf])
+    .then(function (data) {
+      ret = '';
+
+      data.days_num = Math.round(data.days_num) ;
+
+      data.workers_num = Math.round(data.workers_num*100)/100 ;
+
+//      data.sum_forming_time = data.forming_time * data.fc_num; //
+      // Итого трудоёмкость на план
+      data.sum_trk = data.trk * data.fc_num; //
+
+      // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
+      data.need_workers_num = Math.round(data.sum_trk / (22 * data.days_num)*10) / 10;
+//      data.need_workers_num = data.sum_trk / (22 * data.days_num);
+      // Округляю и проверяю на минимальное и максимальное кол-во рабочих
+      data.fact_workers_num  = Math.round(data.need_workers_num);
+      if (data.need_workers_num < 3)  data.fact_workers_num = 3;
+      if (data.need_workers_num > 17) data.fact_workers_num = 17;
+
+
+      // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
+      data.day_power = data.form_num * data.ffc_num * data.kob;
+      data.day_power_max = data.form_num_max * data.ffc_num * data.kob;
+
+      // мощность за месяц с учётом рем.дней,
+      // рем.день - один раз в неделю, в дальнейшем надо будет поставить конкретно ЧЕТВЕРГ и считать кол-во четвергов
+      data.days_rem = Math.floor(data.days_num/7);
+      data.month_power =  data.day_power * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power*0.25);
+      data.month_power_max =  data.day_power_max * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power_max*0.25);
+
+      // Эффективность работы пролёта
+      data.efficiency =  Math.round((data.fc_num /  data.month_power_max) * 10000) / 100;
+
+      // Округляю до двух цифр после запятой для вывода на экран
+      data.month_power = Math.round(data.month_power * 100) / 100 ;
+      data.month_power_max = Math.round(data.month_power_max * 100) / 100 ;
+
+      // Требуется форм на план с учётом рем.дней
+      data.need_form_num_clc = data.fc_num / (data.kob * ((data.days_num - 0.75*data.days_rem))) ;
+      // Округляю в верхнюю сторону
+      data.need_form_num = Math.ceil(data.need_form_num_clc) ;
+
+      // Если не можем сделать нужное по плану кол-во ЖБИ, то выводим красным цветом (пока ставлю !!!)
+      if (data.fc_num > data.month_power) data.fc_num = '(!!!)' + data.fc_num;
+
+
+      gdata = data;
+    })
+    .then(function () {
+      res.render('plan/plan_fc_pro_report34', {data: gdata});
     })
     .catch(function (error) {
 //      res.send(error);

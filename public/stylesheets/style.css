@@ -91,9 +91,8 @@ DIV.center {
 div.main_menu {
   padding: 13px;
   margin: auto;
+  font-size: 14px;
 }
-
-
 
 
 /* ТЕЛО */
@@ -108,14 +107,14 @@ body {
   margin: auto;
 }
 
-/* Заголовок */
+/* ЗАГОЛОВОК */
 div.headerz {
   text-align: center;
   padding: 0;
   margin: auto;
 }
 
-/* Ссылки */
+/* ССЫЛКИ */
 a {
   color: #00B7FF;
 }
@@ -132,7 +131,7 @@ label {
 #    color: midnightblue;
 }
 
-/* Таблицы */
+/* ============== Т А Б Л И Ц Ы ============== */
 table {
   border: 0;
   border-collapse: collapse;
