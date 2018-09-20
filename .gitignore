@@ -63,3 +63,7 @@ typings/
 
 #PhpStorm
 .idea
+
+public/favicon.ico
+public/favicon_public.ico
+
