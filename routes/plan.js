@@ -359,7 +359,7 @@ router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
     .then(function (data) {
       var report_url = '/plan/plan_pro_calc33/'+ plan_rf + '/' + sd_rf;
       if (data.sd_name == 'Пролет 33')  res.redirect('/plan/plan_pro_calc33/'+ plan_rf + '/' + sd_rf);
-      if (data.sd_name == 'Пролет 34')  res.redirect('/plan/plan_pro_calc34/'+ plan_rf + '/' + sd_rf);
+      if (data.sd_name == 'Пролет 34')  res.redirect('/plan/plan_pro_calc33/'+ plan_rf + '/' + sd_rf);
 
       res.send("Нет отчёта для пролёта <b>" + data.sd_name + "</b>");
     })
@@ -407,8 +407,9 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       ret = '';
 
       data.days_num = Math.round(data.days_num) ;
+      data.days_num_cal = 31;
 
-      data.workers_num = Math.round(data.workers_num*100)/100 ;
+      data.workers_num = Math.round(data.workers_num*10)/10 ;
 
 //      data.sum_forming_time = data.forming_time * data.fc_num; //
       // Итого трудоёмкость на план
@@ -417,10 +418,11 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
       data.need_workers_num = Math.round(data.sum_trk / (22 * data.days_num)*10) / 10;
 //      data.need_workers_num = data.sum_trk / (22 * data.days_num);
+      data.max_workers_num = 17;
       // Округляю и проверяю на минимальное и максимальное кол-во рабочих
       data.fact_workers_num  = Math.round(data.need_workers_num);
       if (data.need_workers_num < 3)  data.fact_workers_num = 3;
-      if (data.need_workers_num > 17) data.fact_workers_num = 17;
+      if (data.need_workers_num > data.max_workers_num) data.fact_workers_num = data.max_workers_num;
 
 
       // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
@@ -431,7 +433,14 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       // рем.день - один раз в неделю, в дальнейшем надо будет поставить конкретно ЧЕТВЕРГ и считать кол-во четвергов
       data.days_rem = Math.floor(data.days_num/7);
       data.month_power =  data.day_power * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power*0.25);
-      data.month_power_max =  data.day_power_max * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power_max*0.25);
+      // Максимальная мощность, берём КАЛЕНДАРНЫЕ ДНИ
+      data.days_rem_cal = Math.floor(data.days_num_cal/7);
+      data.month_power_max =  data.day_power_max * (data.days_num_cal - data.days_rem_cal) +  (data.days_rem_cal * data.day_power_max*0.25);
+
+      // Расчётное кол-во дней без учёта рем дней
+      data.days_num_clc = data.fc_num / (data.form_num * data.ffc_num * data.kob);
+      data.days_num_clc = Math.round(data.days_num_clc*10)/10 ;
+
 
       // Эффективность работы пролёта
       data.efficiency =  Math.round((data.fc_num /  data.month_power_max) * 10000) / 100;
@@ -446,7 +455,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       data.need_form_num = Math.ceil(data.need_form_num_clc) ;
 
       // Форматирую для вывода, оставляю две цифры после запятой
-      data.need_form_num_clc = Math.round(data.need_form_num_clc*100) /100 ;
+      data.need_form_num_clc = Math.round(data.need_form_num_clc*10) /10 ;
 
       // Если не можем сделать нужное по плану кол-во ЖБИ, то выводим красным цветом (пока ставлю !!!)
       if (data.fc_num > data.month_power) data.fc_num = '(!!!)' + data.fc_num;
