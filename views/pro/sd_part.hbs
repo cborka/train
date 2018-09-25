@@ -1,0 +1,65 @@
+<h1>Пролёт-Форма-Количество</h1>
+<p>Количество форм (оснасток) в пролётах.<br></p>
+<form action="/pro/sd_part/update" method="POST" >
+    <table class="form">
+        <tr>
+            <td><label>Пролёт:</label></td>
+            <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}"></select>
+                <input id="sd_rf" type="text" name="sd_rf" readonly value={{sd_rf}} hidden >
+                <input id="old_sd_rf" type="text" name="old_sd_rf" readonly value={{sd_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Часть формы:</label></td>
+            <td>
+                <select width="100%" size="1" name='part_name' id='part_name' value="{{part_name}}"></select>
+                <input id="old_part_rf" type="text" name="old_part_rf" readonly value={{part_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Количество форм:</label></td>
+            <td><input id="part_num" type="text" name="part_num" value={{part_num}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список пролётов для выбора
+    var set_sd_names = function (reply)
+    {
+        document.getElementById("sd_name").innerHTML = reply;
+        document.getElementById("sd_name").value = '{{sd_name}}';
+    }
+    function get_sd_names()
+    {
+        doQuery ("/pro/get_prolet_names", set_sd_names);
+    }
+
+    // Изготовить список форм для выбора
+    var set_part_names = function (reply)
+    {
+        document.getElementById("part_name").innerHTML = reply;
+        document.getElementById("part_name").value = '{{part_name}}';
+    }
+    function get_part_names()
+    {
+        doQuery ("/pro/get_part_names", set_part_names);
+    }
+    get_sd_names();
+    get_part_names();
+
+</script>

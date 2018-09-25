@@ -1,0 +1,66 @@
+<h1>17-ПТ-32.61</h1>
+<div><p>Расчёт кол-ва форм 17-ПТ-32.61 в пролёте 34.<br>
+</p></div>
+<div>
+<form name="formparts">
+    <table class="list">
+        <tr>
+            <td class="list"><b>Часть</b></td>
+            <td class="list"><b>Кол-во на 1 форму</b></td>
+            <td class="list"><b>Кол-во в наличии</b></td>
+            <td class="list"><b>Расчётное кол-во форм</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{sd_rf}} {{part_rf}} {{part_name}}</td>
+                <td class="list">{{part_num}}</td>
+                <td class="list">
+                    <input id="partnum" type="number" name="partnum" value="{{part_num_all}}" >
+                </td>
+                <td class="list">{{form_num}}</td>
+                <td class="list">
+                    <button type="button" onclick="save_data({{sd_rf}}, {{part_rf}})">Изменить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</form>
+</div>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    let check_answer = function (reply)
+    {
+
+ //       if (reply == "0") {
+ //           info("Не удалось записать, попробуйте ещё раз!");
+ //           return false;
+ //       }
+
+//        info(reply);
+        return true;
+    }
+
+    function save_data(sd_rf, part_rf)
+    {
+//alert('xx'+document.getElementById("partnum").value+'z');
+
+        doQuery ("/plan/save_sd34_form_part", check_answer,
+                "&sd_rf=" + encodeURIComponent(sd_rf)+
+                "&part_rf=" + encodeURIComponent(part_rf)+
+                "&part_num=" + encodeURIComponent(document.getElementById("partnum").value)
+        );
+
+    }
+
+
+    function info(str)
+    {
+        document.getElementById("hint").innerHTML=str;
+    }
+
+</script>

@@ -1,0 +1,64 @@
+<h1>Из каких частей состит форма (оснастка)</h1>
+<form action="/pro/form_part/update" method="POST" >
+    <table class="form">
+        <tr>
+            <td><label>Форма (оснастка):</label></td>
+            <td><select width="100%" size="1" name='form_name' id='form_name' value="{{form_name}}"></select>
+                <input id="form_rf" type="text" name="form_rf" readonly value={{form_rf}} hidden >
+                <input id="old_form_rf" type="text" name="old_form_rf" readonly value={{form_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>ЖБИ:</label></td>
+            <td>
+                <select width="100%" size="1" name='part_name' id='part_name' value="{{part_name}}"></select>
+                <input id="old_part_rf" type="text" name="old_part_rf" readonly value={{part_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Количество частей на 1 форму:</label></td>
+            <td><input id="part_num" type="number" size="5" step="0.5" name="part_num" value={{part_num}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список форм для выбора
+    var set_form_names = function (reply)
+    {
+        document.getElementById("form_name").innerHTML = reply;
+        document.getElementById("form_name").value = '{{form_name}}';
+    }
+    function get_form_names()
+    {
+        doQuery ("/pro/get_form_names", set_form_names);
+    }
+
+    // Изготовить список частей для выбора
+    var set_part_names = function (reply)
+    {
+        document.getElementById("part_name").innerHTML = reply;
+        document.getElementById("part_name").value = '{{part_name}}';
+    }
+    function get_part_names()
+    {
+        doQuery ("/pro/get_part_names", set_part_names);
+    }
+    get_form_names();
+    get_part_names();
+
+</script>

@@ -1,0 +1,46 @@
+<h1>Состав составных форм (оснасток)</h1>
+<div><p>Из каких частей состят ФОРМЫ<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Форма (оснастка)</b></td>
+            <td class="list"><b>Часть</b></td>
+            <td class="list"><b>Кол-во частей</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{form_name}}</td>
+                <td class="list">{{part_name}}</td>
+                <td class="list">{{part_num}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_form_part({{form_rf}}, {{part_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_form_part({{form_rf}},{{part_rf}},'{{form_name}}','{{part_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/pro/form_part_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_form_part(form_rf, part_rf, form_name, part_name) {
+
+        var result = confirm("Удалить "+form_name+'/'+part_name+ " ?");
+        if (result) {
+            location.href = '/pro/form_part_delete/'+form_rf+'/'+part_rf;
+        }
+        else
+            erro("Оставляю "+form_name+'/'+part_name+" !");
+    }
+
+    function edit_form_part(form_rf, part_rf) {
+        location.href = '/pro/form_part/'+form_rf+'/'+part_rf;
+    }
+
+</script>

@@ -587,7 +587,59 @@ router.get('/plan_pro_calc34/:plan_rf/:sd_rf', function(req, res, next) {
 
 
 
+//=================== ПРОЛЁТ 34 - ЧАСТИ ФОРМЫ 17-ПТ-32.61 =====================
 
+//
+// Показать список ПРОЛЁТ-ЧАСТЬ
+//
+router.get('/sd34_form_part', function(req, res, next) {
+  db.any(
+    "SELECT sp.sd_rf, sd_name, sp.part_rf, part_name, sp.part_num AS part_num_all, fp.part_num,  (sp.part_num / fp.part_num) AS form_num " +
+    " FROM ((((sd_part sp " +
+    "   LEFT JOIN sd_list sd ON sp.sd_rf = sd_id) " +
+    "   LEFT JOIN part_list pt ON sp.part_rf = part_id) " +
+    "   LEFT JOIN form_part fp ON sp.part_rf = fp.part_rf) " +
+    "   LEFT JOIN form_list frm ON fp.form_rf = form_id) " +
+    " WHERE sd_name = 'Пролет 34' AND form_name = '17-ПТ-32.61' " +
+    " ORDER BY part_name ")
+    .then(function (data) {
+
+      // Убираю конечные нули в дробной части
+      for (var i = 0; i < data.length; i++) {
+        data[i].form_num = Math.round(data[i].form_num * 1000) / 1000
+      }
+
+      res.render('plan/sd34_form_part', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Запись
+//
+router.post('/save_sd34_form_part', function(req, res, next) {
+  var part_rf = req.body.part_rf;
+  var sd_rf = req.body.sd_rf;
+  var part_num = req.body.part_num;
+
+//  res.send('Hi boss');
+//  res.send(part_num);
+  db.none(
+    "UPDATE sd_part " +
+    "SET part_num = $1 " +
+    "WHERE sd_rf=$2 AND part_rf=$3",
+    [part_num, sd_rf, part_rf])
+    .then (function () {
+//      res.send('xx'+part_num +','+sd_rf+','+part_rf);
+//      res.redirect('/');
+//      res.redirect(200, '/plan/sd34_form_part');
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+
+});
 
 
 

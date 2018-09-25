@@ -855,4 +855,349 @@ router.get('/form_fc_delete/:form_rf/:fc_rf', function(req, res, next) {
 });
 
 
+
+//=================== ЧАСТИ форма для формовки ЖБИ и просто ЧАСТИ чего-то =====================
+
+//
+// Показать список ЧАСТЕЙ
+//
+router.get('/parts', function(req, res, next) {
+  db.any(
+    "SELECT part_id, part_name " +
+    " FROM part_list " +
+    " WHERE part_id > 1 " +
+    " ORDER BY part_name")
+    .then(function (data) {
+      res.render('pro/parts', {data: data}); // Показ части
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новую ЧАСТЬ
+//
+router.get('/part_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS part_id, '' AS part_name ")
+    .then(function (data) {
+      res.render('pro/part', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ЧАСТЬ
+//
+router.get('/part/:part_id', function(req, res, next) {
+  var part_id = req.params.part_id;
+  db.one(
+    "SELECT part_id, part_name " +
+    " FROM part_list " +
+    " WHERE part_id = $1", part_id)
+    .then(function (data) {
+      res.render('pro/part', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Добавление и корректировка ЧАСТИ
+//
+router.post('/part_update', function(req, res, next) {
+  var part_id = req.body.part_id;
+  var part_name = req.body.part_name;
+  if (part_id > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE part_list " +
+      "SET part_name=$1 " +
+      "WHERE part_id=$2",
+      [part_name, part_id])
+      .then (function () {
+        res.redirect('/pro/parts');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO part_list (part_name) " +
+      "VALUES ($1)",
+      [part_name])
+      .then (function (data) {
+        res.redirect('/pro/parts');
+
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить ЧАСТЬ
+router.get('/part_delete/:part_id', function(req, res, next) {
+  var part_id = req.params.part_id;
+  db.none("DELETE FROM part_list WHERE part_id=$1", part_id)
+    .then(function () {
+      res.redirect('/pro/parts'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Сформировать и возвратить список ЧАСТЕЙ для выбора
+//
+router.get('/get_part_names', function(req, res, next) {
+  db.any("SELECT part_name FROM part_list ORDER BY 1 ")
+    .then (function (data) {
+      var result = '';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].part_name+'">'+data[i].part_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+//=================== ФОРМА-ЧАСТЬ (СОСТАВНЫЕ ФОРМЫ) =====================
+
+//
+// Показать список ФОРМА-ЧАСТЬ
+//
+router.get('/form_part_s', function(req, res, next) {
+  db.any(
+    "SELECT form_rf, form_name, part_rf, part_name,  cast(part_num AS float) " +
+    " FROM ((form_part ff " +
+    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
+    "   LEFT JOIN part_list fc ON part_rf = part_id) " +
+    " ORDER BY form_name, part_name ")
+    .then(function (data) {
+      res.render('pro/form_part_s', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новый ФОРМА-ЧАСТЬ
+//
+router.get('/form_part_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS form_rf, '' AS form_name, 0 AS part_rf, '' AS part_name, 0 AS part_num ")
+    .then(function (data) {
+      res.render('pro/form_part', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ФОРМА-ЧАСТЬ
+//
+router.get('/form_part/:form_rf/:part_rf', function(req, res, next) {
+  var form_rf = req.params.form_rf;
+  var part_rf = req.params.part_rf;
+  db.one(
+    "SELECT form_rf, form_name, part_rf, part_name,  cast(part_num AS float) " +
+    " FROM ((form_part ff " +
+    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
+    "   LEFT JOIN part_list fc ON part_rf = part_id) " +
+    " WHERE form_rf = $1 AND part_rf = $2", [form_rf, part_rf])
+    .then(function (data) {
+      res.render('pro/form_part', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавление и корректировка ФОРМА-ЧАСТЬ
+//
+router.post('/form_part/update', function(req, res, next) {
+  var form_rf = req.body.form_rf;
+  var form_name = req.body.form_name;
+  var part_name = req.body.part_name;
+  var part_num = req.body.part_num;
+  var old_form_rf = req.body.old_form_rf;
+  var old_part_rf = req.body.old_part_rf;
+  if (form_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE form_part " +
+      "SET form_rf=(SELECT form_id FROM form_list WHERE form_name=$1), part_rf=(SELECT part_id FROM part_list WHERE part_name=$2), part_num=$3 " +
+      "WHERE form_rf=$4 AND part_rf=$5",
+      [form_name, part_name, part_num, old_form_rf, old_part_rf])
+      .then (function () {
+        res.redirect('/pro/form_part_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO  form_part (form_rf, part_rf, part_num) " +
+      "VALUES ((SELECT form_id FROM form_list WHERE form_name=$1), (SELECT part_id FROM part_list WHERE part_name=$2), $3)",
+      [form_name, part_name, part_num])
+      .then (function (data) {
+        res.redirect('/pro/form_part_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить ФОРМА-ЧАСТЬ
+router.get('/form_part_delete/:form_rf/:part_rf', function(req, res, next) {
+  var form_rf = req.params.form_rf;
+  var part_rf = req.params.part_rf;
+  db.none("DELETE FROM form_part WHERE form_rf=$1 AND part_rf=$2", [form_rf, part_rf])
+    .then(function () {
+      res.redirect('/pro/form_part_s'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+//=================== ПРОЛЁТ-ЧАСТИ (ФОРМ) =====================
+
+//
+// Показать список ПРОЛЁТ-ЧАСТЬ
+//
+router.get('/sd_part_s', function(req, res, next) {
+  db.any(
+    "SELECT sd_rf, sd_name, part_rf, part_name, part_num " +
+    " FROM ((sd_part sf " +
+    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
+    "   LEFT JOIN part_list frm ON part_rf = part_id) " +
+    " ORDER BY sd_name, part_name ")
+    .then(function (data) {
+
+      // Убираю конечные нули в дробной части
+      for (var i = 0; i < data.length; i++) {
+        data[i].part_num = Math.round(data[i].part_num * 1000) / 1000
+      }
+
+      res.render('pro/sd_part_s', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новый ПРОЛЁТ-ЧАСТЬ
+//
+router.get('/sd_part_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS sd_rf, '' AS sd_name, 0 AS part_rf, '' AS part_name ")
+    .then(function (data) {
+      res.render('pro/sd_part', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ПРОЛЁТ-ЧАСТЬ
+//
+router.get('/sd_part/:sd_rf/:part_rf', function(req, res, next) {
+  var sd_rf = req.params.sd_rf;
+  var part_rf = req.params.part_rf;
+  db.one(
+    "SELECT sd_rf, sd_name, part_rf, part_name, part_num " +
+    " FROM ((sd_part sf " +
+    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
+    "   LEFT JOIN part_list frm ON part_rf = part_id) " +
+    " WHERE sd_rf = $1 AND part_rf = $2", [sd_rf, part_rf])
+    .then(function (data) {
+      res.render('pro/sd_part', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавление и корректировка ПРОЛЁТ-ЧАСТЬ
+//
+router.post('/sd_part/update', function(req, res, next) {
+  var sd_rf = req.body.sd_rf;
+  var part_rf = req.body.part_rf;
+  var sd_name = req.body.sd_name;
+  var part_name = req.body.part_name;
+  var part_num = req.body.part_num;
+  var old_sd_rf = req.body.old_sd_rf;
+  var old_part_rf = req.body.old_part_rf;
+  if (sd_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE sd_part " +
+      "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), part_rf=(SELECT part_id FROM part_list WHERE part_name=$2), part_num=$3 " +
+      "WHERE sd_rf=$4 AND part_rf=$5",
+      [sd_name, part_name, part_num, old_sd_rf, old_part_rf])
+      .then (function () {
+        res.redirect('/pro/sd_part_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO  sd_part (sd_rf, part_rf, part_num) " +
+      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT part_id FROM part_list WHERE part_name=$2), $3)",
+      [sd_name, part_name, part_num])
+      .then (function (data) {
+        res.redirect('/pro/sd_part_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить  ПРОЛЁТ-ЧАСТЬ
+router.get('/sd_part_delete/:sd_rf/:part_rf', function(req, res, next) {
+  var sd_rf = req.params.sd_rf;
+  var part_rf = req.params.part_rf;
+  db.none("DELETE FROM sd_part WHERE sd_rf=$1 AND part_rf=$2", [sd_rf, part_rf])
+    .then(function () {
+      res.redirect('/pro/sd_part_s'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = router;

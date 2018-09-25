@@ -1,0 +1,43 @@
+<div>
+    <h1>Список частей форм (оснасток)</h1>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Id</b></td>
+            <td class="list"><b>Название</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{part_id}}</td>
+                <td class="list">{{part_name}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_part({{part_id}})">Изменить</button>
+                    <button type="button" onclick="delete_part({{part_id}},'{{part_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/pro/part_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_part(part_id, part_name) {
+
+        var result = confirm("Удалить, "+part_name+"?");
+        if (result) {
+            location.href = '/pro/part_delete/'+part_id;
+        }
+        else
+            erro("Оставляю "+part_name+"!");
+    }
+
+    function edit_part(part_id) {
+        location.href = '/pro/part/'+part_id;
+    }
+
+</script>

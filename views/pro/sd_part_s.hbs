@@ -1,0 +1,46 @@
+<h1>Пролёт-Формы</h1>
+<div><p>Количество форм (оснасток) в пролётах.<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Пролёт</b></td>
+            <td class="list"><b>Форма (оснастка)</b></td>
+            <td class="list"><b>Количество форм</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{sd_name}}</td>
+                <td class="list">{{part_name}}</td>
+                <td class="list">{{part_num}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_sd_part({{sd_rf}}, {{part_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_sd_part({{sd_rf}},{{part_rf}},'{{sd_name}}','{{part_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/pro/sd_part_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_sd_part(sd_rf, part_rf, sd_name, part_name) {
+
+        var result = confirm("Удалить "+sd_name+'/'+part_name+ " ?");
+        if (result) {
+            location.href = '/pro/sd_part_delete/'+sd_rf+'/'+part_rf;
+        }
+        else
+            erro("Оставляю "+sd_name+'/'+part_name+" !");
+    }
+
+    function edit_sd_part(sd_rf, part_rf) {
+        location.href = '/pro/sd_part/'+sd_rf+'/'+part_rf;
+    }
+
+</script>

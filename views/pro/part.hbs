@@ -1,0 +1,31 @@
+<h1>Добавление и корректировка ЧАСТЕЙ форм (оснасток)</h1>
+<form name="part" action="/pro/part_update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="part_id" name="part_id" readonly value="{{part_id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Название:</label></td>
+            <td><input id="part_name" type="text" name="part_name" value="{{part_name}}" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+
+</script>
