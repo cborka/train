@@ -2,8 +2,8 @@
 <div><p>Расчёт кол-ва форм 17-ПТ-32.61 в пролёте 34.<br>
 </p></div>
 <div>
-<form name="formparts">
-    <table class="list">
+<form name="formparts"  action="/plan/save_sd34_form_part" method="POST">
+    <table id="table" class="list" >
         <tr>
             <td class="list"><b>Часть</b></td>
             <td class="list"><b>Кол-во на 1 форму</b></td>
@@ -13,14 +13,14 @@
         </tr>
         {{#each data}}
             <tr>
-                <td class="list">{{sd_rf}} {{part_rf}} {{part_name}}</td>
+                <td class="list">{{sd_rf}} {{form_rf}} {{part_name}}</td>
                 <td class="list">{{part_num}}</td>
-                <td class="list">
-                    <input id="partnum" type="number" name="partnum" value="{{part_num_all}}" >
+                <td class="list" id="inp">
+                    <input id="part_all" type="number" name="part_all" value="{{part_num_all}}" >
                 </td>
-                <td class="list">{{form_num}}</td>
-                <td class="list">
-                    <button type="button" onclick="save_data({{sd_rf}}, {{part_rf}})">Изменить</button>
+                <td class="list" >{{form_num}}</td>
+                <td class="list" id="btn">
+                    <button type="button" onclick="save_data({{sd_rf}}, {{part_rf}}, this)">Сохранить</button>
                 </td>
             </tr>
         {{/each}}
@@ -31,36 +31,41 @@
 <div id="hint" ></div>
 <div id="erro" ></div>
 
+Итого форм: {{data.form_num_min}}
+<button type="button" onclick="save_form_num({{data.sd_id}}, {{data.form_id}}, {{data.form_num_min}} )">Сохранить</button><br>
+
 <script>
 
     let check_answer = function (reply)
     {
-
- //       if (reply == "0") {
- //           info("Не удалось записать, попробуйте ещё раз!");
- //           return false;
- //       }
-
+        location.reload(true);
 //        info(reply);
-        return true;
     }
-
-    function save_data(sd_rf, part_rf)
+    function save_data(sd_rf, part_rf, el)
     {
-//alert('xx'+document.getElementById("partnum").value+'z');
+        r = el.parentNode.parentNode;
+        v = r.cells[2].children[0].value;
 
         doQuery ("/plan/save_sd34_form_part", check_answer,
                 "&sd_rf=" + encodeURIComponent(sd_rf)+
                 "&part_rf=" + encodeURIComponent(part_rf)+
-                "&part_num=" + encodeURIComponent(document.getElementById("partnum").value)
+                "&part_num=" + encodeURIComponent(v)
         );
-
     }
 
+    function save_form_num(sd_rf, form_rf, form_num)
+    {
+        doQuery ("/plan/save_sd34_form_num", check_answer,
+                "&sd_rf=" + encodeURIComponent(sd_rf)+
+                "&form_rf=" + encodeURIComponent(form_rf)+
+                "&form_num=" + encodeURIComponent(form_num)
+        );
+    }
 
     function info(str)
     {
         document.getElementById("hint").innerHTML=str;
     }
+
 
 </script>
