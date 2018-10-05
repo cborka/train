@@ -16,62 +16,107 @@
     <table class="list">
         <tr>
             <td class="list"><b>ЖБИ</b></td>
-            <td class="list"><b>{{data.fc_name}}</b></td>
+            <td class="list" colspan="3"><b>{{data.fc_name}}</b></td>
         </tr>
         <tr>
-            <td class="list"><b>Количество ЖБИ:</b> Плановое / Можем сделать / Максимальное</td>
-            <td class="list">{{data.fc_num}} / {{data.month_power}} / {{data.month_power_max}}</td>
+            <td class="list"><b>Количество ЖБИ:</b> Плановое | Можем сделать | Максимальное</td>
+            <td class="list right" title="Плановое кол-во ЖБИ">
+                {{data.fc_num}}</td>
+            <td class="list right" title="Можем сделать">
+                {{data.month_power}}</td>
+            <td class="list right" title="Максимальное кол-во ЖБИ, которое сможем изготовить при максимальном кол-ве форм и дней">
+                {{data.month_power_max}}</td>
         </tr>
         <tr>
-            <td class="list"><b>Кол-во дней:</b> Плановое / Расчётное (без учёта рем.дней) / Календарных дней</td>
-            <td class="list">{{data.days_num}} / {{data.days_num_clc}} / {{data.days_num_cal}}</td>
+            <td class="list"><b>Кол-во дней:</b> Плановое | Расчётное (без учёта рем.дней) | Календарных дней</td>
+            <td class="list right" title="Плановое кол-во рабочих дней">
+                {{data.days_num}}</td>
+            <td class="list right" title="Кол-во рабочих дней необходимых для выполнения плана">{{data.days_num_clc}}</td>
+            <td class="list right" title="Календарных дней">
+                {{data.days_num_cal}}</td>
         </tr>
         <tr>
-            <td class="list"><b>Кол-во человек в смене: </b> Расчётное / Фактическое / Максимальное <br> =
+            <td class="list"><b>Кол-во человек в смене: </b> Расчётное | Фактическое | Максимальное <br> =
                 Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)</td>
-            <td class="list">{{data.fact_workers_num}}({{data.need_workers_num}}) / {{data.workers_num}} / {{data.max_workers_num}}</td>
+            <td class="list right" title="Кол-во рабочих в смене необходимых для выполнения плана">
+                {{data.fact_workers_num}}({{data.need_workers_num}})</td>
+            <td class="list right" title="Фактическое кол-во рабочих в смене">
+                {{data.workers_num}}</td>
+            <td class="list right" title="Максимальное кол-во рабочих в смене">
+                {{data.max_workers_num}}</td>
         </tr>
         <tr>
-            <td class="list"><b>Количество форм:</b> Фактическое / Требуемое / Максимальное </td>
-            <td class="list">{{data.form_num}} / {{data.need_form_num}}({{data.need_form_num_clc}}) / {{data.form_num_max}} </td>
+            <td class="list"><b>Количество форм:</b> Фактическое | Требуемое | Максимальное </td>
+            <td class="list right" title="Фактическое, имеющееся кол-во форм">
+                {{data.form_num}}</td>
+            <td class="list right" title="Расчетное кол-во форм необходимых для выполения плана за плановое кол-во дней">
+                {{data.need_form_num}}({{data.need_form_num_clc}})</td>
+            <td class="list right" title="Максимально возможное кол-во форм">
+                {{data.form_num_max}} </td>
         </tr>
         <tr>
             <td class="list"><b></b></td>
         </tr>
         <tr>
-            <td class="list"><b>Мощность за сутки: </b>  <br> = Кол-во форм * КОб
+            <td class="list"><b>Мощность за сутки: </b> | Максимальная мощность  <br> = Кол-во форм * КОб
                 (сколько можем изготовить на данном оборудовании)</td>
-            <td class="list">{{data.day_power}} / {{data.day_power_max}}</td>
+            <td class="list right" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
+                {{data.day_power}}</td>
+            <td class="list right" title="Сколько ЖБИ сможем изготовить при максимально возможном кол-ве форм с заданным КОб">
+                {{data.day_power_max}}</td>
+            <td class="list"> </td>
         </tr>
         <tr>
-            <td class="list"><b>Мощность за месяц:</b> Текущая / Максимальная (с учётом рем. дней) (<b>{{data.days_rem}}</b>)</td>
-            <td class="list">{{data.month_power}} / {{data.month_power_max}}</td>
+            <td class="list"><b>Мощность за месяц:</b> Текущая | Максимальная (с учётом рем. дней) (<b>{{data.days_rem}}</b>)</td>
+            <td class="list right" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
+                {{data.month_power}}</td>
+            <td class="list right" title="Сколько ЖБИ сможем изготовить при максимально возможном кол-ве форм с заданным КОб">
+                {{data.month_power_max}}</td>
+            <td class="list"> </td>
         </tr>
         <tr>
             <td class="list"><b></b></td>
         </tr>
         <tr>
             <td class="list"><b>Эффективность</b> = (Плановое кол-во / Максимальная мощность за месяц) * 100%</td>
-            <td class="list">{{data.efficiency}}%</td>
+            <td class="list right" title="Эффективность производства в процентах от максимально возможной эффективности">
+                {{data.efficiency}}%</td>
+            <td class="list"> </td>
+            <td class="list"> </td>
         </tr>
         <tr>
             <td class="list"><b></b></td>
         </tr>
         <tr>
-            <td class="list">Трудоёмкость изготовления 1 шт.</td>
-            <td class="list">{{data.trk}}</td>
+            <td class="list">Трудоёмкость изготовления 1 шт. | Коэф-т трудоёмкости | Без учёта коэф-та</td>
+            <td class="list right" title="Трудоёмкость изготоволения 1 ЖБИ с учётом коэф-та">
+                {{data.trk}}</td>
+            <td class="list right" title="Коэф-т корректирующий нормативную трудоёмкость">
+                {{data.trkk}}</td>
+            <td class="list right" title="Нормативная трудоёмкость">
+                {{data.trk0}}</td>
         </tr>
         <tr>
-            <td class="list">Итого трудоёмкость на план(человеко-часов)</td>
-            <td class="list">{{data.sum_trk}}</td>
+            <td class="list">Итого трудоёмкость на план(человеко-часов) || Без учёта коэф-та</td>
+            <td class="list right" title="Трудоёмкость изготовления планового кол-ва ЖБИ (человеко-часов)">
+                {{data.sum_trk}}</td>
+            <td class="list"> </td>
+            <td class="list right" title="Нормативная трудоёмкость изготовления планового кол-ва ЖБИ (человеко-часов)">
+                {{data.sum_trk0}}</td>
         </tr>
         <tr>
             <td class="list">Количество ЖБИ в одной форме</td>
-            <td class="list">{{data.ffc_num}}</td>
+            <td class="list right" title="Сколько ЖБИ можно формовать в одной форме">
+                {{data.ffc_num}}</td>
+            <td class="list"> </td>
+            <td class="list"> </td>
         </tr>
         <tr>
             <td class="list">Коэф-т оборачиваемости</td>
-            <td class="list">{{data.kob}}</td>
+            <td class="list right" title="Сколько раз в сутки можем формовать ЖБИ в одной и той же форме">
+                {{data.kob}}</td>
+            <td class="list"> </td>
+            <td class="list"> </td>
         </tr>
         <tr>
 

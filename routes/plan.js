@@ -390,7 +390,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
 
   db.one(
     "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
-    " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sf.form_num_max, sdf.trk, sdf.kob " +
+    " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sf.form_num_max, sdf.trk, sdf.trkk, sdf.kob " +
     " FROM (((((((plan_fc_pro pp " +
     "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
     "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
@@ -409,15 +409,24 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       data.days_num = Math.round(data.days_num) ;
       data.days_num_cal = 31;
 
-      data.workers_num = Math.round(data.workers_num*10)/10 ;
+      data.workers_num = Math.round(data.workers_num*10)/10 ;0
+
+      data.trk0 = data.trk;
+      data.trk = data.trk * data.trkk;
+      data.trk = Math.round(data.trk * 100) / 100 ;
 
 //      data.sum_forming_time = data.forming_time * data.fc_num; //
       // Итого трудоёмкость на план
+      data.sum_trk0 = data.trk0 * data.fc_num; //
       data.sum_trk = data.trk * data.fc_num; //
 
       // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
       data.need_workers_num = Math.round(data.sum_trk / (22 * data.days_num)*10) / 10;
-//      data.need_workers_num = data.sum_trk / (22 * data.days_num);
+
+      // Округляю до двух цифр после запятой для вывода на экран
+      data.sum_trk0 = Math.round(data.sum_trk0 * 100) / 100 ;
+      data.sum_trk = Math.round(data.sum_trk * 100) / 100 ;
+
       data.max_workers_num = 17;
       // Округляю и проверяю на минимальное и максимальное кол-во рабочих
       data.fact_workers_num  = Math.round(data.need_workers_num);

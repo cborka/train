@@ -539,7 +539,7 @@ router.get('/get_plan_names', function(req, res, next) {
 //
 router.get('/sd_fc_s', function(req, res, next) {
   db.any(
-    "SELECT sd_rf, sd_name, fc_rf, fc_name, trk, forming_time, kob " +
+    "SELECT sd_rf, sd_name, fc_rf, fc_name, trk, trkk, forming_time, kob " +
     " FROM ((sd_fc sf " +
     "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
     "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
@@ -572,7 +572,7 @@ router.get('/sd_fc/:sd_rf/:fc_rf', function(req, res, next) {
   var sd_rf = req.params.sd_rf;
   var fc_rf = req.params.fc_rf;
   db.one(
-    "SELECT sd_rf, sd_name, fc_rf, fc_name, trk, forming_time, kob " +
+    "SELECT sd_rf, sd_name, fc_rf, fc_name, trk, trkk, forming_time, kob " +
     " FROM ((sd_fc sf " +
     "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
     "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
@@ -594,6 +594,7 @@ router.post('/sd_fc/update', function(req, res, next) {
   var sd_name = req.body.sd_name;
   var fc_name = req.body.fc_name;
   var trk = req.body.trk;
+  var trkk = req.body.trkk;
   var forming_time = req.body.forming_time;
   var kob = req.body.kob;
   var old_sd_rf = req.body.old_sd_rf;
@@ -603,9 +604,9 @@ router.post('/sd_fc/update', function(req, res, next) {
     db.none(
       "UPDATE sd_fc " +
       "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), fc_rf=(SELECT fc_id FROM fc_list WHERE fc_name=$2), " +
-      "  trk=$3, forming_time=$4, kob=$5 " +
-      "WHERE sd_rf=$6 AND fc_rf=$7",
-      [sd_name, fc_name, trk, forming_time, kob, old_sd_rf, old_fc_rf])
+      "  trk=$3, trkk=$4, forming_time=$5, kob=$6 " +
+      "WHERE sd_rf=$7 AND fc_rf=$8",
+      [sd_name, fc_name, trk, trkk, forming_time, kob, old_sd_rf, old_fc_rf])
       .then (function () {
         res.redirect('/pro/sd_fc_s');
       })
@@ -616,9 +617,9 @@ router.post('/sd_fc/update', function(req, res, next) {
   else {
 //  Добавление
     db.none(
-      "INSERT INTO  sd_fc (sd_rf, fc_rf, trk, forming_time, kob) " +
-      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT fc_id FROM fc_list WHERE fc_name=$2), $3, $4, $5)",
-      [sd_name, fc_name, trk, forming_time, kob])
+      "INSERT INTO  sd_fc (sd_rf, fc_rf, trk, trkk,  forming_time, kob) " +
+      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT fc_id FROM fc_list WHERE fc_name=$2), $3, $4, $5, $6)",
+      [sd_name, fc_name, trk, trkk, forming_time, kob])
       .then (function (data) {
         res.redirect('/pro/sd_fc_s');
       })

@@ -14,8 +14,46 @@
 <body>
 
 <H1>jQuery TEST</H1>
-<p>kzkz njgjkz</p>
+$("h1").css("background-color","#fdd");
+<p>
+    Параграф, просто параграф текста. <br>
+    $("p").css("background-color","#ddd");
+</p>
 
+<p id="with_border">
+    Параграф с идентификатором (id="with_border"). <br>
+    $("#with_border").css("border","black solid 1px");
+</p>
+
+<p class="indent">
+    Параграф с классом (class="indent"). <br>
+    $(".indent").css("text-indent","25px");
+</p>
+
+<p id="content">Ща будет бабах</p>
+
+
+
+
+<script>
+  $(document).ready( function(){
+    // вызов нужных функций скрипта
+    $("<div><p>Ба-бах!</p></div>").appendTo("#content");
+  });
+
+
+  // ОБРАЩЕНИЕ К ТЕГУ (ЭЛЕМЕНТУ)
+  $("p").css("background-color","#ddd");
+  $("h1").css("background-color","#fdd");
+
+  // ОБРАЩЕНИЕ К ЭЛЕМЕНТУ С ID
+  $("#with_border").css("border","black solid 1px");
+
+  // ОБРАЩЕНИЕ К КЛАССУ
+  $(".indent").css("text-indent","25px");
+
+
+</script>
 
 </body>
 </html>
