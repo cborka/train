@@ -174,3 +174,19 @@ tbody tr:hover {
   background: #eee; /* Цвет фона при наведении */
 }
 
+
+/* ============== В Ы Д Е Л Е Н И Е ============= */
+
+.pink {color: #ee008c;}
+.red {color: red;}
+.green {color: green;}
+.blue {color: blue;}
+.maroon {color: maroon;}
+.purple {color: purple;}
+.indigo {color: indigo;}
+.silver {color: silver;}
+.grey {color: grey;}
+.black {color: black;}
+.whiteinblack {color: white; background-color: black}
+
+
