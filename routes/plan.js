@@ -245,8 +245,8 @@ router.get('/plan_pro_calc/:plan_rf/:sd_rf', function(req, res, next) {
 //
 router.get('/plan_sd_s', function(req, res, next) {
   db.any(
-    "SELECT plan_rf, plan_name, sd_rf, sd_name, days_num, workers_num " +
-    " FROM ((plan_sd sf " +
+    "SELECT plan_rf, plan_name, sd_rf, sd_name, days_num, workers_num, CAST(ps.date_begin AS VARCHAR) AS dtb, CAST(ps.date_end AS VARCHAR) AS dte " +
+    " FROM ((plan_sd ps " +
     "   LEFT JOIN plan_list plan ON plan_rf = plan_id) " +
     "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
     " ORDER BY plan_name, sd_name ")
@@ -262,7 +262,7 @@ router.get('/plan_sd_s', function(req, res, next) {
 // Добавить новый ПЛАН-ПРОЛЁТ
 //
 router.get('/plan_sd_addnew', function(req, res, next) {
-  db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name ")
+  db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name, CAST(CURRENT_DATE AS varchar) AS dtb, CAST(CURRENT_DATE+30 AS varchar) AS dte  ")
     .then(function (data) {
       res.render('plan/plan_sd', data);
     })
@@ -278,8 +278,8 @@ router.get('/plan_sd/:plan_rf/:sd_rf', function(req, res, next) {
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
   db.one(
-    "SELECT plan_rf, plan_name, sd_rf, sd_name, days_num, workers_num " +
-    " FROM ((plan_sd sf " +
+    "SELECT plan_rf, plan_name, sd_rf, sd_name, days_num, workers_num, CAST(ps.date_begin AS VARCHAR) AS dtb, CAST(ps.date_end AS VARCHAR) AS dte " +
+    " FROM ((plan_sd ps " +
     "   LEFT JOIN plan_list plan ON plan_rf = plan_id) " +
     "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
     " WHERE plan_rf = $1 AND sd_rf = $2", [plan_rf, sd_rf])
@@ -301,15 +301,22 @@ router.post('/plan_sd/update', function(req, res, next) {
   var sd_name = req.body.sd_name;
   var days_num = req.body.days_num;
   var workers_num = req.body.workers_num;
+  var dtb = req.body.dtb;
+  var dte = req.body.dte;
   var old_plan_rf = req.body.old_plan_rf;
   var old_sd_rf = req.body.old_sd_rf;
   if (plan_rf > 0 ) {
 //  Обновление
     db.none(
       "UPDATE plan_sd " +
-      "SET plan_rf=(SELECT plan_id FROM plan_list WHERE plan_name=$1), sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$2), days_num=$3, workers_num=$4 " +
-      "WHERE plan_rf=$5 AND sd_rf=$6",
-      [plan_name, sd_name, days_num, workers_num, old_plan_rf, old_sd_rf])
+      "SET plan_rf=(SELECT plan_id FROM plan_list WHERE plan_name=$1), " +
+      "  sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$2), " +
+      "  days_num=$3, " +
+      "  workers_num=$4, " +
+      "  date_begin=$5, " +
+      "  date_end=$6 " +
+      "WHERE plan_rf=$7 AND sd_rf=$8",
+      [plan_name, sd_name, days_num, workers_num, dtb, dte, old_plan_rf, old_sd_rf])
       .then (function () {
         res.redirect('/plan/plan_sd_s');
       })
@@ -320,9 +327,13 @@ router.post('/plan_sd/update', function(req, res, next) {
   else {
 //  Добавление
     db.none(
-      "INSERT INTO  plan_sd (plan_rf, sd_rf, days_num, workers_num ) " +
-      "VALUES ((SELECT plan_id FROM plan_list WHERE plan_name=$1), (SELECT sd_id FROM sd_list WHERE sd_name=$2),  $3, $4)",
-      [plan_name, sd_name, days_num, workers_num])
+      "INSERT INTO  plan_sd (plan_rf, sd_rf, days_num, workers_num, date_begin, date_end ) " +
+      "VALUES (" +
+      "  (SELECT plan_id FROM plan_list WHERE plan_name=$1), " +
+      "  (SELECT sd_id FROM sd_list WHERE sd_name=$2),  " +
+      "  $3, $4, $5, $6" +
+      ")",
+      [plan_name, sd_name, days_num, workers_num, dtb, dte])
       .then (function (data) {
         res.redirect('/plan/plan_sd_s');
       })
@@ -390,7 +401,8 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
 
   db.one(
     "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
-    " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, sf.form_num, sf.form_num_max, sdf.trk, sdf.trkk, sdf.kob " +
+    " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, ps.date_begin, ps.date_end, " +
+    " sf.form_num, sf.form_num_max, sdf.trk, sdf.trkk, sdf.kob " +
     " FROM (((((((plan_fc_pro pp " +
     "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
     "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
@@ -405,6 +417,27 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
     [plan_rf, sd_rf])
     .then(function (data) {
       ret = '';
+
+      // Считаю кол-во четвергов (рем. дней) за период
+
+      var day_length = 1000*60*60*24; // Миллисекунд в сутках
+      var db = data.date_begin;
+      var de = data.date_end;
+      var rem_days_num = 0;
+      // Цикл по дням
+      var dw = ': '; // Даты рем. дней (числа месяца)
+      while(db.getTime() <= de.getTime()){
+
+        if(db.getDay() == 4) {// если четверг, то рем.день
+          rem_days_num++;
+          dw = dw + db.getDate() + ' ';
+        }
+
+        db.setTime(db.getTime() + day_length); // Следующий день
+      }
+      data.days_rem = rem_days_num;
+      data.dw = dw; // Даты рем. дней (числа месяца)
+
 
       data.days_num = Math.round(data.days_num) ;
       data.days_num_cal = 31;
@@ -440,10 +473,11 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
 
       // мощность за месяц с учётом рем.дней,
       // рем.день - один раз в неделю, в дальнейшем надо будет поставить конкретно ЧЕТВЕРГ и считать кол-во четвергов
-      data.days_rem = Math.floor(data.days_num/7);
+//      data.days_rem = Math.floor(data.days_num/7); // Посчитали выше кол-во четвергов
       data.month_power =  data.day_power * (data.days_num - data.days_rem) +  (data.days_rem * data.day_power*0.25);
       // Максимальная мощность, берём КАЛЕНДАРНЫЕ ДНИ
-      data.days_rem_cal = Math.floor(data.days_num_cal/7);
+      data.days_rem_cal = data.days_rem; // Неважно, берём рабочие дни или календарные, кол-во четвергов от этого не меняется
+//      data.days_rem_cal = Math.floor(data.days_num_cal/7);
       data.month_power_max =  data.day_power_max * (data.days_num_cal - data.days_rem_cal) +  (data.days_rem_cal * data.day_power_max*0.25);
 
       // Расчётное кол-во дней без учёта рем дней
@@ -657,7 +691,7 @@ router.post('/save_sd34_form_part', function(req, res, next) {
 
 });
 //
-// Обновление записи в sd_form
+// Обновление записи в таблице sd_form
 //
 router.post('/save_sd34_form_num', function(req, res, next) {
   var form_rf = req.body.form_rf;

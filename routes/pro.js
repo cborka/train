@@ -425,11 +425,17 @@ router.get('/get_form_names', function(req, res, next) {
 //
 router.get('/plans', function(req, res, next) {
   db.any(
-    "SELECT plan_id, plan_name " +
+    "SELECT plan_id, plan_name, CAST(date_begin AS VARCHAR) AS dtb, CAST(date_end AS VARCHAR) AS dte" +
     " FROM plan_list " +
     " WHERE plan_id > 1 " +
     " ORDER BY plan_name")
     .then(function (data) {
+
+//      for (var i = 0; i < data.length; i++) {
+//        data[i].dtb = data[i].date_begin.toISOString().slice(0, 10);
+//        data[i].dte = data[i].date_end.toISOString().slice(0, 10);
+//      }
+
       res.render('pro/plans', {data: data}); // Показ формы
     })
     .catch(function (error) {
@@ -441,7 +447,7 @@ router.get('/plans', function(req, res, next) {
 // Добавить новый ПЛАН
 //
 router.get('/plan_addnew', function(req, res, next) {
-  db.one("SELECT 0 AS plan_id, '' AS plan_name ")
+  db.one("SELECT 0 AS plan_id, '' AS plan_name, CAST(CURRENT_DATE AS varchar) AS dtb, CAST(CURRENT_DATE+30 AS varchar) AS dte ")
     .then(function (data) {
       res.render('pro/plan', data);
     })
@@ -456,7 +462,7 @@ router.get('/plan_addnew', function(req, res, next) {
 router.get('/plan/:plan_id', function(req, res, next) {
   var plan_id = req.params.plan_id;
   db.one(
-    "SELECT plan_id, plan_name " +
+    "SELECT plan_id, plan_name, CAST(date_begin AS VARCHAR) AS dtb, CAST(date_end AS VARCHAR) AS dte " +
     " FROM plan_list " +
     " WHERE plan_id = $1", plan_id)
     .then(function (data) {
@@ -472,13 +478,17 @@ router.get('/plan/:plan_id', function(req, res, next) {
 router.post('/plan_update', function(req, res, next) {
   var plan_id = req.body.plan_id;
   var plan_name = req.body.plan_name;
+  var dtb = req.body.dtb;
+  var dte = req.body.dte;
   if (plan_id > 0 ) {
 //  Обновление
     db.none(
       "UPDATE plan_list " +
-      "SET plan_name=$1 " +
-      "WHERE plan_id=$2",
-      [plan_name, plan_id])
+      "SET plan_name=$1, " +
+      "    date_begin=$2, " +
+      "    date_end=$3 " +
+      "WHERE plan_id=$4",
+      [plan_name, dtb, dte, plan_id])
       .then (function () {
         res.redirect('/pro/plans');
       })
@@ -489,9 +499,9 @@ router.post('/plan_update', function(req, res, next) {
   else {
 //  Добавление
     db.none(
-      "INSERT INTO plan_list (plan_name) " +
-      "VALUES ($1)",
-      [plan_name])
+      "INSERT INTO plan_list (plan_name, date_begin, date_end) " +
+      "VALUES ($1, $2, $3)",
+      [plan_name, dtb, dte])
       .then (function (data) {
         res.redirect('/pro/plans');
 

@@ -68,7 +68,7 @@
                 {{data.day_power_max}}</td>
         </tr>
         <tr>
-            <td class="list"><b>Мощность за месяц:</b> Текущая | Максимальная (с учётом рем. дней) (<b>{{data.days_rem}}</b>)</td>
+            <td class="list"><b>Мощность за месяц:</b> Текущая | Максимальная (с учётом <b>{{data.days_rem}}</b> рем. дней {{data.dw}})</td>
             <td class="list"> </td>
             <td class="list right green" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
                 {{data.month_power}}</td>
@@ -125,6 +125,7 @@
     </table>
 </div>
 <br>
+
 <div id="hint" ></div>
 <div id="erro" ></div>
 

@@ -4,12 +4,16 @@
         <tr>
             <td class="list"><b>Id</b></td>
             <td class="list"><b>Название</b></td>
+            <td class="list"><b>Дата начала</b></td>
+            <td class="list"><b>Дата конца</b></td>
             <td class="list">Кнопки</td>
         </tr>
         {{#each data}}
             <tr>
                 <td class="list">{{plan_id}}</td>
                 <td class="list">{{plan_name}}</td>
+                <td class="list">{{dtb}}</td>
+                <td class="list">{{dte}}</td>
                 <td class="list">
                     <button type="button" onclick="edit_plan({{plan_id}})">Изменить</button>
                     <button type="button" onclick="delete_plan({{plan_id}},'{{plan_name}}')">Удалить</button>
@@ -22,7 +26,6 @@
 <br>
 <div id="hint" ></div>
 <div id="erro" ></div>
-
 
 <script>
 

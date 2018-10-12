@@ -25,6 +25,14 @@
             <td><input id="workers_num" type="number" size="7" step="0.01" name="workers_num" value={{workers_num}} ></td>
         </tr>
         <tr>
+            <td><label>Дата начала ГГГГ-ММ-ДД:</label></td>
+            <td><input id="dtb" type="text" pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}' name="dtb" value="{{dtb}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Дата окончания ГГГГ-ММ-ДД:</label></td>
+            <td><input id="dte" type="text" pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}' name="dte" value="{{dte}}" ></td>
+        </tr>
+        <tr>
             <td></td>
             <td>
                 <button type="submit" >Сохранить</button>
