@@ -38,6 +38,12 @@
 11. Посчитать кол-во четвергов за период времени.
 
 
+======================= SQL ==========================================
+
+UPDATE user_rights ur
+  SET menu_delimiter = (SELECT menu_delimiter FROM user_rights ur2 WHERE user_rf = 9 AND ur.right_name = ur2.right_name)
+WHERE ur.user_rf = 11
+
 ======================================================================
 
 
