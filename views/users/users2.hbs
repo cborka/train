@@ -1,0 +1,48 @@
+<h1>Список пользователей 2</h1>
+<div>
+    <table class="list">
+    <tr>
+        <td class="list"><b>Id</b></td>
+        <td class="list"><b>Логин</b></td>
+        <td class="list"><b>ФИО</b></td>
+        <td class="list"><b>Группа</b></td>
+        <td class="list">Кнопки</td>
+    </tr>
+    {{#each data}}
+        <tr>
+            <td class="list">{{user_id}}</td>
+            <td class="list">{{user_name}}</td>
+            <td class="list">{{fullname}}</td>
+            <td class="list">{{group_name}}</td>
+            <td class="list">
+                <button type="button" onclick="edit_user({{user_id}})">Изменить</button>
+                <button type="button" onclick="delete_user({{user_id}},'{{user_name}}')">Удалить</button>
+            </td>
+        </tr>
+    {{/each}}
+    </table>
+</div>
+<a href="/users/user_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_user(user_id, user_name) {
+
+        var result = confirm("Удалить, "+user_name+"?");
+        if (result) {
+            location.href = '/users/user_delete/'+user_id;
+//            window.open('/pro/sd_delete/'+sd_id);
+        }
+        else
+            erro("Оставляю "+user_name+"!");
+    }
+
+    function edit_user(user_id) {
+        location.href = '/users/user/'+user_id;
+    }
+
+</script>

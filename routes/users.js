@@ -330,4 +330,253 @@ router.get('/right/delete/:id/:right_name', function(req, res, next) {
 });
 
 
+//======================= ПОЛЬЗОВАТЕЛИ === USERS ===============================
+
+//
+// Показать список ПОЛЬЗОВАТЕЛЕЙ
+//
+router.get('/users', function(req, res, next) {
+  db.any(
+    "SELECT ul.user_id, ul.user_name, ul.fullname, ul.email, ul.password, ul.added_at, ul.group_rf, grp.user_name AS group_name, ul.phone, ul.notes " +
+    " FROM user_list ul LEFT JOIN user_list grp ON ul.group_rf = grp.user_id" +
+    " WHERE ul.user_id > 0" +
+    " ORDER BY ul.user_name")
+    .then(function (data) {
+      res.render('users/users2', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить нового ПОЛЬЗОВАТЕЛЯ
+//
+router.get('/user_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS user_id, '' AS user_name, 1 AS group_rf, Гость' AS group_name, '' AS fullname, '' AS email, '' AS phone, '' AS notes, '123' AS password ")
+    .then(function (data) {
+      res.render('users/user2', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ПОЛЬЗОВАТЕЛЯ
+//
+router.get('/user/:user_id', function(req, res, next) {
+  var user_id = req.params.user_id;
+  db.one(
+    "SELECT ul.user_id, ul.user_name, ul.fullname, ul.email, ul.password, ul.added_at, ul.group_rf, grp.user_name AS group_name, ul.phone, ul.notes " +
+    " FROM user_list ul LEFT JOIN user_list grp ON ul.group_rf = grp.user_id" +
+    " WHERE ul.user_id = $1", user_id)
+    .then(function (data) {
+      res.render('users/user2', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Добавление и корректировка ПОЛЬЗОВАТЕЛЯ
+//
+router.post('/user_update', function(req, res, next) {
+  var user_id = req.body.user_id;
+  var user_name = req.body.user_name;
+  var group_name = req.body.group_name;
+  var fullname = req.body.fullname;
+  var email = req.body.email;
+  var password = req.body.password;
+  var group_rf = req.body.group_rf;
+  var phone = req.body.phone;
+  var notes = req.body.notes;
+  if (user_id > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE user_list " +
+      "SET user_name=$1, group_rf=(SELECT user_id FROM user_list WHERE user_name = $2), fullname=$3, email=$4, " +
+      "  phone=$5, notes=$6 " +
+      "WHERE user_id=$7",
+      [user_name, group_name, fullname, email, phone, notes, user_id])
+      .then (function () {
+        res.redirect('/users/users');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO user_list (user_name, group_rf, fullname, email, password, phone, notes) " +
+      "VALUES ($1, (SELECT user_id FROM user_list WHERE user_name = $2), $3, $4, $5, $6, $7)",
+      [user_name, group_name, fullname, email, password, phone, notes])
+      .then (function (data) {
+        res.redirect('/users/users');
+
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+// Удалить ПОЛЬЗОВАТЕЛЯ
+router.get('/user_delete/:user_id', function(req, res, next) {
+  var user_id = req.params.user_id;
+  db.none("DELETE FROM user_list WHERE userid=$1", user_id)
+    .then(function () {
+      res.redirect('/users/users'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Сформировать и возвратить список ПОЛЬЗОВАТЕЛЕЙ для выбора
+//
+router.get('/get_user_names', function(req, res, next) {
+  db.any("SELECT user_name FROM user_list ORDER BY 1 ")
+    .then (function (data) {
+      var result = '';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].user_name+'">'+data[i].user_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+//======================= ПРАВА ПОЛЬЗОВАТЕЛЕЙ === USER RIGHTS ===============================
+
+//
+// Показать список ПРАВ
+//
+router.get('/rights', function(req, res, next) {
+  db.any(
+    "SELECT right_id, right_name, pre_url, url, post_url, url_attributes, notes, right_group " +
+    " FROM right_list " +
+    " WHERE right_id > 1 " +
+    " ORDER BY right_group, right_name")
+    .then(function (data) {
+      res.render('users/rights', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новое ПРАВО
+//
+router.get('/right_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS right_id, '' AS right_name, '/home' AS url ")
+    .then(function (data) {
+      res.render('users/right', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ПРАВО
+//
+router.get('/right/:right_id', function(req, res, next) {
+  var right_id = req.params.right_id;
+  db.one(
+    "SELECT right_id, right_name, pre_url, url, post_url, url_attributes, notes, right_group  " +
+    " FROM right_list " +
+    " WHERE right_id = $1", right_id)
+    .then(function (data) {
+      res.render('users/right', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Добавление и корректировка ПЛАНА
+//
+router.post('/right_update', function(req, res, next) {
+  var right_id = req.body.right_id;
+  var right_name = req.body.right_name;
+  var pre_url = req.body.pre_url;
+  var url = req.body.url;
+  var post_url = req.body.post_url;
+  var url_attributes = req.body.url_attributes;
+  var notes = req.body.notes;
+  var right_group = req.body.right_group;
+  if (right_id > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE right_list " +
+      "SET right_name=$1, " +
+      "    pre_url=$2, " +
+      "    url=$3, " +
+      "    post_url=$4, " +
+      "    url_attributes=$5, " +
+      "    notes=$6, " +
+      "    right_group=$7 " +
+      "WHERE right_id=$8",
+      [right_name, pre_url, url, post_url, url_attributes, notes, right_group, right_id])
+      .then (function () {
+        res.redirect('/users/rights');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO right_list (right_name, pre_url, url, post_url, url_attributes, notes, right_group) " +
+      "VALUES ($1, $2, $3, $4, $5, $6)",
+      [right_name, pre_url, url, post_url, url_attributes, notes, right_group])
+      .then (function (data) {
+        res.redirect('/users/rights');
+
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить ПРАВО
+router.get('/right_delete/:right_id', function(req, res, next) {
+  var right_id = req.params.right_id;
+  db.none("DELETE FROM right_list WHERE right_id=$1", right_id)
+    .then(function () {
+      res.redirect('/users/rights'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Сформировать и возвратить список ПРАВ для выбора
+//
+router.get('/get_right_names', function(req, res, next) {
+  db.any("SELECT right_name FROM right_list ORDER BY 1 ")
+    .then (function (data) {
+      var result = '';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].right_name+'">'+data[i].right_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+
+
 module.exports = router;

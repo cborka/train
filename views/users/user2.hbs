@@ -1,0 +1,75 @@
+<h1>Добавление и корректировка пользователей</h1>
+<form name="user2" action="/users/user_update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="user_id" name="user_id" readonly value="{{user_id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Логин:</label></td>
+            <td><input id="user_name" type="text" name="user_name" value="{{user_name}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Группа:</label></td>
+            <td>
+
+                <select width="100%" size="1" name='group_name' id='group_name' value="{{group_name}}"></select>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Полное имя:</label></td>
+            <td><input id="fullname" type="text" name="fullname" value="{{fullname}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Почта:</label></td>
+            <td><input id="email" type="text" name="email" value="{{email}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Пароль:</label></td>
+            <td><input id="password" type="text" name="password" value="{{password}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Телефон:</label></td>
+            <td><input id="phone" type="text" name="phone" value="{{phone}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Заметки:</label></td>
+            <td><input id="notes" type="text" name="notes" value="{{notes}}" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+                <button type="button" onclick="go_back()">Не сохранять</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Назад к списку
+    function go_back() {
+        location.href = '/users/users';
+    }
+
+    // Изготовить список подразделений для выбора
+    var set_group_names = function (reply)
+    {
+        document.getElementById("group_name").innerHTML = reply;
+        document.getElementById("group_name").value = '{{group_name}}';
+    }
+    function get_group_names()
+    {
+        doQuery ("/users/get_user_names", set_group_names);
+    }
+    get_group_names();
+
+</script>

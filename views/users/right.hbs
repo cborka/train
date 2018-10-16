@@ -1,0 +1,55 @@
+<h1>Добавление и корректировка пользователей</h1>
+<form name="right" action="/users/right_update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="right_id" name="right_id" readonly value="{{right_id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Название права:</label></td>
+            <td><input id="right_name" type="text" name="right_name" value="{{right_name}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Группа:</label></td>
+            <td><input id="right_group" type="text" name="right_group" value="{{right_group}}" ></td>
+        </tr>
+        <tr>
+            <td><label>pre_url:</label></td>
+            <td><input id="pre_url" type="text" name="pre_url" value="{{pre_url}}" ></td>
+        </tr>
+        <tr>
+            <td><label>url:</label></td>
+            <td><input id="url" type="text" name="url" value="{{url}}" ></td>
+        </tr>
+        <tr>
+            <td><label>post_url:</label></td>
+            <td><input id="post_url" type="text" name="post_url" value="{{post_url}}" ></td>
+        </tr>
+        <tr>
+            <td><label>url_attributes:</label></td>
+            <td><input id="url_attributes" type="text" name="url_attributes" value="{{url_attributes}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Заметки:</label></td>
+            <td><input id="notes" type="text" name="notes" value="{{notes}}" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+                <button type="button" onclick="history.go(-1)">Не сохранять</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+</script>

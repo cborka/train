@@ -1,0 +1,55 @@
+<h1>Список ПРАВ пользователей</h1>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Id</b></td>
+            <td class="list"><b>Группа</b></td>
+            <td class="list"><b>Название</b></td>
+            <td class="list"><b>pre_url</b></td>
+            <td class="list"><b>url</b></td>
+            <td class="list"><b>post_url</b></td>
+            <td class="list"><b>url_attributes</b></td>
+            <td class="list"><b>Заметки</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{right_id}}</td>
+                <td class="list">{{right_group}}</td>
+                <td class="list">{{right_name}}</td>
+                <td class="list">{{pre_url}}</td>
+                <td class="list">{{url}}</td>
+                <td class="list">{{post_url}}</td>
+                <td class="list">{{url_attributes}}</td>
+                <td class="list">{{notes}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_right({{right_id}})">Изменить</button>
+                    <button type="button" onclick="delete_right({{right_id}},'{{right_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/users/right_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_user(right_id, right_name) {
+
+        var result = confirm("Удалить, "+right_name+"?");
+        if (result) {
+            location.href = '/users/right_delete/'+right_id;
+        }
+        else
+            erro("Оставляю "+right_name+"!");
+    }
+
+    function edit_right(right_id) {
+        location.href = '/users/right/'+right_id;
+    }
+
+</script>
