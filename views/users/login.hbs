@@ -2,7 +2,7 @@
 <form name="userlogin" action="/users/login" method="POST">
     <table class="form">
         <tr>
-            <td><label>Login:</label></td>
+            <td><label>Имя (логин):</label></td>
             <td><input id="login" type="text" name="login" value="{{login}}" onchange="check_data()">{{login}}</td>
         </tr>
         <tr>
@@ -51,7 +51,7 @@
 
         if (userlogin.login.value == "")
         {
-            info("Поле 'Login' не заполнено");
+            info("Поле 'Имя (логин)' не заполнено");
             return false;
         }
         if (userlogin.password.value == "")

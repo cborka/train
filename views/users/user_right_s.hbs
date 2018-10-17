@@ -1,0 +1,48 @@
+<h1>Наборы прав пользователей</h1>
+<div><p>Наборы прав пользователей. Группа и порядковый номер права нужны для формирования меню пользователя.<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Пользователь</b></td>
+            <td class="list"><b>Право</b></td>
+            <td class="list"><b>Группа</b></td>
+            <td class="list"><b>Порядковый номер</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{user_name}}</td>
+                <td class="list">{{right_name}}</td>
+                <td class="list">{{right_group}}</td>
+                <td class="list">{{right_order}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_user_right({{user_rf}}, {{right_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_user_right({{user_rf}},{{right_rf}},'{{user_name}}','{{right_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/users/user_right_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_user_right(user_rf, right_rf, user_name, right_name) {
+
+        var result = confirm("Удалить "+user_name+'/'+right_name+ " ?");
+        if (result) {
+            location.href = '/users/user_right_delete/'+user_rf+'/'+right_rf;
+        }
+        else
+            erro("Оставляю "+user_name+'/'+right_name+" !");
+    }
+
+    function edit_user_right(user_rf, right_rf) {
+        location.href = '/users/user_right/'+user_rf+'/'+right_rf;
+    }
+
+</script>

@@ -1,0 +1,69 @@
+<h1>Пользователь-Право</h1>
+<p>Право пользователя. Группа и порядковый номер права нужны для формирования меню пользователя.<br></p>
+<form action="/users/user_right/update" method="POST" >
+    <table class="form">
+        <tr>
+            <td><label>Пользователь:</label></td>
+            <td><select width="100%" size="1" name='user_name' id='user_name' value="{{user_name}}"></select>
+                <input id="user_rf" type="text" name="user_rf" readonly value={{user_rf}} hidden >
+                <input id="old_user_rf" type="text" name="old_user_rf" readonly value={{user_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Право:</label></td>
+            <td>
+                <select width="100%" size="1" name='right_name' id='right_name' value="{{right_name}}"></select>
+                <input id="old_right_rf" type="text" name="old_right_rf" readonly value={{right_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Группа:</label></td>
+            <td><input id="right_group" type="text" name="right_group" value={{right_group}} ></td>
+        </tr>
+        <tr>
+            <td><label>Порядковый номер в группе:</label></td>
+            <td><input id="right_order" type="text" name="right_order" value={{right_order}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список пользователей для выбора
+    var set_user_names = function (reply)
+    {
+        document.getElementById("user_name").innerHTML = reply;
+        document.getElementById("user_name").value = '{{user_name}}';
+    }
+    function get_user_names()
+    {
+        doQuery ("/users/get_user_names", set_user_names);
+    }
+
+    // Изготовить список прав для выбора
+    var set_right_names = function (reply)
+    {
+        document.getElementById("right_name").innerHTML = reply;
+        document.getElementById("right_name").value = '{{right_name}}';
+    }
+    function get_right_names()
+    {
+        doQuery ("/users/get_right_names", set_right_names);
+    }
+    get_user_names();
+    get_right_names();
+
+</script>

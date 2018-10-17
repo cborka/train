@@ -8,13 +8,13 @@ var db = require("../db");
 
 /* GET users list */
 router.get('/', function(req, res, next) {
-  res.redirect('/users/all/');
+//  res.redirect('/users/all/');
 //  res.send('Строка подключения к БД: '+process.env.PG_CONNECT);
 });
 
 /*
 ** Показать пользователя из БД
-*/
+* /
 router.get('/select/:id', function(req, res, next) {
   var id = req.params.id; // получаем id
   db.one("SELECT id, login, phone FROM users WHERE id=$1", id)
@@ -26,10 +26,10 @@ router.get('/select/:id', function(req, res, next) {
 //      res.send("код ошибки: "+error.code+"<br> получено: "+error.received+"<br> запрос: "+error.query);
     });
 });
-
+*/
 /*
 ** Добавить пользователя в БД
-*/
+* /
 router.get('/addnew', function(req, res, next) {
   db.one("SELECT 0 AS id, '' AS login, '' AS phone")
     .then(function (data) {
@@ -39,10 +39,10 @@ router.get('/addnew', function(req, res, next) {
       res.send(error);
     });
 });
-
+*/
 /*
 ** Удалить пользователя из БД
-*/
+* /
 router.get('/delete/:id', function(req, res, next) {
   var id = req.params.id; // получаем id
   db.none("DELETE FROM users WHERE id=$1", id)
@@ -53,10 +53,11 @@ router.get('/delete/:id', function(req, res, next) {
       res.send(error);
     });
 });
-
+*/
 //
 // Добавление пользователя, корректировка данных пользователя
 //
+/*
 router.post('/update', function(req, res, next) {
   var id = req.body.id;
   var login = req.body.login;
@@ -83,7 +84,7 @@ router.post('/update', function(req, res, next) {
       });
   }
 });
-
+*/
 //
 // Показать список пользователей
 //
@@ -101,14 +102,15 @@ router.get('/all', function(req, res, next) {
 // Регистрация пользователя
 //
 router.get('/reg', function(req, res, next) {
-  res.render('users/reg', {id: "0"});
+  res.render('users/reg', {user_id: "0"});
 });
 router.post('/reg', function(req, res, next) {
   var login = req.body.login;
   var password = req.body.password;
   var fullname = req.body.fullname;
 //  res.send("pass="+password+"("+md5(password)+"), login="+login+", fullname="+ fullname);
-  db.one("INSERT INTO users (login, password, fullname) VALUES ($1, $2, $3) RETURNING id;", [login, md5(password), fullname])
+  db.one("INSERT INTO user_list (user_name, group_rf, fullname, email, password, phone) VALUES ($1, 1, $2, $1, $3, $1) RETURNING user_id;",
+    [login, fullname, md5(password)])
     .then (function (data) {
       res.redirect('/users/login?login='+login);
     })
@@ -125,8 +127,7 @@ router.get('/login', function(req, res, next) {
   var login = req.params.login;
   res.render('users/login', {login: login});
 });
-
-// Настраиваем сессию
+// и настраиваем сессию
 router.post('/login', function(req, res, next) {
   var login = req.body.login;
   var password = req.body.password;
@@ -135,9 +136,10 @@ router.post('/login', function(req, res, next) {
   req.session.password = md5(password);
   req.session.login = login;
 
-  db.one("SELECT id, fullname FROM users WHERE login = $1 and password = $2", [login, md5(password)])
+  db.one("SELECT user_id, group_rf, fullname FROM user_list WHERE user_name = $1 and password = $2", [login, md5(password)])
     .then (function (data) {
-      req.session.uid = data.id;
+      req.session.uid = data.user_id;
+      req.session.gid = data.group_rf;
       req.session.fullname = data.fullname;
 
       res.redirect('/');
@@ -170,7 +172,7 @@ router.get('/logout', function(req, res, next) {
 //
 router.post('/isLoginFree', function(req, res, next) {
   var login = req.body.login;
-  db.one("SELECT count(*) AS cnt FROM users WHERE login = $1", login)
+  db.one("SELECT count(*) AS cnt FROM user_list WHERE user_name = $1", login)
     .then (function (data) {
       res.send(data.cnt);
     })
@@ -185,7 +187,7 @@ router.post('/isLoginFree', function(req, res, next) {
 router.post('/isValidUser', function(req, res, next) {
   var login = req.body.login;
   var password = req.body.password;
-  db.one("SELECT count(*) AS cnt FROM users WHERE login = $1 and password = $2", [login, md5(password)])
+  db.one("SELECT count(*) AS cnt FROM user_list WHERE user_name = $1 AND password = $2", [login, md5(password)])
     .then (function (data) {
       res.send(data.cnt);
     })
@@ -208,16 +210,18 @@ router.get('/get_main_menu', function(req, res, next) {
     return;
   }
 
+  var gid = req.session.gid;
+
   db.any(
-    "SELECT right_name, url, menu_delimiter " +
-      "FROM user_rights " +
-      "WHERE user_rf = $1 AND menu_order > 0" +
-      "ORDER BY menu_order, right_name", id)
+    "SELECT ur.right_group, right_name, url, post_url " +
+      " FROM user_right ur LEFT JOIN right_list ON right_rf = right_id " +
+      " WHERE user_rf = $1 " +
+      " ORDER BY ur.right_group, ur.right_order, right_name ", gid)
     .then (function (data) {
         var result = 'Меню '+ req.session.login +
-          ':<br>  <a href="/" >Домой</a> | <a href="/users/logout">Выход</a> | ';
+          ':<br>  <a href="/" >Домой</a> | <a href="/users/logout">Выход</a> <br> ';
         for (var i = 0; i < data.length; i++) {
-          result = result + ' <a href="'+ data[i].url +'" >'+data[i].right_name + '</a> '+data[i].menu_delimiter;
+          result = result + ' <a href="'+ data[i].url +'" >'+data[i].right_name + '</a> '+data[i].post_url + '<br>';
         }
         res.send(result);
     })
@@ -226,7 +230,7 @@ router.get('/get_main_menu', function(req, res, next) {
     });
 
 });
-
+/*
 //
 // Показать список ПРАВ пользователей
 //
@@ -243,10 +247,10 @@ router.get('/rights/all', function(req, res, next) {
       res.send(error);
     });
 });
-
+*/
 /*
 ** Добавить новое ПРАВО пользователя
-*/
+* /
 router.get('/rights/addnew', function(req, res, next) {
   db.one("SELECT 0 AS id, '' AS login, '' AS right_name, '' AS url, '|' AS menu_delimiter, 0 AS menu_order ")
     .then(function (data) {
@@ -259,7 +263,7 @@ router.get('/rights/addnew', function(req, res, next) {
 
 /*
 ** Показать/обновить ПРАВО пользователя
-*/
+* /
 router.get('/rights/:id/:right_name', function(req, res, next) {
   var id = req.params.id;
   var right_name = req.params.right_name;
@@ -328,7 +332,7 @@ router.get('/right/delete/:id/:right_name', function(req, res, next) {
       res.send(error);
     });
 });
-
+*/
 
 //======================= ПОЛЬЗОВАТЕЛИ === USERS ===============================
 
@@ -575,6 +579,118 @@ router.get('/get_right_names', function(req, res, next) {
       res.send(error);
     });
 });
+
+
+//================ USER_RIGHT === НАБОРЫ ПРАВ ПОЛЬЗОВАТЕЛЕЙ =====================
+
+//
+// Показать список ПОЛЬЗОВАТЕЛЬ-ПРАВО
+//
+router.get('/user_right_s', function(req, res, next) {
+  db.any(
+    "SELECT user_rf, user_name, right_rf, right_name, ur.right_group, ur.right_order " +
+    " FROM ((user_right ur " +
+    "   LEFT JOIN user_list ul ON user_rf = user_id) " +
+    "   LEFT JOIN right_list rl ON right_rf = right_id) " +
+    " ORDER BY user_name, right_group, right_order, right_name ")
+    .then(function (data) {
+      res.render('users/user_right_s', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новый ПОЛЬЗОВАТЕЛЬ-ПРАВО
+//
+router.get('/user_right_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS user_rf, '' AS user_name, 0 AS right_rf, '' AS right_name, '' AS right_group, 1 AS right_order ")
+    .then(function (data) {
+      res.render('users/user_right', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ПОЛЬЗОВАТЕЛЬ-ПРАВО
+//
+router.get('/user_right/:user_rf/:right_rf', function(req, res, next) {
+  var user_rf = req.params.user_rf;
+  var right_rf = req.params.right_rf;
+  db.one(
+    "SELECT user_rf, user_name, right_rf, right_name, ur.right_group, ur.right_order " +
+    " FROM ((user_right ur " +
+    "   LEFT JOIN user_list ul ON user_rf = user_id) " +
+    "   LEFT JOIN right_list rl ON right_rf = right_id) " +
+    " WHERE user_rf = $1 AND right_rf = $2", [user_rf, right_rf])
+    .then(function (data) {
+      res.render('users/user_right', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавление и корректировка ПОЛЬЗОВАТЕЛЬ-ПРАВО
+//
+router.post('/user_right/update', function(req, res, next) {
+  var user_rf = req.body.user_rf;
+  var right_rf = req.body.right_rf;
+  var user_name = req.body.user_name;
+  var right_name = req.body.right_name;
+  var right_group = req.body.right_group;
+  var right_order = req.body.right_order;
+  var old_user_rf = req.body.old_user_rf;
+  var old_right_rf = req.body.old_right_rf;
+  if (user_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE user_right " +
+      "SET user_rf=(SELECT user_id FROM user_list WHERE user_name=$1), " +
+      "  right_rf=(SELECT right_id FROM right_list WHERE right_name=$2), " +
+      "  right_group=$3, " +
+      "  right_order=$4 " +
+      "WHERE user_rf=$5 AND right_rf=$6",
+      [user_name, right_name, right_group, right_order, old_user_rf, old_right_rf])
+      .then (function () {
+        res.redirect('/users/user_right_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO  user_right (user_rf, right_rf, right_group, right_order) " +
+      "VALUES ((SELECT user_id FROM user_list WHERE user_name=$1), (SELECT right_id FROM right_list WHERE right_name=$2), $3, $4)",
+      [user_name, right_name, right_group, right_order])
+      .then (function (data) {
+        res.redirect('/users/user_right_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить  ПОЛЬЗОВАТЕЛЬ-ПРАВО
+router.get('/user_right_delete/:user_rf/:right_rf', function(req, res, next) {
+  var user_rf = req.params.user_rf;
+  var right_rf = req.params.right_rf;
+  db.none("DELETE FROM user_right WHERE user_rf=$1 AND right_rf=$2", [user_rf, right_rf])
+    .then(function () {
+      res.redirect('/users/user_right_s'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
 
 
 
