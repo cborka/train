@@ -625,7 +625,7 @@ router.post('/right_update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO right_list (right_name, pre_url, url, post_url, url_attributes, notes, right_group) " +
-      "VALUES ($1, $2, $3, $4, $5, $6)",
+      " VALUES ($1, $2, $3, $4, $5, $6, $7)",
       [right_name, pre_url, url, post_url, url_attributes, notes, right_group])
       .then (function (data) {
         res.redirect('/users/rights');
