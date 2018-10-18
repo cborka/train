@@ -1,0 +1,101 @@
+<h1>Профиль пользователя</h1>
+<form name="profile" action="/users/profile_update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="user_id" name="user_id" readonly value="{{user_id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Логин:</label></td>
+            <td><input id="user_name" type="text" name="user_name" value="{{user_name}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Полное имя:</label></td>
+            <td><input id="fullname" type="text" name="fullname" value="{{fullname}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Почта:</label></td>
+            <td><input id="email" type="text" name="email" value="{{email}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Пароль:</label></td>
+            <td><input id="password" type="password" name="password" value=""  onchange="check_password()" ></td>
+        </tr>
+        <tr>
+            <td><label>Подтверждение пароля:</label></td>
+            <td><input id="password2" type="password" name="password2" value="" onchange="check_password()" ></td>
+            <td><button id="button_password" type="button" disabled onclick="save_password()">Сохранить пароль</button></td>
+        </tr>
+            <td><label>Телефон:</label></td>
+            <td><input id="phone" type="text" name="phone" value="{{phone}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Заметки:</label></td>
+            <td><input id="notes" type="text" name="notes" value="{{notes}}" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+                <button type="button" onclick="history.go(-1)">Не сохранять</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    function info(str)
+    {
+        document.getElementById("hint").innerHTML=str;
+    }
+
+    function check_password()
+    {
+        var btn = document.getElementById("button_password");
+        btn.disabled = true;
+
+        if (profile.password.value == "")
+        {
+            info("Пароль не заполнен");
+            return false;
+        }
+        if (profile.password.value != profile.password2.value)
+        {
+            info("Пароли не совпадают");
+            return false;
+        }
+
+        info("");
+        btn.disabled = false;
+
+        return true;
+    }
+
+    let save_password_reply = function (reply)
+    {
+
+        if (reply == "0") {
+            info("Пароль сохранён!");
+        }
+        else
+            info("ошибка: "+reply);
+    }
+
+    function save_password()
+    {
+        doQuery ("/users/save_password", save_password_reply,
+                "&password=" + encodeURIComponent(profile.password.value)+
+                "&user_id=" + {{user_id}}
+        );
+    }
+
+
+</script>

@@ -136,7 +136,10 @@ router.post('/login', function(req, res, next) {
   req.session.password = md5(password);
   req.session.login = login;
 
-  db.one("SELECT user_id, group_rf, fullname FROM user_list WHERE user_name = $1 and password = $2", [login, md5(password)])
+  db.one("SELECT user_id, group_rf, fullname " +
+    " FROM user_list " +
+    " WHERE user_name = $1 " +
+    "   AND (password = $2 OR password = $3) ", [login, md5(password), password])
     .then (function (data) {
       req.session.uid = data.user_id;
       req.session.gid = data.group_rf;
@@ -160,7 +163,70 @@ router.get('/home', function(req, res, next) {
 //  res.send('Здравствуй, пользователь №'+ id);
 });
 
-// Выход
+//
+// ПРОФИЛЬ пользователя
+//
+router.get('/profile', function(req, res, next) {
+
+  if (req.session.login == undefined)
+    res.redirect('/');
+
+  var user_id = req.session.uid;
+  db.one(
+    "SELECT ul.user_id, ul.user_name, ul.fullname, ul.email, ul.added_at, ul.group_rf, grp.user_name AS group_name, ul.phone, ul.notes " +
+    " FROM user_list ul LEFT JOIN user_list grp ON ul.group_rf = grp.user_id" +
+    " WHERE ul.user_id = $1", user_id)
+    .then(function (data) {
+      res.render('users/profile', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+  });
+//
+// Сохранить ПРОФИЛЬ пользователя
+//
+router.post('/profile_update', function(req, res, next) {
+  var user_id = req.body.user_id;
+  var user_name = req.body.user_name;
+  var fullname = req.body.fullname;
+  var email = req.body.email;
+  var phone = req.body.phone;
+  var notes = req.body.notes;
+  db.none(
+      "UPDATE user_list " +
+      " SET user_name=$1, fullname=$2, email=$3, phone=$4, notes=$5 " +
+      " WHERE user_id=$6",
+      [user_name, fullname, email, phone, notes, user_id])
+    .then (function () {
+        res.redirect('/users/home');
+    })
+    .catch(function (error) {
+        res.send(error);
+    });
+});
+
+//
+// Сохранить ПАРОЛЬ
+//
+router.post('/save_password', function(req, res, next) {
+  var user_id = req.body.user_id;
+  var password = req.body.password;
+  db.none(
+    "UPDATE user_list " +
+    " SET password=$1 " +
+    " WHERE user_id=$2",
+    [md5(password), user_id])
+    .then (function () {
+      res.send("0");
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+// Выход из системы
 router.get('/logout', function(req, res, next) {
   req.session.destroy(function(err) {
     res.redirect('/');
@@ -187,7 +253,10 @@ router.post('/isLoginFree', function(req, res, next) {
 router.post('/isValidUser', function(req, res, next) {
   var login = req.body.login;
   var password = req.body.password;
-  db.one("SELECT count(*) AS cnt FROM user_list WHERE user_name = $1 AND password = $2", [login, md5(password)])
+  db.one("SELECT count(*) AS cnt " +
+    " FROM user_list " +
+    " WHERE user_name = $1 " +
+    "   AND (password = $2 OR password = $3) ", [login, md5(password), password])
     .then (function (data) {
       res.send(data.cnt);
     })
@@ -197,7 +266,7 @@ router.post('/isValidUser', function(req, res, next) {
 });
 
 //
-// Сформировать и возвратить меню пользователя на основе имеющихся у него ПРАВ
+// Сформировать и возвратить МЕНЮ ПОЛЬЗОВАТЕЛЯ на основе имеющихся у него ПРАВ
 //
 router.get('/get_main_menu', function(req, res, next) {
   var id = req.session.uid;
@@ -210,19 +279,32 @@ router.get('/get_main_menu', function(req, res, next) {
     return;
   }
 
-  var gid = req.session.gid;
+  var gid = req.session.gid; // Группа пользователя
+  var uid = req.session.uid; // Пользователь
+  var guest = 1;             // Гость
 
   db.any(
-    "SELECT ur.right_group, right_name, url, post_url " +
+    "SELECT DISTINCT ur.right_group, ur.right_order, right_name, pre_url, url, url_attributes, post_url " +
       " FROM user_right ur LEFT JOIN right_list ON right_rf = right_id " +
-      " WHERE user_rf = $1 " +
-      " ORDER BY ur.right_group, ur.right_order, right_name ", gid)
+      " WHERE user_rf IN ($1, $2, $3) " +
+      " ORDER BY ur.right_group, ur.right_order, right_name ", [uid ,gid, guest])
     .then (function (data) {
         var result = 'Меню '+ req.session.login +
-          ':<br>  <a href="/" >Домой</a> | <a href="/users/logout">Выход</a> <br> ';
+          ':<br>  <a href="/" >Домой</a> <br> <a href="/users/logout">Выход</a> <br> <a href="/users/profile">Профиль</a>  <br> ';
+
+        var current_group = '';
         for (var i = 0; i < data.length; i++) {
-          result = result + ' <a href="'+ data[i].url +'" >'+data[i].right_name + '</a> '+data[i].post_url + '<br>';
+          if (i == 0 || data[i].right_group != current_group)  {
+            current_group = data[i].right_group;
+            result = result + '<br>'+ current_group + '<br>';
+          }
+
+          result = result +
+            data[i].pre_url +
+            ' <a href="'+ data[i].url +'" ' + data[i].url_attributes + '>'+ data[i].right_name + '</a> ' +
+            data[i].post_url + '<br>';
         }
+
         res.send(result);
     })
     .catch(function (error) {
@@ -404,7 +486,11 @@ router.post('/user_update', function(req, res, next) {
       "WHERE user_id=$7",
       [user_name, group_name, fullname, email, phone, notes, user_id])
       .then (function () {
-        res.redirect('/users/users');
+
+        if (user_id == req.session.uid)
+          res.redirect('/users/home');
+        else
+          res.redirect('/users/users');
       })
       .catch(function (error) {
         res.send(error);

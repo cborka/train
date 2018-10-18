@@ -40,7 +40,7 @@
             <td></td>
             <td>
                 <button type="submit" >Сохранить</button>
-                <button type="button" onclick="go_back()">Не сохранять</button>
+                <button type="button" onclick="history.go(-1)">Не сохранять</button>
             </td>
         </tr>
         <tr>
@@ -55,12 +55,7 @@
 
 <script>
 
-    // Назад к списку
-    function go_back() {
-        location.href = '/users/users';
-    }
-
-    // Изготовить список подразделений для выбора
+    // Изготовить список пользователей для выбора
     var set_group_names = function (reply)
     {
         document.getElementById("group_name").innerHTML = reply;
