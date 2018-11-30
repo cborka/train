@@ -1,0 +1,50 @@
+<h1>План - План</h1>
+<div><p>То, что запланировано сделать в данном месяце и сколько нужно делать каждый день.<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>План</b></td>
+            <td class="list"><b>Подразделение</b></td>
+            <td class="list"><b>Предмет</b></td>
+            <td class="list"><b>Кол-во на план</b></td>
+            <td class="list"><b>Кол-во на день</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{plan_name}}</td>
+                <td class="list">{{sd_name}}</td>
+                <td class="list">{{item_name}}</td>
+                <td class="list">{{num_plan}}</td>
+                <td class="list">{{num_day}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}},'{{plan_name}}','{{sd_name}}','{{item_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/plan2/plan_plan_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_plan_sd(plan_rf, sd_rf, item_rf, plan_name, sd_name, item_name) {
+
+        var result = confirm("Удалить "+plan_name+'/'+sd_name+'/'+item_name+ " ?");
+        if (result) {
+            location.href = '/plan2/plan_plan_delete/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+        }
+        else
+            erro("Оставляю "+plan_name+'/'+sd_name+'/'+item_name+" !");
+    }
+
+    function edit_plan_sd(plan_rf,sd_rf,item_rf) {
+        location.href = '/plan2/plan_plan/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+    }
+
+</script>

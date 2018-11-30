@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мои ссылки</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta charset="UTF-8">
+
+    <link rel='stylesheet' href='/css/style.css' />
+
+</head>
+<body>
+
+<H1>Просто тестовая страничка</H1>
+
+<p>
+    Просто параграф.
+</p>
+
+<input type="file" id="your-files" multiple>
+<br>...<br>
+<div id="ajax1" >1</div>
+
+<button type="button" onclick="showfn()">Показать имена файлов</button>
+<script>
+
+  function showfn() {
+//     alert(document.getElementById("your-files").value);
+    alert('xxx');
+  }
+//  const fs = require('fs');
+
+//  alert(fs.readFileSync('c:\\cborka\\fcl.txt'));
+
+  function ShowFolderList(path) {
+    var fso = new ActiveXObject("Scripting.FileSystemObject");
+//    var folder = fso.GetFolder(path);
+//    var subFlds = new Enumerator(folder.SubFolders);
+
+    var s = "x";
+//    for (; !subFlds.atEnd(); subFlds.moveNext()) {
+//      s += subFlds.item()
+//      s += "<br />";
+//    }
+    return (s);
+  }
+  sss = ShowFolderList('c:\\');
+  alert(sss);
+
+  alert('123');
+
+</script>
+
+
+
+
+
+
+
+</body>

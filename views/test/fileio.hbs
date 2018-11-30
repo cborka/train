@@ -1,0 +1,30 @@
+<h1> fileio test </h1>>
+
+<input type="file" id="your-files" multiple>
+...<br>
+<div id="ajax1" >1</div>
+<br>...<br>
+
+<script>
+
+//alert('c:cborkafcl.txt');
+//alert(fs.readFileSync('c:\\cborka\\fcl.txt'));
+
+
+// ajax1
+var set_1 = function (reply)
+{
+  document.getElementById("ajax1").innerHTML = reply;
+}
+
+function get_1()
+{
+  doQuery ("/test/files", set_1);
+}
+
+get_1();
+
+</script>
+
+
+{{dir}}

@@ -12,8 +12,11 @@ var db = require("./db");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var commonRouter = require('./routes/common');
 var proRouter = require('./routes/pro');
 var planRouter = require('./routes/plan');
+var plan2Router = require('./routes/plan2');
+var testRouter = require('./routes/test');
 
 var app = express();
 
@@ -40,8 +43,11 @@ app.disable('x-powered-by');
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/common', commonRouter);
 app.use('/pro', proRouter);
 app.use('/plan', planRouter);
+app.use('/plan2', plan2Router);
+app.use('/test', testRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

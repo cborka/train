@@ -1,0 +1,86 @@
+<form action="/plan2/plan_plan/update" method="POST" >
+    <table class="form">
+        <tr>
+            <td><label>План-месяц:</label></td>
+            <td><select width="100%" size="1" name='plan_name' id='plan_name' value="{{plan_name}}"></select>
+                <input id="plan_rf" type="text" name="plan_rf" readonly value={{plan_rf}} hidden >
+                <input id="old_plan_rf" type="text" name="old_plan_rf" readonly value={{plan_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Подразделение:</label></td>
+            <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}"></select>
+                <input id="sd_rf" type="text" name="sd_rf" readonly value={{sd_rf}} hidden >
+                <input id="old_sd_rf" type="text" name="old_sd_rf" readonly value={{sd_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Предмет:</label></td>
+            <td>
+                <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}"></select>
+                <input id="old_item_rf" type="text" name="old_item_rf" readonly value={{item_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Количество на план:</label></td>
+            <td><input id="num_plan" type="number" name="num_plan" value={{num_plan}} ></td>
+        </tr>
+        <tr>
+            <td><label>Количество на день:</label></td>
+            <td><input id="num_day" type="number" name="num_day" value={{num_day}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список планов для выбора
+    var set_plan_names = function (reply)
+    {
+        document.getElementById("plan_name").innerHTML = reply;
+        document.getElementById("plan_name").value = '{{plan_name}}';
+    }
+    function get_plan_names()
+    {
+        doQuery ("/common/get_spr_names/Планы", set_plan_names);
+    }
+
+    // Изготовить список подразделений для выбора
+    var set_sd_names = function (reply)
+    {
+        document.getElementById("sd_name").innerHTML = reply;
+        document.getElementById("sd_name").value = '{{sd_name}}';
+    }
+    function get_sd_names()
+    {
+        doQuery ("/common/get_spr_names/Подразделения", set_sd_names);
+    }
+
+    // Изготовить список ЖБИ для выбора
+    var set_item_names = function (reply)
+    {
+        document.getElementById("item_name").innerHTML = reply;
+        document.getElementById("item_name").value = '{{item_name}}';
+    }
+    function get_item_names()
+    {
+        doQuery ("/common/get_spr_names/ЖБИ", set_item_names);
+    }
+    get_plan_names();
+    get_sd_names();
+    get_item_names();
+
+</script>

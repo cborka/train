@@ -274,7 +274,7 @@ router.get('/get_main_menu', function(req, res, next) {
   // Пользователь не зашёл в систему, начальное меню
   if (id == "" || id == undefined)
   {
-    var result = '<a href="/" >Главная</a> | <a href="/users/login">Вход</a> | <a href="/users/reg">Регистрация</a>';
+    var result = '<a href="/" >Главная</a> <br> <a href="/users/login">Вход</a> <br> <a href="/users/reg">Регистрация</a><br>';
     res.send(result);
     return;
   }

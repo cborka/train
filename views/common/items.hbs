@@ -1,0 +1,52 @@
+<h1>Общий список всего</h1>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Id</b></td>
+            <td class="list"><b>Справочник</b></td>
+            <td class="list"><b>Входит в группау</b></td>
+            <td class="list"><b>Название</b></td>
+            <td class="list"><b>Флаги</b></td>
+            <td class="list"><b>Путь</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{item_id}}</td>
+                <td class="list">{{spr_name}}</td>
+                <td class="list">{{group_name}}</td>
+                <td class="list">{{item_name}}</td>
+                <td class="list">{{item_flag}}</td>
+                <td class="list">{{path_name}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_item({{item_id}})">Изменить</button>
+                    <button type="button" onclick="delete_item({{item_id}},'{{item_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/common/item_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_item(item_id, item_name) {
+
+        var result = confirm("Удалить, "+item_id+"?");
+        if (result) {
+            location.href = '/common/item_delete/'+item_id;
+//            window.open('/common/item_delete/'+item_id);
+        }
+        else
+            erro("Оставляю "+item_name+"!");
+    }
+
+    function edit_item(item_id) {
+        location.href = '/common/item/'+item_id;
+    }
+
+</script>

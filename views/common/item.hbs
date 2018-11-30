@@ -1,0 +1,77 @@
+<h1>Добавление и корректировка чего-то</h1>
+<form name="item" action="/common/item_update" method="POST">
+    <table class="form">
+        <tr>
+            <td><label>Id:</label></td>
+            <td><input  id="item_id" name="item_id" readonly value="{{item_id}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Название:</label></td>
+            <td><input id="item_name" type="text" name="item_name" value="{{item_name}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Входит в:</label></td>
+            <td>
+
+                <select width="100%" size="1" name='group_name' id='group_name' value="{{group_name}}"></select>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Справочник:</label></td>
+            <td>
+
+                <select width="100%" size="1" name='spr_name' id='spr_name' value="{{spr_name}}"></select>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Флаги:</label></td>
+            <td><input id="item_flag" type="number" name="item_flag" value="{{item_flag}}" ></td>
+        </tr>
+        <tr>
+            <td><label>Путь:</label></td>
+            <td><input id="path_name" type="text" name="path_name" value="{{path_name}}" ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список групп для выбора
+    var set_group_names = function (reply)
+    {
+        document.getElementById("group_name").innerHTML = reply;
+        document.getElementById("group_name").value = '{{group_name}}';
+    }
+    function get_group_names()
+    {
+        doQuery ("/common/get_group_names", set_group_names);
+    }
+
+    // Изготовить список справочников для выбора
+    var set_spr_names = function (reply)
+    {
+        document.getElementById("spr_name").innerHTML = reply;
+        document.getElementById("spr_name").value = '{{spr_name}}';
+    }
+    function get_spr_names()
+    {
+        doQuery ("/common/get_sprs", set_spr_names);
+    }
+
+    get_group_names();
+    get_spr_names();
+
+</script>
