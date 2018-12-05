@@ -1,0 +1,50 @@
+<h1>СКЛАД</h1>
+<div><p>То, что есть в наличии на складах.<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Склад</b></td>
+            <td class="list"><b>Предмет</b></td>
+            <td class="list"><b>Кол-во фактическое</b></td>
+            <td class="list"><b>Кол-во максимальное</b></td>
+            <td class="list"><b>Свободных мест</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{sklad_name}}</td>
+                <td class="list">{{item_name}}</td>
+                <td class="list">{{num_fact}}</td>
+                <td class="list">{{num_max}}</td>
+                <td class="list">{{num_free}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_sklad({{sklad_rf}},{{item_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_sklad({{sklad_rf}},{{item_rf}},'{{sklad_name}}','{{item_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/plan2/sklad_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_sklad(sklad_rf, item_rf, sklad_name, item_name) {
+
+        var result = confirm("Удалить "+sklad_name+'/'+item_name+ " ?");
+        if (result) {
+            location.href = '/plan2/sklad_delete/'+sklad_rf+'/'+item_rf;
+        }
+        else
+            erro("Оставляю "+sklad_name+'/'+item_name+" !");
+    }
+
+    function edit_sklad(sklad_rf, item_rf) {
+        location.href = '/plan2/sklad/'+sklad_rf+'/'+item_rf;
+    }
+
+</script>

@@ -18,16 +18,17 @@
             <td><label>Предмет:</label></td>
             <td>
                 <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}"></select>
+                <input id="item_rf" type="text" name="item_rf" readonly value={{item_rf}} hidden >
                 <input id="old_item_rf" type="text" name="old_item_rf" readonly value={{item_rf}} hidden >
             </td>
         </tr>
         <tr>
             <td><label>Количество на план:</label></td>
-            <td><input id="num_plan" type="number" name="num_plan" value={{num_plan}} ></td>
+            <td><input id="num_plan" type="number" name="num_plan" step="0.001" value={{num_plan}} ></td>
         </tr>
         <tr>
             <td><label>Количество на день:</label></td>
-            <td><input id="num_day" type="number" name="num_day" value={{num_day}} ></td>
+            <td><input id="num_day" type="number" name="num_day" step="0.001" value={{num_day}} ></td>
         </tr>
         <tr>
             <td></td>

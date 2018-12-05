@@ -1,0 +1,72 @@
+<form action="/plan2/sklad/update" method="POST" >
+    <table class="form">
+        <tr>
+            <td><label>Склад:</label></td>
+            <td><select width="100%" size="1" name='sklad_name' id='sklad_name' value="{{sklad_name}}"></select>
+                <input id="sklad_rf" type="text" name="sklad_rf" readonly value={{sklad_rf}} hidden >
+                <input id="old_sklad_rf" type="text" name="old_sklad_rf" readonly value={{sklad_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Предмет:</label></td>
+            <td>
+                <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}"></select>
+                <input id="item_rf" type="text" name="item_rf" readonly value={{item_rf}} hidden >
+                <input id="old_item_rf" type="text" name="old_item_rf" readonly value={{item_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Количество фатическое:</label></td>
+            <td><input id="num_fact" type="number" name="num_fact" step="0.001" value={{num_fact}} ></td>
+        </tr>
+        <tr>
+            <td><label>Количество максимальное:</label></td>
+            <td><input id="num_max" type="number" name="num_max" step="0.001" value={{num_max}} ></td>
+        </tr>
+        <tr>
+            <td><label>Свободных мест:</label></td>
+            <td><input id="num_free" type="number" name="num_free" readonly value={{num_free}} ></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список складов (подразделений) для выбора
+    var set_sd_names = function (reply)
+    {
+        document.getElementById("sklad_name").innerHTML = reply;
+        document.getElementById("sklad_name").value = '{{sklad_name}}';
+    }
+    function get_sd_names()
+    {
+        doQuery ("/common/get_spr_names/Подразделения", set_sd_names);
+    }
+
+    // Изготовить список предметов для выбора
+    var set_item_names = function (reply)
+    {
+        document.getElementById("item_name").innerHTML = reply;
+        document.getElementById("item_name").value = '{{item_name}}';
+    }
+    function get_item_names()
+    {
+        doQuery ("/common/get_spr_names/ЖБИ", set_item_names);
+    }
+    get_sd_names();
+    get_item_names();
+
+</script>

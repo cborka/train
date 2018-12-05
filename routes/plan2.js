@@ -66,6 +66,10 @@ router.get('/plan_plan/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
     "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
     " WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
     .then(function (data) {
+
+      data.num_plan = Math.round(data.num_plan * 1000) / 1000
+      data.num_day = Math.round(data.num_day * 1000) / 1000
+
       res.render('plan2/plan_plan', data);
     })
     .catch(function (error) {
@@ -194,6 +198,9 @@ router.get('/plan_fact/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
     "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
     " WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
     .then(function (data) {
+
+      data.num_fact = Math.round(data.num_fact * 1000) / 1000
+
       res.render('plan2/plan_fact', data);
     })
     .catch(function (error) {
@@ -265,7 +272,129 @@ router.get('/plan_fact_delete/:plan_rf/:sd_rf/:item_rf', function(req, res, next
 });
 
 
+//====== СКЛАД ======= таблица sklad =============
 
+//
+// Показать список СКЛАД
+//
+router.get('/sklad_s', function(req, res, next) {
+  db.any(
+    "SELECT pp.sklad_rf, sklad.item_name AS sklad_name, " +
+    "    pp.item_rf, item.item_name AS item_name, num_fact, num_max, (num_max - num_fact) AS num_free " +
+    " FROM ((sklad pp " +
+    "   LEFT JOIN item_list sklad ON sklad_rf = sklad.item_id) " +
+    "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+    " ORDER BY sklad.item_name, item.item_name ")
+    .then(function (data) {
+
+      for (var i = 0; i < data.length; i++) {
+        data[i].num_fact = Math.round(data[i].num_fact * 1000) / 1000
+        data[i].num_max = Math.round(data[i].num_max * 1000) / 1000
+        data[i].num_free = Math.round(data[i].num_free * 1000) / 1000
+      }
+
+      res.render('plan2/sklad_s', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новую строку в СКЛАД
+//sklad_addnew
+router.get('/sklad_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS sklad_rf, '' AS sklad_name, 0 AS item_rf, '' AS item_name, 0 AS num_fact, 0 AS num_max, 0 AS num_free ")
+    .then(function (data) {
+      res.render('plan2/sklad', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить строку СКЛАДа
+//
+router.get('/sklad/:sklad_rf/:item_rf', function(req, res, next) {
+  var sklad_rf = req.params.sklad_rf;
+  var item_rf = req.params.item_rf;
+  db.one(
+    "SELECT pp.sklad_rf, sklad.item_name AS sklad_name, " +
+    "    pp.item_rf, item.item_name AS item_name, num_fact, num_max, (num_max - num_fact) AS num_free " +
+    " FROM ((sklad pp " +
+    "   LEFT JOIN item_list sklad ON sklad_rf = sklad.item_id) " +
+    "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+    " WHERE sklad_rf=$1 AND item_rf=$2", [sklad_rf, item_rf])
+    .then(function (data) {
+
+      data.num_fact = Math.round(data.num_fact * 1000) / 1000
+      data.num_max = Math.round(data.num_max * 1000) / 1000
+      data.num_free = Math.round(data.num_free * 1000) / 1000
+
+      res.render('plan2/sklad', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавление и корректировка строки СКЛАДа
+//
+router.post('/sklad/update', function(req, res, next) {
+  var sklad_rf = req.body.sklad_rf;
+  var item_rf = req.body.item_rf;
+  var sklad_name = req.body.sklad_name;
+  var item_name = req.body.item_name;
+  var num_fact = req.body.num_fact;
+  var num_max = req.body.num_max;
+  var old_sklad_rf = req.body.old_sklad_rf;
+  var old_item_rf = req.body.old_item_rf;
+  if (item_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE sklad " +
+      "SET sklad_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "    item_rf=(SELECT item_id FROM item_list WHERE item_name=$2), " +
+      "    num_fact=$3, num_max=$4 " +
+      "WHERE sklad_rf=$5 AND item_rf=$6",
+      [sklad_name, item_name, num_fact, num_max, old_sklad_rf, old_item_rf])
+      .then (function () {
+        res.redirect('/plan2/sklad_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO sklad (sklad_rf, item_rf, num_fact, num_max) " +
+      "VALUES ((SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "  (SELECT item_id FROM item_list WHERE item_name=$2), $3, $4)",
+      [sklad_name, item_name, num_fact, num_max])
+      .then (function (data) {
+        res.redirect('/plan2/sklad_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить предмет со СКЛАДа
+router.get('/sklad_delete/:sklad_rf/:item_rf', function(req, res, next) {
+  var sklad_rf = req.params.sklad_rf;
+  var item_rf = req.params.item_rf;
+  db.none("DELETE FROM sklad WHERE sklad_rf=$1 AND item_rf=$3", [sklad_rf, item_rf])
+    .then(function () {
+      res.redirect('/plan2/sklad_s'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
 
 module.exports = router;

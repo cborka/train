@@ -18,6 +18,7 @@
             <td><label>Предмет:</label></td>
             <td>
                 <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}"></select>
+                <input id="item_rf" type="text" name="item_rf" readonly value={{item_rf}} hidden >
                 <input id="old_item_rf" type="text" name="old_item_rf" readonly value={{item_rf}} hidden >
             </td>
         </tr>
@@ -27,7 +28,7 @@
         </tr>
         <tr>
             <td><label>Количество сделано:</label></td>
-            <td><input id="num_fact" type="number" name="num_fact" value={{num_fact}} ></td>
+            <td><input id="num_fact" type="number" name="num_fact" step="0.001" value={{num_fact}} ></td>
         </tr>
         <tr>
             <td></td>
