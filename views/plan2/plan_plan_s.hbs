@@ -1,4 +1,7 @@
-<h1>План - План</h1>
+План-План: <a href="/plan2/plan_plan_s/ЖБИ" > ЖБИ </a> |
+<a href="/plan2/plan_plan_s/Арматура" > Арматура </a> |
+<a href="/plan2/plan_plan_s/Бетон" > Бетон </a>
+<h1>План - План {{data.spr_name}}</h1>
 <div><p>То, что запланировано сделать в данном месяце и сколько нужно делать каждый день.<br>
 </p></div>
 <div>
@@ -26,7 +29,7 @@
         {{/each}}
     </table>
 </div>
-<a href="/plan2/plan_plan_addnew" title="Добавить" > Добавить </a>
+<a href="/plan2/plan_plan_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
 <br>
 <div id="hint" ></div>
 <div id="erro" ></div>
@@ -37,14 +40,14 @@
 
         var result = confirm("Удалить "+plan_name+'/'+sd_name+'/'+item_name+ " ?");
         if (result) {
-            location.href = '/plan2/plan_plan_delete/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+            location.href = '/plan2/plan_plan_delete/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
         }
         else
             erro("Оставляю "+plan_name+'/'+sd_name+'/'+item_name+" !");
     }
 
     function edit_plan_sd(plan_rf,sd_rf,item_rf) {
-        location.href = '/plan2/plan_plan/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+        location.href = '/plan2/plan_plan/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
     }
 
 </script>

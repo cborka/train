@@ -14,7 +14,26 @@ var db = require("../db");
 //
 // Показать список ПЛАН
 //
-router.get('/plan_plan_s', function(req, res, next) {
+router.get('/plan_plan_s/:spr_name', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var where_clause = '';
+
+  db.any(
+    "SELECT item_id " +
+    "  FROM item_list " +
+    "  WHERE  item_name = $1 ", [spr_name])
+    .then(function (data) {
+
+      if (data.length == 1) {
+        where_clause = " WHERE item.spr_rf = " + data[0].item_id;
+      }
+      else
+        where_clause = " WHERE item.spr_rf = 0 ";
+
+//      res.render('plan2/sklad_s', {data: data}); // Показ формы
+
+    })
+    .then(function () {
   db.any(
     "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
     "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, num_plan, num_day " +
@@ -22,6 +41,7 @@ router.get('/plan_plan_s', function(req, res, next) {
     "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
     "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
     "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+    where_clause +
     " ORDER BY plan.item_name, sd.item_name, item.item_name ")
     .then(function (data) {
 
@@ -30,19 +50,25 @@ router.get('/plan_plan_s', function(req, res, next) {
         data[i].num_day = Math.round(data[i].num_day * 1000) / 1000
       }
 
+      data.spr_name = spr_name;
       res.render('plan2/plan_plan_s', {data: data}); // Показ формы
     })
     .catch(function (error) {
       res.send(error);
     });
+  });
 });
 
 //
 // Добавить новую строку в ПЛАН
 //
-router.get('/plan_plan_addnew', function(req, res, next) {
+router.get('/plan_plan_addnew/:spr_name', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name, 0 AS item_rf, '' AS item_name, 0 AS num_plan, 0 AS num_day ")
     .then(function (data) {
+
+      data.spr_name = spr_name;
+
       res.render('plan2/plan_plan', data);
     })
     .catch(function (error) {
@@ -53,7 +79,8 @@ router.get('/plan_plan_addnew', function(req, res, next) {
 //
 // Показать/обновить строку ПЛАНа
 //
-router.get('/plan_plan/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+router.get('/plan_plan/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
   var item_rf = req.params.item_rf;
@@ -70,6 +97,8 @@ router.get('/plan_plan/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
       data.num_plan = Math.round(data.num_plan * 1000) / 1000
       data.num_day = Math.round(data.num_day * 1000) / 1000
 
+      data.spr_name = spr_name;
+
       res.render('plan2/plan_plan', data);
     })
     .catch(function (error) {
@@ -81,6 +110,7 @@ router.get('/plan_plan/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
 // Добавление и корректировка строки ПЛАНа
 //
 router.post('/plan_plan/update', function(req, res, next) {
+  var spr_name = req.body.spr_name;
   var plan_rf = req.body.plan_rf;
   var sd_rf = req.body.sd_rf;
   var item_rf = req.body.item_rf;
@@ -103,7 +133,7 @@ router.post('/plan_plan/update', function(req, res, next) {
       "WHERE plan_rf=$6 AND sd_rf=$7 AND item_rf=$8",
       [plan_name, sd_name, item_name, num_plan, num_day, old_plan_rf, old_sd_rf, old_item_rf])
       .then (function () {
-        res.redirect('/plan2/plan_plan_s');
+        res.redirect('/plan2/plan_plan_s/'+spr_name);
       })
       .catch(function (error) {
         res.send(error);
@@ -118,7 +148,7 @@ router.post('/plan_plan/update', function(req, res, next) {
       "  (SELECT item_id FROM item_list WHERE item_name=$3), $4, $5)",
       [plan_name, sd_name, item_name, num_plan, num_day])
       .then (function (data) {
-        res.redirect('/plan2/plan_plan_s');
+        res.redirect('/plan2/plan_plan_s/'+spr_name);
       })
       .catch(function (error) {
         res.send(error);
@@ -127,13 +157,14 @@ router.post('/plan_plan/update', function(req, res, next) {
 });
 
 // Удалить  ПЛАН ПРОИЗВОДСТВА ЖБИ
-router.get('/plan_plan_delete/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+router.get('/plan_plan_delete/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
   var item_rf = req.params.item_rf;
   db.none("DELETE FROM plan_plan WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
     .then(function () {
-      res.redirect('/plan2/plan_plan_s'); // Обновление списка
+      res.redirect('/plan2/plan_plan_s/'+spr_name); // Обновление списка
     })
     .catch(function (error) {
       res.send(error);
@@ -147,7 +178,26 @@ router.get('/plan_plan_delete/:plan_rf/:sd_rf/:item_rf', function(req, res, next
 //
 // Показать список ФАКТ
 //
-router.get('/plan_fact_s', function(req, res, next) {
+router.get('/plan_fact_s/:spr_name', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var where_clause = '';
+
+  db.any(
+    "SELECT item_id " +
+    "  FROM item_list " +
+    "  WHERE  item_name = $1 ", [spr_name])
+    .then(function (data) {
+
+      if (data.length == 1) {
+        where_clause = " WHERE item.spr_rf = " + data[0].item_id;
+      }
+      else
+        where_clause = " WHERE item.spr_rf = 0 ";
+
+//      res.render('plan2/sklad_s', {data: data}); // Показ формы
+
+    })
+    .then(function () {
   db.any(
     "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
     "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, CAST(pp.dt AS VARCHAR) AS dt, num_fact " +
@@ -155,6 +205,7 @@ router.get('/plan_fact_s', function(req, res, next) {
     "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
     "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
     "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+    where_clause +
     " ORDER BY plan.item_name, sd.item_name, item.item_name ")
     .then(function (data) {
 
@@ -162,19 +213,26 @@ router.get('/plan_fact_s', function(req, res, next) {
         data[i].num_fact = Math.round(data[i].num_fact * 1000) / 1000
       }
 
+      data.spr_name = spr_name;
+
       res.render('plan2/plan_fact_s', {data: data}); // Показ формы
     })
     .catch(function (error) {
       res.send(error);
     });
+  });
 });
 
 //
 // Добавить новую строку в ФАКТ
 //
-router.get('/plan_fact_addnew', function(req, res, next) {
+router.get('/plan_fact_addnew/:spr_name', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name, 0 AS item_rf, '' AS item_name, CAST(CURRENT_TIMESTAMP AS VARCHAR) AS dt, 0 AS num_fact ")
     .then(function (data) {
+
+      data.spr_name = spr_name;
+
       res.render('plan2/plan_fact', data);
     })
     .catch(function (error) {
@@ -185,7 +243,8 @@ router.get('/plan_fact_addnew', function(req, res, next) {
 //
 // Показать/обновить строку ФАКТа
 //
-router.get('/plan_fact/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+router.get('/plan_fact/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
   var item_rf = req.params.item_rf;
@@ -201,6 +260,8 @@ router.get('/plan_fact/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
 
       data.num_fact = Math.round(data.num_fact * 1000) / 1000
 
+      data.spr_name = spr_name;
+
       res.render('plan2/plan_fact', data);
     })
     .catch(function (error) {
@@ -212,6 +273,7 @@ router.get('/plan_fact/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
 // Добавление и корректировка строки ФАКТа
 //
 router.post('/plan_fact/update', function(req, res, next) {
+  var spr_name = req.body.spr_name;
   var plan_rf = req.body.plan_rf;
   var sd_rf = req.body.sd_rf;
   var item_rf = req.body.item_rf;
@@ -234,7 +296,7 @@ router.post('/plan_fact/update', function(req, res, next) {
       "WHERE plan_rf=$6 AND sd_rf=$7 AND item_rf=$8",
       [plan_name, sd_name, item_name, dt, num_fact, old_plan_rf, old_sd_rf, old_item_rf])
       .then (function () {
-        res.redirect('/plan2/plan_fact_s');
+        res.redirect('/plan2/plan_fact_s/'+spr_name);
       })
       .catch(function (error) {
         res.send(error);
@@ -249,7 +311,7 @@ router.post('/plan_fact/update', function(req, res, next) {
       "  (SELECT item_id FROM item_list WHERE item_name=$3), $4, $5)",
       [plan_name, sd_name, item_name, dt, num_fact])
       .then (function (data) {
-        res.redirect('/plan2/plan_fact_s');
+        res.redirect('/plan2/plan_fact_s/'+spr_name);
       })
       .catch(function (error) {
         res.send(error);
@@ -258,13 +320,14 @@ router.post('/plan_fact/update', function(req, res, next) {
 });
 
 // Удалить ФАКТ
-router.get('/plan_fact_delete/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+router.get('/plan_fact_delete/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
   var item_rf = req.params.item_rf;
   db.none("DELETE FROM plan_fact WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
     .then(function () {
-      res.redirect('/plan2/plan_fact_s'); // Обновление списка
+      res.redirect('/plan2/plan_fact_s/'+spr_name); // Обновление списка
     })
     .catch(function (error) {
       res.send(error);
@@ -278,12 +341,41 @@ router.get('/plan_fact_delete/:plan_rf/:sd_rf/:item_rf', function(req, res, next
 // Показать список СКЛАД
 //
 router.get('/sklad_s', function(req, res, next) {
+
+  res.redirect('/plan2/sklad_s/all');
+
+});
+
+router.get('/sklad_s/:spr_name', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var where_clause = '';
+
+//  if (spr_name != '0')
+//    where_clause = " WHERE item.spr_rf = " + spr_name;
+
   db.any(
+    "SELECT item_id " +
+    "  FROM item_list " +
+    "  WHERE  item_name = $1 ", [spr_name])
+    .then(function (data) {
+
+      if (data.length == 1) {
+        where_clause = " WHERE item.spr_rf = " + data[0].item_id;
+      }
+      else
+        where_clause = " WHERE item.spr_rf = 0 ";
+
+//      res.render('plan2/sklad_s', {data: data}); // Показ формы
+
+    })
+    .then(function () {
+      db.any(
     "SELECT pp.sklad_rf, sklad.item_name AS sklad_name, " +
     "    pp.item_rf, item.item_name AS item_name, num_fact, num_max, (num_max - num_fact) AS num_free " +
     " FROM ((sklad pp " +
     "   LEFT JOIN item_list sklad ON sklad_rf = sklad.item_id) " +
     "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+      where_clause +
     " ORDER BY sklad.item_name, item.item_name ")
     .then(function (data) {
 
@@ -293,19 +385,27 @@ router.get('/sklad_s', function(req, res, next) {
         data[i].num_free = Math.round(data[i].num_free * 1000) / 1000
       }
 
+      data.spr_name = spr_name;
       res.render('plan2/sklad_s', {data: data}); // Показ формы
     })
     .catch(function (error) {
       res.send(error);
     });
+
+  });
+
 });
 
 //
 // Добавить новую строку в СКЛАД
 //sklad_addnew
-router.get('/sklad_addnew', function(req, res, next) {
+router.get('/sklad_addnew/:spr_name', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   db.one("SELECT 0 AS sklad_rf, '' AS sklad_name, 0 AS item_rf, '' AS item_name, 0 AS num_fact, 0 AS num_max, 0 AS num_free ")
     .then(function (data) {
+
+      data.spr_name = spr_name;
+
       res.render('plan2/sklad', data);
     })
     .catch(function (error) {
@@ -316,7 +416,8 @@ router.get('/sklad_addnew', function(req, res, next) {
 //
 // Показать/обновить строку СКЛАДа
 //
-router.get('/sklad/:sklad_rf/:item_rf', function(req, res, next) {
+router.get('/sklad/:spr_name/:sklad_rf/:item_rf', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   var sklad_rf = req.params.sklad_rf;
   var item_rf = req.params.item_rf;
   db.one(
@@ -332,6 +433,8 @@ router.get('/sklad/:sklad_rf/:item_rf', function(req, res, next) {
       data.num_max = Math.round(data.num_max * 1000) / 1000
       data.num_free = Math.round(data.num_free * 1000) / 1000
 
+      data.spr_name = spr_name;
+
       res.render('plan2/sklad', data);
     })
     .catch(function (error) {
@@ -343,6 +446,7 @@ router.get('/sklad/:sklad_rf/:item_rf', function(req, res, next) {
 // Добавление и корректировка строки СКЛАДа
 //
 router.post('/sklad/update', function(req, res, next) {
+  var spr_name = req.body.spr_name;
   var sklad_rf = req.body.sklad_rf;
   var item_rf = req.body.item_rf;
   var sklad_name = req.body.sklad_name;
@@ -361,7 +465,7 @@ router.post('/sklad/update', function(req, res, next) {
       "WHERE sklad_rf=$5 AND item_rf=$6",
       [sklad_name, item_name, num_fact, num_max, old_sklad_rf, old_item_rf])
       .then (function () {
-        res.redirect('/plan2/sklad_s');
+        res.redirect('/plan2/sklad_s/'+spr_name);
       })
       .catch(function (error) {
         res.send(error);
@@ -375,7 +479,7 @@ router.post('/sklad/update', function(req, res, next) {
       "  (SELECT item_id FROM item_list WHERE item_name=$2), $3, $4)",
       [sklad_name, item_name, num_fact, num_max])
       .then (function (data) {
-        res.redirect('/plan2/sklad_s');
+        res.redirect('/plan2/sklad_s/'+spr_name);
       })
       .catch(function (error) {
         res.send(error);
@@ -384,12 +488,13 @@ router.post('/sklad/update', function(req, res, next) {
 });
 
 // Удалить предмет со СКЛАДа
-router.get('/sklad_delete/:sklad_rf/:item_rf', function(req, res, next) {
+router.get('/sklad_delete/:spr_name/:sklad_rf/:item_rf', function(req, res, next) {
+  var spr_name = req.params.spr_name;
   var sklad_rf = req.params.sklad_rf;
   var item_rf = req.params.item_rf;
-  db.none("DELETE FROM sklad WHERE sklad_rf=$1 AND item_rf=$3", [sklad_rf, item_rf])
+  db.none("DELETE FROM sklad WHERE sklad_rf=$1 AND item_rf=$2", [sklad_rf, item_rf])
     .then(function () {
-      res.redirect('/plan2/sklad_s'); // Обновление списка
+      res.redirect('/plan2/sklad_s/'+spr_name); // Обновление списка
     })
     .catch(function (error) {
       res.send(error);

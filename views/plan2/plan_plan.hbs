@@ -20,6 +20,7 @@
                 <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}"></select>
                 <input id="item_rf" type="text" name="item_rf" readonly value={{item_rf}} hidden >
                 <input id="old_item_rf" type="text" name="old_item_rf" readonly value={{item_rf}} hidden >
+                <input id="spr_name" type="text" name="spr_name" readonly value={{spr_name}} hidden >
             </td>
         </tr>
         <tr>
@@ -70,7 +71,7 @@
         doQuery ("/common/get_spr_names/Подразделения", set_sd_names);
     }
 
-    // Изготовить список ЖБИ для выбора
+    // Изготовить список ПРЕДМЕТОВ для выбора
     var set_item_names = function (reply)
     {
         document.getElementById("item_name").innerHTML = reply;
@@ -78,7 +79,8 @@
     }
     function get_item_names()
     {
-        doQuery ("/common/get_spr_names/ЖБИ", set_item_names);
+//        doQuery ("/common/get_all_items", set_item_names);
+        doQuery ("/common/get_spr_names/{{spr_name}}", set_item_names);
     }
     get_plan_names();
     get_sd_names();

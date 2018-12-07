@@ -1,6 +1,11 @@
-<h1>СКЛАД</h1>
-<div><p>То, что есть в наличии на складах.<br>
-</p></div>
+Склады: <a href="/plan2/sklad_s/ЖБИ" > ЖБИ </a> |
+<a href="/plan2/sklad_s/Арматура" > Арматура </a> |
+<a href="/plan2/sklad_s/Бетон" > Бетон </a>
+<h1>СКЛАД {{data.spr_name}}</h1>
+<div>
+    <p>То, что есть в наличии на складах.<br>
+    </p>
+</div>
 <div>
     <table class="list">
         <tr>
@@ -26,7 +31,7 @@
         {{/each}}
     </table>
 </div>
-<a href="/plan2/sklad_addnew" title="Добавить" > Добавить </a>
+<a href="/plan2/sklad_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
 <br>
 <div id="hint" ></div>
 <div id="erro" ></div>
@@ -37,14 +42,14 @@
 
         var result = confirm("Удалить "+sklad_name+'/'+item_name+ " ?");
         if (result) {
-            location.href = '/plan2/sklad_delete/'+sklad_rf+'/'+item_rf;
+            location.href = '/plan2/sklad_delete/{{data.spr_name}}/'+sklad_rf+'/'+item_rf;
         }
         else
             erro("Оставляю "+sklad_name+'/'+item_name+" !");
     }
 
     function edit_sklad(sklad_rf, item_rf) {
-        location.href = '/plan2/sklad/'+sklad_rf+'/'+item_rf;
+        location.href = '/plan2/sklad/{{data.spr_name}}/'+sklad_rf+'/'+item_rf;
     }
 
 </script>

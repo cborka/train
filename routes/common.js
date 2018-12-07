@@ -153,7 +153,7 @@ router.get('/get_sprs', function(req, res, next) {
   db.any(
     "SELECT item_name " +
     "  FROM item_list " +
-    "  WHERE spr_rf = 3" +
+    "  WHERE (spr_rf = 3 OR item_id = 3)" +
     "  ORDER BY 1 ")
     .then (function (data) {
       var result = '';
@@ -193,6 +193,26 @@ router.get('/get_spr_names/:spr', function(req, res, next) {
 });
 
 
+//
+// Сформировать и возвратить весь список для выбора (кроме назавний справочников)
+//
+router.get('/get_all_items', function(req, res, next) {
+  db.any(
+    "SELECT item_name " +
+    "  FROM item_list " +
+    "  WHERE spr_rf != 3" +
+    "  ORDER BY 1 ")
+    .then (function (data) {
+      var result = '';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
 
 

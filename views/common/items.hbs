@@ -6,8 +6,8 @@
             <td class="list"><b>Справочник</b></td>
             <td class="list"><b>Входит в группу</b></td>
             <td class="list"><b>Название</b></td>
-            <td class="list"><b>Флаги</b></td>
-            <td class="list"><b>Путь</b></td>
+<!--            <td class="list"><b>Флаги</b></td>
+            <td class="list"><b>Путь</b></td> -->
             <td class="list">Кнопки</td>
         </tr>
         {{#each data}}
@@ -16,8 +16,8 @@
                 <td class="list">{{spr_name}}</td>
                 <td class="list">{{group_name}}</td>
                 <td class="list">{{item_name}}</td>
-                <td class="list">{{item_flag}}</td>
-                <td class="list">{{path_name}}</td>
+<!--                <td class="list">{ {item_flag}}</td>
+                <td class="list">{ {path_name}}</td>  -->
                 <td class="list">
                     <button type="button" onclick="edit_item({{item_id}})">Изменить</button>
                     <button type="button" onclick="delete_item({{item_id}},'{{item_name}}')">Удалить</button>

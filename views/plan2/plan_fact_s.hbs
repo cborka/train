@@ -1,4 +1,7 @@
-<h1>План - Факт</h1>
+План-План: <a href="/plan2/plan_fact_s/ЖБИ" > ЖБИ </a> |
+<a href="/plan2/plan_fact_s/Арматура" > Арматура </a> |
+<a href="/plan2/plan_fact_s/Бетон" > Бетон </a>
+<h1>План - Факт {{data.spr_name}}</h1>
 <div><p>То, что сделано в данном месяце.<br>
 </p></div>
 <div>
@@ -26,7 +29,7 @@
         {{/each}}
     </table>
 </div>
-<a href="/plan2/plan_fact_addnew" title="Добавить" > Добавить </a>
+<a href="/plan2/plan_fact_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
 <br>
 <div id="hint" ></div>
 <div id="erro" ></div>
@@ -37,14 +40,14 @@
 
         var result = confirm("Удалить "+plan_name+'/'+sd_name+'/'+item_name+ " ?");
         if (result) {
-            location.href = '/plan2/plan_fact_delete/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+            location.href = '/plan2/plan_fact_delete/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
         }
         else
             erro("Оставляю "+plan_name+'/'+sd_name+'/'+item_name+" !");
     }
 
     function edit_plan_fact(plan_rf,sd_rf,item_rf) {
-        location.href = '/plan2/plan_fact/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+        location.href = '/plan2/plan_fact/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
     }
 
 </script>
