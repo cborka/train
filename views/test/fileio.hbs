@@ -1,9 +1,26 @@
-<h1> fileio test </h1>>
+<h1> Тестирование работы с файлами </h1>
 
+<a href="/test/fileio" > fileio.hbs </a> |
+<a href="/test/files" > test/files </a> |
+<a href="http://10.0.0.33/test/files" > http://10.0.0.33/test/files </a> |
+<br><br>
+
+
+<h2> Тест выполнения функции через заданный интервал времени </h2>
+[<div id="dt" ></div>]
+
+
+<h2> Кнопка выбора файла </h2>
 <input type="file" id="your-files" multiple>
-...<br>
-<div id="ajax1" >1</div>
 <br>...<br>
+
+<h2> Результат выполнения процедуры ShowFolderList(path) </h2>
+[<div id="ajax1" ></div>]
+<br>...<br>
+
+<h2> Тест передачи параметров на эту страничку </h2>
+{{dir}}
+
 
 <script>
 
@@ -24,7 +41,25 @@ function get_1()
 
 get_1();
 
+//var d = new Date();
+
+function get_date() {
+
+    document.getElementById("dt").innerHTML = new Date().toString();
+}
+
+// начать повторы с интервалом 2 сек
+var timerId = setInterval(get_date, 2000);
+
+// через 10 сек остановить повторы
+setTimeout(function() {
+    clearInterval(timerId);
+}, 10000);
+
+//get_date();
+
+
+
 </script>
 
 
-{{dir}}
