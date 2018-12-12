@@ -1,0 +1,67 @@
+<h1> Импорт данных </h1>
+
+<h2> Список файлов </h2>
+<button type="button" onclick="get_filenames()">Получить имена файлов</button>
+<div id="filenames" ></div>
+<button type="button" onclick="load_files()">Загрузить данные из файлов</button>
+<div id="files" ></div>
+Процесс загрузки
+<div id="loads" ></div>
+
+
+<script>
+
+    //
+    // Получить имена файлов
+    //
+    var filenames = '';
+    var set_filenames = function (reply)
+    {
+        filenames = reply;
+        document.getElementById("filenames").innerHTML = filenames;
+    }
+    function get_filenames()
+    {
+        doQuery ("/import/1c8filenames", set_filenames);
+    }
+
+    //
+    // Загрузить данные из файлов
+    //
+    var filenames = '';
+    function load_files()
+    {
+        document.getElementById("loads").innerHTML = '';
+        document.getElementById("filenames").innerHTML = '';
+
+        // Получаем массив имён файлов
+        var files = filenames.split('\n<br>');
+
+        var ret = ' <table class="list">';
+        for (var i = 0; i < files.length; i++) {
+            ret = ret + '<tr><td>' + files[i] + '</td></tr>';
+            load_file(files[i]);
+        }
+        ret = ret +'</table>';
+
+        document.getElementById("files").innerHTML = ret;
+    }
+
+    //
+    // Загрузка одного файла
+    //
+    var load_file_done = function (reply)
+    {
+        document.getElementById("loads").innerHTML += reply;
+    }
+    function load_file(filename)
+    {
+      if(filename != '')
+        doQuery ("/import/load_file", load_file_done, '&filename=' + encodeURIComponent(filename));
+    }
+
+
+
+</script>
+
+
