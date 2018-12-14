@@ -93,13 +93,12 @@ router.post('/load_file', function(req, res, next) {
 //
 router.post('/load_fcrashod', function(req, res, next) {
   var filename = req.body.filename;
+  var gdata = {};
 //  var content = '';
 
     // Считываем содержание файла в память
-  fs.readFile(filename, function (err, logData) {
-    // Если возникла ошибка, мы кидаем исключение
-    // и программа заканчивается
-//    if (err) throw err;
+  fs.readFile(dir+'\\'+filename, function (err, logData) {
+
     if (err) {
       s = 'Ошибка чтения файла ' + filename;
       res.send('load_fcrashod: '+s+'<br>');
@@ -114,24 +113,46 @@ router.post('/load_fcrashod', function(req, res, next) {
     // Разбиваем текст на массив из строчек
     var lines = text.split('\n');
 
+    // Цикл по строкам
     for (var i = 0; i < lines.length; i++) {
-      var parts = lines[i].split('\t');
-      ret = ret + ', nm='+parts[0]+', v='+parts[1];
 
-      db.none(
-        "INSERT INTO fc_list (fc_name, fc_v, bet_v, fc_w, concrete_rf, ok, notes) " +
-        "VALUES ($1, $2, 0, 0, 1, '', '')",
-        [parts[0],parts[1]])
+      // Разбиваем строку на поля
+      var fields = lines[i].split('\t');
+
+      if (fields.length != 6)
+        ret = ret + ' плохая строка ['+ lines[i] + ']<br>';
+      else
+        ret = ret + 'name='+fields[0]+', dt='+fields[1]+', sklad='+fields[2]+', cust='+fields[3]+', fc='+fields[4]+', num='+fields[5]+ '<br>';
+
+      db.any(
+        "SELECT item_id FROM item_list WHERE item_name = 'Заказчики' AND spr_rf = 3")
         .then (function (data) {
-          //res.redirect('/pro/fcs');
+          if (data.length = 1)
+            gdata.spr_cust_rf = data[0].item_id;
+          else
+            gdata.spr_cust_rf = '0';
 
+          ret = ret + 'xИД справочника Заказчики =  ' + gdata.spr_cust_rf + '.<br>'
+          res.send(ret);
+
+        })
+        .then(function () {
+          db.one(
+            "SELECT SUM(pp.fc_num * sf.trk) AS trk_sum " +
+            " FROM (plan_fc_pro pp " +
+            "   LEFT JOIN sd_fc sf ON pp.fc_rf = sf.fc_rf) " )
+            .then(function (data) {
+              gdata.trk_sum = data.trk_sum;
+             })
         })
         .catch(function (error) {
           res.send(error);
         });
 
+      ret = ret + 'ИД справочника Заказчики =  ' + gdata.spr_cust_rf + '.<br>'
+
     }
-    res.send(ret);
+//    res.send(ret);
   });
 
 });
