@@ -28,7 +28,6 @@
     //
     // Загрузить данные из файлов
     //
-    var filenames = '';
     function load_files()
     {
         document.getElementById("loads").innerHTML = '';
@@ -40,15 +39,74 @@
         var ret = ' <table class="list">';
         for (var i = 0; i < files.length; i++) {
             ret = ret + '<tr><td>' + files[i] + '</td></tr>';
-            load_file(files[i]);
+            load_file2(files[i]);
         }
         ret = ret +'</table>';
 
         document.getElementById("files").innerHTML = ret;
     }
 
+
     //
     // Загрузка одного файла
+    //
+    function load_file2(filename)
+    {
+        document.getElementById("loads").innerHTML += filename + '<br>';
+
+        if(filename != '')
+            doQuery ("/import/get_data", load_data, '&filename=' + encodeURIComponent(filename));
+    }
+
+    var load_data = function (reply)
+    {
+      var  text = reply;
+
+      // Разбиваем текст на массив из строчек
+      var lines = text.split('\n');
+
+      // Цикл по строкам
+      for (var i = 0; i < lines.length; i++) {
+
+          // Разбиваем строку на поля
+          var fields = lines[i].split('\t');
+
+          if (fields.length != 6)
+          {
+            document.getElementById("loads").innerHTML += ' плохая строка [' + lines[i] + ']<br>';
+            continue;
+          }
+
+          document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
+          doQuery ("/import/load_string", load_string_reply,
+                  '&string_no=' + encodeURIComponent(i+1)+
+                  '&id1c=' + encodeURIComponent(fields[0].trim())+
+                  '&dt=' + encodeURIComponent(fields[1])+
+                  '&sklad_name=' + encodeURIComponent(fields[2].trim())+
+                  '&cust_name=' + encodeURIComponent(fields[3].trim())+
+                  '&fc_name=' + encodeURIComponent(fields[4].trim())+
+                  '&fc_num=' + encodeURIComponent(fields[5])
+          );
+
+      }
+
+      document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
+
+//        document.getElementById("loads").innerHTML += text+'<br>---<br>';
+    }
+
+    var load_string_reply = function (reply)
+    {
+        document.getElementById("loads").innerHTML += reply;
+    }
+
+
+
+
+
+
+    //
+    // Загрузка одного файла полностью на стороне сервера
     //
     var load_file_done = function (reply)
     {

@@ -62,7 +62,7 @@ router.get('/1c8filenames', function(req, res, next) {
 //      s = s + data[i] + '<br>'+ SEL(content) + '<br>';
       s = s + data[i] + '\n<br>';
       }
-      if (i > 15) break;
+ //     if (i > 35) break;
     }
 
     res.send(s);
@@ -88,6 +88,58 @@ router.post('/load_file', function(req, res, next) {
 
 });
 
+
+
+//
+// Вернуть содержимое файла
+//
+router.post('/get_data', function(req, res, next) {
+  var filename = req.body.filename;
+
+  // Считываем содержание файла в память
+  fs.readFile(dir+'\\'+filename, function (err, logData) {
+
+    if (err) {
+      s = 'Ошибка чтения файла ' + filename;
+      res.send('get_data: '+s+'<br>');
+      return;
+    }
+
+    // logData это объект типа Buffer, переводим в строку
+    var text = logData.toString();
+
+    res.send(text);
+  });
+});
+
+//
+// Загрузить строку файла fcprihod
+//
+router.post('/load_string', function(req, res, next) {
+  var string_no = req.body.string_no;
+  var id1c = req.body.id1c;
+  var dt = req.body.dt;
+  var sklad_name = req.body.sklad_name;
+  var cust_name = req.body.cust_name;
+  var fc_name = req.body.fc_name;
+  var fc_num = req.body.fc_num;
+
+  db.none(
+    "INSERT INTO fcrashod_1c(id1c, dt, sklad_name, cust_name, fc_name, fc_num, string_no) VALUES ($1, $2, $3, $4, $5, $6, $7) ",
+      [id1c, dt, sklad_name, cust_name, fc_name, fc_num, string_no] )
+    .then (function (data) {
+        res.send(string_no+','+id1c+','+dt+','+sklad_name+','+cust_name+','+fc_name+','+fc_num+' загружено<br>');
+
+    })
+    .catch(function (error) {
+       res.send(string_no+','+id1c+' не удалось загрузить, вероятно уже было загружено<br>');
+    });
+
+});
+
+
+
+
 //
 // Загрузить список ЖБИ из файла с разделителями
 //
@@ -96,7 +148,7 @@ router.post('/load_fcrashod', function(req, res, next) {
   var gdata = {};
 //  var content = '';
 
-    // Считываем содержание файла в память
+  // Считываем содержание файла в память
   fs.readFile(dir+'\\'+filename, function (err, logData) {
 
     if (err) {
@@ -120,54 +172,47 @@ router.post('/load_fcrashod', function(req, res, next) {
       var fields = lines[i].split('\t');
 
       if (fields.length != 6)
-        ret = ret + ' плохая строка ['+ lines[i] + ']<br>';
+      {
+        ret = ret + ' плохая строка [' + lines[i] + ']<br>';
+      }
       else
-        ret = ret + 'name='+fields[0]+', dt='+fields[1]+', sklad='+fields[2]+', cust='+fields[3]+', fc='+fields[4]+', num='+fields[5]+ '<br>';
+//       ret = ret + lines[i]+'<br>';
 
-      db.any(
-        "SELECT item_id FROM item_list WHERE item_name = 'Заказчики' AND spr_rf = 3")
-        .then (function (data) {
-          if (data.length = 1)
-            gdata.spr_cust_rf = data[0].item_id;
-          else
-            gdata.spr_cust_rf = '0';
+        db.one(
+          //     "SELECT '-ok-' AS ret " )
+//      "INSERT INTO public.test1(col1) VALUES ('"+lines[i]+"')")
+//      "INSERT INTO public.test1(col1) VALUES ($1)", [fields[0]+fields[1]+fields[2]+fields[3]+fields[4]+fields[5]])
+          "INSERT INTO public.test1(col1) VALUES ($7); SELECT ret FROM load_fcrashod($1, $2, $3, $4, $5, $6)", [fields[0],fields[1],fields[2],fields[3],fields[4],fields[5],lines[i]] )
+          .then (function (data) {
+            ret = ret +  data.ret + '<br>';
+//          ret = ret + ' i'+i;
+//          res.send(ret);
 
-          ret = ret + 'xИД справочника Заказчики =  ' + gdata.spr_cust_rf + '.<br>'
-          res.send(ret);
+          })
+          .catch(function (error) {
+//          res.send(error);
+            ret = ret + '3';
+//          res.send(ret);
 
-        })
-        .then(function () {
-          db.one(
-            "SELECT SUM(pp.fc_num * sf.trk) AS trk_sum " +
-            " FROM (plan_fc_pro pp " +
-            "   LEFT JOIN sd_fc sf ON pp.fc_rf = sf.fc_rf) " )
-            .then(function (data) {
-              gdata.trk_sum = data.trk_sum;
-             })
-        })
-        .catch(function (error) {
-          res.send(error);
-        });
+          });
 
-      ret = ret + 'ИД справочника Заказчики =  ' + gdata.spr_cust_rf + '.<br>'
-
+      //      ret = ret + 'ИД справочника Заказчики =  ' + gdata.spr_cust_rf + '.<br>'
     }
-//    res.send(ret);
+
+    db.one(
+      "SELECT count(*) AS ret FROM test1 " )
+      .then (function (data) {
+        ret = ret + 'count='+ data.ret+'<br>';
+        res.send(ret+'1<br>');
+      })
+      .catch(function (error) {
+//        res.send(ret+'3<br>');
+      });
+
+//    res.send(ret+'+++<br>');
   });
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
