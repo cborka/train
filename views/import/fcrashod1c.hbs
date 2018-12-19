@@ -1,0 +1,46 @@
+
+<h2>Вывоз ЖБ в штуках с начала месяца по заказчикам </h2>
+
+<select width="100%" size="1" name='cust_name' id='cust_name' value=" " onchange="show_cust_name()"></select>
+<button type="button" onclick="get_table()">Показать</button>
+
+<div id="divcust_name" ></div>
+<div id="table2" ></div>
+
+
+
+<script>
+
+    function show_cust_name()
+    {
+//        document.getElementById("divcust_name").innerHTML = document.getElementById("cust_name").value;
+        get_table();
+    }
+
+
+    // Запросить и показать таблицу
+    var set_table = function (reply)
+    {
+        document.getElementById("table2").innerHTML = reply;
+    }
+    function get_table()
+    {
+        doQuery ("/import/get_fcrashod_table", set_table, '&cust_name=' + encodeURIComponent(document.getElementById("cust_name").value));
+    }
+
+
+    // Изготовить список планов для выбора
+    var set_cust_names = function (reply)
+    {
+        document.getElementById("cust_name").innerHTML = reply;
+        document.getElementById("cust_name").value = ' ';
+    }
+    function get_cust_names()
+    {
+        doQuery ("/import/get_fcrashod_cust_names", set_cust_names);
+    }
+
+    // Изготовить список подразделений для выбора
+    get_cust_names();
+
+</script>

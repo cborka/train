@@ -4,6 +4,7 @@ var router = express.Router();
 var fs = require('fs');
 var db = require("../db");
 var dir = '\\\\10.0.0.10\\обменпризводство';
+//var archive_dir = '\\\\10.0.0.33\\Common\\x321\\loaded_files';
 
 //
 //  Импорт данных в базу данных из других программ
@@ -39,6 +40,67 @@ router.get('/from1c', function(req, res, next) {
 
 });
 
+//
+// Показать загруженный из 1С расход ЖБИ
+//
+router.get('/fcrashod1c', function(req, res, next) {
+
+  var data = { };
+
+  res.render('import/fcrashod1c', data);
+
+});
+//
+// Сформировать и возвратить список заказчиков из таблицы fcrashod1c
+//
+router.get('/get_fcrashod_cust_names', function(req, res, next) {
+  db.any(
+    "SELECT DISTINCT cust_name " +
+    "  FROM fcrashod_1c " +
+    "  ORDER BY 1 ")
+    .then (function (data) {
+      var result = ' <option value=""> </option>';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].cust_name+'">'+data[i].cust_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Вернуть содержимое файла
+//
+router.post('/get_fcrashod_table', function(req, res, next) {
+  var cust_name = req.body.cust_name;
+
+  db.any(
+    "SELECT fc_name, SUM(fc_num) AS fc_num " +
+    "  FROM fcrashod_1c " +
+    "  WHERE cust_name = $1 " +
+    "  GROUP BY fc_name " +
+    "  ORDER BY fc_name ", [cust_name])
+    .then (function (data) {
+
+      var result = ' <table class="list">';
+      for (var i = 0; i < data.length; i++) {
+        result = result + '<tr><td>' + data[i].fc_name + '</td>';
+        result = result + '<td>' + data[i].fc_num + '</td></tr>';
+      }
+      result = result +'</table>';
+
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+
+
+
 // Возвратить список файлов
 router.get('/1c8filenames', function(req, res, next) {
 
@@ -62,7 +124,7 @@ router.get('/1c8filenames', function(req, res, next) {
 //      s = s + data[i] + '<br>'+ SEL(content) + '<br>';
       s = s + data[i] + '\n<br>';
       }
- //     if (i > 35) break;
+ //      if (i > 25) break;
     }
 
     res.send(s);
@@ -85,6 +147,23 @@ router.post('/load_file', function(req, res, next) {
 
   res.send(s);
 //  res.send('Файл '+filename+' загружен.<br>');
+
+});
+//
+// Удаление файла
+//
+router.post('/remove_file', function(req, res, next) {
+  var filename = req.body.filename;
+
+  fs.rename(dir+'\\'+filename, dir+'\\111\\'+filename,  function (err) {
+//    if (err) throw err;
+    var s = 'x';
+    if (err)
+      s = 'Не смог удалить файл '+filename+'---'+dir+'\\'+filename +' --> '+ dir+'\\111\\'+filename+'.<br>';
+    else
+      s =  'Файл '+filename+' удалён!<br>';
+    res.send(s);
+  });
 
 });
 

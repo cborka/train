@@ -1,8 +1,13 @@
 <h1> Импорт данных </h1>
 
 <h2> Список файлов </h2>
+<button type="button" onclick="auto_on()">Включить автозагрузку</button>
+<button type="button" onclick="auto_off()">Выключить автозагрузку</button>
+<div id="auto" ></div>
+<br>
 <button type="button" onclick="get_filenames()">Получить имена файлов</button>
 <div id="filenames" ></div>
+
 <button type="button" onclick="load_files()">Загрузить данные из файлов</button>
 <div id="files" ></div>
 Процесс загрузки
@@ -10,6 +15,33 @@
 
 
 <script>
+    var timerId;
+
+
+    function auto_on() {
+
+        document.getElementById("auto").innerHTML = 'Автозагрузка включена<br>';
+        timerId = setInterval(get_filenames, 30000);
+    }
+    // начать повторы с интервалом 2 сек
+
+    function auto_off() {
+        clearInterval(timerId);
+        document.getElementById("auto").innerHTML = 'Автозагрузка выключена<br>';
+        document.getElementById("loads").innerHTML = '';
+        document.getElementById("filenames").innerHTML = '';
+
+    }
+
+    function load_new() {
+        document.getElementById("auto").innerHTML += 'Раз<br>';
+    }
+
+
+    function get_date() {
+
+        return(new Date().toString());
+    }
 
     //
     // Получить имена файлов
@@ -18,7 +50,15 @@
     var set_filenames = function (reply)
     {
         filenames = reply;
-        document.getElementById("filenames").innerHTML = filenames;
+
+        if (filenames.trim() != '') {
+            document.getElementById("filenames").innerHTML += get_date() + 'Загружаю <br>' + filenames;
+            setTimeout(load_files, 2000);
+//            load_files();
+        }
+//        else
+//          document.getElementById("filenames").innerHTML += get_date() + ' Пусто <br>';
+
     }
     function get_filenames()
     {
@@ -30,25 +70,28 @@
     //
     function load_files()
     {
-        document.getElementById("loads").innerHTML = '';
-        document.getElementById("filenames").innerHTML = '';
+//        document.getElementById("loads").innerHTML = '';
+//        document.getElementById("filenames").innerHTML = '';
 
         // Получаем массив имён файлов
         var files = filenames.split('\n<br>');
 
+        // Помещаю имена файлов в таблицу и вызываю функцию загрузки
         var ret = ' <table class="list">';
         for (var i = 0; i < files.length; i++) {
             ret = ret + '<tr><td>' + files[i] + '</td></tr>';
+
             load_file2(files[i]);
+
+            setTimeout(remove_file, i*1000+2000, files[i]);
+
         }
         ret = ret +'</table>';
 
         document.getElementById("files").innerHTML = ret;
     }
-
-
     //
-    // Загрузка одного файла
+    // Получение содержимого файла
     //
     function load_file2(filename)
     {
@@ -57,7 +100,9 @@
         if(filename != '')
             doQuery ("/import/get_data", load_data, '&filename=' + encodeURIComponent(filename));
     }
-
+    //
+    // Загрузка содержимого файла построчно
+    //
     var load_data = function (reply)
     {
       var  text = reply;
@@ -101,12 +146,28 @@
     }
 
 
+    function remove_file(filename)
+    {
+        if(filename == '')
+          return;
+
+//        document.getElementById("loads").innerHTML += 'Удалён файл '+ filename + '<br>';
+//        if(filename != '')
+          doQuery ("/import/remove_file", remove_file_reply, '&filename=' + encodeURIComponent(filename));
+    }
+    var remove_file_reply = function (reply)
+    {
+        document.getElementById("loads").innerHTML += reply;
+    }
+
+
 
 
 
 
     //
     // Загрузка одного файла полностью на стороне сервера
+    // НЕ РЕАЛИЗОВАНО
     //
     var load_file_done = function (reply)
     {
