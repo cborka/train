@@ -6,16 +6,34 @@
 <div id="auto" ></div>
 <br>
 <button type="button" onclick="get_filenames()">Получить имена файлов</button>
-<div id="filenames" ></div>
+<!-- <button type="button" onclick="save_log()">Сохранить журнал загрузки</button> -->
 
+<div id="filenames" ></div>
+<!--
 <button type="button" onclick="load_files()">Загрузить данные из файлов</button>
 <div id="files" ></div>
+-->
 Процесс загрузки
 <div id="loads" ></div>
 
 
 <script>
     var timerId;
+
+    function save_log()
+    {
+        file_name = 'c:\\cborka\\load_log.txt';
+//        text = 'Добавленный текст в файл!!! ';
+
+        doQuery ("/common/add_text_to_file", add_reply,
+                '&file_name=' + encodeURIComponent(file_name)+
+                '&text=' + encodeURIComponent(document.getElementById("loads").innerHTML.replace(new RegExp("<br>",'g'),'\r\n'))
+    );
+    }
+    var add_reply = function (reply)
+    {
+        document.getElementById("loads").innerHTML += reply;
+    }
 
 
     function auto_on() {
@@ -33,37 +51,53 @@
 
     }
 
-    function load_new() {
-        document.getElementById("auto").innerHTML += 'Раз<br>';
-    }
-
-
     function get_date() {
-
-        return(new Date().toString());
+      var s = new Date().toString();
+      return(s.substr(0, 24));
     }
 
     //
     // Получить имена файлов
     //
     var filenames = '';
+
+    function get_filenames()
+    {
+        save_log();
+        document.getElementById("loads").innerHTML = '';
+        doQuery ("/import/1c8filenames", set_filenames);
+    }
     var set_filenames = function (reply)
     {
         filenames = reply;
 
         if (filenames.trim() != '') {
-            document.getElementById("filenames").innerHTML += get_date() + 'Загружаю <br>' + filenames;
+            document.getElementById("filenames").innerHTML += get_date() + ' Загружаю: ' + filenames;
             setTimeout(load_files, 2000);
 //            load_files();
         }
 //        else
 //          document.getElementById("filenames").innerHTML += get_date() + ' Пусто <br>';
+    }
 
-    }
-    function get_filenames()
+    //
+    // Удалить документ из таблицы
+    //
+    function clear_doc2(table_name, id1c)
     {
-        doQuery ("/import/1c8filenames", set_filenames);
+        document.getElementById("loads").innerHTML += 'Проверка ' +table_name+ ' / '+ id1c + '<br>';
+
+        doQuery ("/import/clear_doc2", clear_doc_reply,
+                '&table_name=' + encodeURIComponent(table_name)+
+                '&id1c=' + encodeURIComponent(id1c)
+        );
     }
+    var clear_doc_reply = function (reply)
+    {
+        document.getElementById("loads").innerHTML += reply;
+    }
+
+
 
     //
     // Загрузить данные из файлов
@@ -72,87 +106,235 @@
     {
 //        document.getElementById("loads").innerHTML = '';
 //        document.getElementById("filenames").innerHTML = '';
+        document.getElementById("loads").innerHTML += '<br>Загрузка содержимого новых файлов <br>';
 
         // Получаем массив имён файлов
         var files = filenames.split('\n<br>');
 
         // Помещаю имена файлов в таблицу и вызываю функцию загрузки
-        var ret = ' <table class="list">';
         for (var i = 0; i < files.length; i++) {
-            ret = ret + '<tr><td>' + files[i] + '</td></tr>';
 
             load_file2(files[i]);
 
-            setTimeout(remove_file, i*1000+2000, files[i]);
-
+            setTimeout(remove_file, i*1000+10000, files[i]); // 10 секунд на загрузку )))
         }
-        ret = ret +'</table>';
-
-        document.getElementById("files").innerHTML = ret;
     }
     //
     // Получение содержимого файла
     //
     function load_file2(filename)
     {
-        document.getElementById("loads").innerHTML += filename + '<br>';
+        if(filename == '')
+            return;
 
-        if(filename != '')
-            doQuery ("/import/get_data", load_data, '&filename=' + encodeURIComponent(filename));
+        document.getElementById("loads").innerHTML += 'Получение содержимого файла: ' + filename + '<br>';
+
+        // Тут проверка что за файл и как и куда его загружать
+        if (filename.substring(17) == 'отгрузка ЖБИ.txt')
+        {
+            doQuery ("/import/get_data", load_data_fcrashod, '&filename=' + encodeURIComponent(filename));
+        }
+        else if (filename.substring(17) == 'сдача ЖБИ.txt')
+        {
+            doQuery ("/import/get_data", load_data_fcprihod, '&filename=' + encodeURIComponent(filename));
+        }
+        else if (filename.substring(17) == 'формовка ЖБИ.txt')
+        {
+            doQuery ("/import/get_data", load_data_fcformovka, '&filename=' + encodeURIComponent(filename));
+        }
+        else if (filename.substring(17) == 'арматура в пролет.txt')
+        {
+            doQuery ("/import/get_data", load_data_armrashod, '&filename=' + encodeURIComponent(filename));
+        }
+
     }
+
     //
-    // Загрузка содержимого файла построчно
+    // Загрузка содержимого файла fcrashod построчно
     //
-    var load_data = function (reply)
+    var load_data_fcrashod = function (reply) {
+        var text = reply;
+
+        i = text.indexOf("\t");
+        id1c = text.substring(0,i);
+
+        clear_doc2('fcrashod_1c', id1c);
+        setTimeout(load_data_fcrashod2, 5000, reply); // 5 секунд на проверку и удаление и загружаем новое содержимое
+    }
+    var load_data_fcrashod2 = function (reply)
     {
-      var  text = reply;
+        var  text = reply;
 
-      // Разбиваем текст на массив из строчек
-      var lines = text.split('\n');
+        document.getElementById("loads").innerHTML += 'Загрузка содержимого файла Расход ЖБИ <br>';
 
-      // Цикл по строкам
-      for (var i = 0; i < lines.length; i++) {
+        var lines = text.split('\n'); // Разбиваем текст на массив из строчек
+        for (var i = 0; i < lines.length; i++) {
 
-          // Разбиваем строку на поля
-          var fields = lines[i].split('\t');
+            var fields = lines[i].split('\t');
 
-          if (fields.length != 6)
-          {
-            document.getElementById("loads").innerHTML += ' плохая строка [' + lines[i] + ']<br>';
-            continue;
-          }
+            if (fields.length != 6)
+            {
+                document.getElementById("loads").innerHTML += ' плохая строка [' + lines[i] + ']<br>';
+                continue;
+            }
 
-          document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
-          doQuery ("/import/load_string", load_string_reply,
-                  '&string_no=' + encodeURIComponent(i+1)+
-                  '&id1c=' + encodeURIComponent(fields[0].trim())+
-                  '&dt=' + encodeURIComponent(fields[1])+
-                  '&sklad_name=' + encodeURIComponent(fields[2].trim())+
-                  '&cust_name=' + encodeURIComponent(fields[3].trim())+
-                  '&fc_name=' + encodeURIComponent(fields[4].trim())+
-                  '&fc_num=' + encodeURIComponent(fields[5])
-          );
+            document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
 
-      }
-
-      document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
-
-//        document.getElementById("loads").innerHTML += text+'<br>---<br>';
+            doQuery ("/import/load_string_fcrashod", load_string_reply,
+                    '&string_no=' + encodeURIComponent(i+1)+
+                    '&id1c=' + encodeURIComponent(fields[0].trim())+
+                    '&dt=' + encodeURIComponent(fields[1])+
+                    '&sklad_name=' + encodeURIComponent(fields[2].trim())+
+                    '&cust_name=' + encodeURIComponent(fields[3].trim())+
+                    '&fc_name=' + encodeURIComponent(fields[4].trim())+
+                    '&fc_num=' + encodeURIComponent(fields[5])
+            );
+        }
+        document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
     }
+    //
+    // Загрузка содержимого файла fcprihod построчно
+    //
+    var load_data_fcprihod = function (reply) {
+        var text = reply;
+
+        i = text.indexOf("\t");
+        id1c = text.substring(0,i);
+
+        clear_doc2('fcprihod_1c', id1c);
+        setTimeout(load_data_fcprihod2, 5000, reply); // 5 секунд на проверку и удаление и загружаем новое содержимое
+    }
+    var load_data_fcprihod2 = function (reply)
+    {
+        var  text = reply;
+
+
+        var lines = text.split('\n'); // Разбиваем текст на массив из строчек
+        for (var i = 0; i < lines.length; i++) {
+
+            var fields = lines[i].split('\t');
+
+            if (fields.length != 5)
+            {
+                document.getElementById("loads").innerHTML += ' плохая строка [' + lines[i] + ']<br>';
+                continue;
+            }
+
+            document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
+
+            doQuery ("/import/load_string_fcprihod", load_string_reply,
+                    '&string_no=' + encodeURIComponent(i+1)+
+                    '&id1c=' + encodeURIComponent(fields[0].trim())+
+                    '&dt=' + encodeURIComponent(fields[1])+
+                    '&sd_name=' + encodeURIComponent(fields[2].trim())+
+                    '&fc_name=' + encodeURIComponent(fields[3].trim())+
+                    '&fc_num=' + encodeURIComponent(fields[4])
+            );
+        }
+        document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
+    }
+    //
+    // Загрузка содержимого файла fcformovka построчно
+    //
+    var load_data_fcformovka = function (reply) {
+        var text = reply;
+
+        i = text.indexOf("\t");
+        id1c = text.substring(0,i);
+//        document.getElementById("loads").innerHTML += 'индекс = '+i + '<br>'
+//        document.getElementById("loads").innerHTML += 'id1c= '+id1c + '.<br>'
+
+        clear_doc2('fcformovka_1c', id1c);
+        setTimeout(load_data_fcformovka2, 5000, reply); // 5 секунд на проверку и удаление и загружаем новое содержимое
+//        load_data_fcformovka2(reply);
+    }
+    var load_data_fcformovka2 = function (reply)
+    {
+        var  text = reply;
+
+        document.getElementById("loads").innerHTML += 'Загрузка содержимого файла: Формовка ЖБИ <br>';
+
+        var lines = text.split('\n'); // Разбиваем текст на массив из строчек
+        for (var i = 0; i < lines.length; i++) {
+
+            var fields = lines[i].split('\t');
+
+            if (fields.length != 5)
+            {
+                document.getElementById("loads").innerHTML += ' плохая строка [' + lines[i] + ']<br>';
+                continue;
+            }
+
+            document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
+
+            doQuery ("/import/load_string_fcformovka", load_string_reply,
+                    '&string_no=' + encodeURIComponent(i+1)+
+                    '&id1c=' + encodeURIComponent(fields[0].trim())+
+                    '&dt=' + encodeURIComponent(fields[1])+
+                    '&sd_name=' + encodeURIComponent(fields[2].trim())+
+                    '&fc_name=' + encodeURIComponent(fields[3].trim())+
+                    '&fc_num=' + encodeURIComponent(fields[4])
+            );
+        }
+        document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
+    }
+
+    //
+    // Загрузка содержимого файла armrashod построчно
+    //
+    var load_data_armrashod = function (reply) {
+        var text = reply;
+
+        i = text.indexOf("\t");
+        id1c = text.substring(0,i);
+
+        clear_doc2('armrashod_1c', id1c);
+        setTimeout(load_data_armrashod2, 5000, reply); // 5 секунд на проверку и удаление и загружаем новое содержимое
+    }
+    var load_data_armrashod2 = function (reply)
+    {
+        var  text = reply;
+
+        document.getElementById("loads").innerHTML += 'Загрузка содержимого файла Расход арматуры <br>';
+
+        var lines = text.split('\n'); // Разбиваем текст на массив из строчек
+        for (var i = 0; i < lines.length; i++) {
+
+            var fields = lines[i].split('\t');
+
+            if (fields.length != 6)
+            {
+                document.getElementById("loads").innerHTML += ' плохая строка [' + lines[i] + ']<br>';
+                continue;
+            }
+
+            document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
+
+            doQuery ("/import/load_string_armrashod_1c", load_string_reply,
+                    '&string_no=' + encodeURIComponent(i+1)+
+                    '&id1c=' + encodeURIComponent(fields[0].trim())+
+                    '&dt=' + encodeURIComponent(fields[1])+
+                    '&sklad_name=' + encodeURIComponent(fields[2].trim())+
+                    '&sd_name=' + encodeURIComponent(fields[3].trim())+
+                    '&arm_name=' + encodeURIComponent(fields[4].trim())+
+                    '&arm_num=' + encodeURIComponent(fields[5])
+            );
+        }
+        document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
+    }
+
+
 
     var load_string_reply = function (reply)
     {
         document.getElementById("loads").innerHTML += reply;
     }
 
-
     function remove_file(filename)
     {
         if(filename == '')
           return;
 
-//        document.getElementById("loads").innerHTML += 'Удалён файл '+ filename + '<br>';
-//        if(filename != '')
           doQuery ("/import/remove_file", remove_file_reply, '&filename=' + encodeURIComponent(filename));
     }
     var remove_file_reply = function (reply)

@@ -16,7 +16,7 @@ function onERRdefault(msg)
 //
 // Запуск асинхронного запроса на выполнение
 //
-function doQuery (url, onOK, params)
+function doQuery (url, onOK, params, async = true)
 {
   let xhr = new XMLHttpRequest();
 
@@ -42,23 +42,13 @@ function doQuery (url, onOK, params)
   }
 
   if (params == '' || params == undefined) {
-    xhr.open("GET", url);
+    xhr.open("GET", url, async);
     xhr.send();
   }
   else {
-    xhr.open("POST", url);
+    xhr.open("POST", url, async);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.send(params);
   }
 }
 
-
-function doGetQuery (url, onOK)
-{
-  doQuery (url, onOK, '');
-}
-
-function doPostQuery (url, onOK, params)
-{
-  doQuery (url, onOK, params);
-}
