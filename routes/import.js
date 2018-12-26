@@ -8,6 +8,21 @@ var db = require("../db");
 var dir = '\\\\10.0.0.10\\обменпризводство';
 //var archive_dir = '\\\\10.0.0.33\\Common\\x321\\loaded_files';
 
+
+function str2num(str) {
+
+  ret = '';
+  for (var i = 0; i < str.length; i++) {
+    s = str.substr(i,1);
+    if ((s == '0') ||  (s == '1') ||  (s == '2') ||  (s == '3') ||  (s == '4') ||  (s == '5') ||  (s == '6') ||
+        (s == '7') ||  (s == '8') ||  (s == '9') ||  (s == '.')
+    )
+    ret = ret + s;
+  }
+  return (ret);
+}
+
+
 //
 //  Пример разбиения файла на строки и дальше этих строк на поля
 //
@@ -60,6 +75,7 @@ router.get('/1c8filenames', function(req, res, next) {
         || (data[i].substring(17) == 'сдача ЖБИ.txt')
         || (data[i].substring(17) == 'отгрузка ЖБИ.txt')
         || (data[i].substring(17) == 'арматура в пролет.txt')
+        || (data[i].substring(17) == 'выдача бетона.txt')
     )
 //      if (data[i].slice(-4) == '.txt')
       {
@@ -264,13 +280,37 @@ router.post('/load_string_armrashod_1c', function(req, res, next) {
   var sklad_name = req.body.sklad_name;
   var sd_name = req.body.sd_name;
   var arm_name = req.body.arm_name;
-  var arm_num = req.body.arm_num.replace(',','.');
+  var arm_num = str2num(req.body.arm_num.trim().replace(',','.'));
 
   db.none(
     "INSERT INTO armrashod_1c (id1c, dt, sklad_name, sd_name, arm_name, arm_num, string_no) VALUES ($1, $2, $3, $4, $5, $6, $7) ",
     [id1c, dt, sklad_name, sd_name, arm_name, arm_num, string_no] )
     .then (function (data) {
       res.send(string_no+','+id1c+','+dt+','+sklad_name+','+sd_name+','+arm_name+','+arm_num+' загружено<br>');
+
+    })
+    .catch(function (error) {
+      res.send(string_no+','+id1c+' не удалось загрузить, вероятно уже было загружено или '+error+'<br>');
+    });
+
+});
+
+//
+// Загрузить строку таблицы betrashod_1c
+//
+router.post('/load_string_betrashod_1c', function(req, res, next) {
+  var string_no = req.body.string_no;
+  var id1c = req.body.id1c;
+  var dt = req.body.dt;
+  var sd_name = req.body.sd_name;
+  var bet_name = req.body.bet_name;
+  var bet_num = str2num(req.body.bet_num.trim().replace(',','.'));
+
+  db.none(
+    "INSERT INTO betrashod_1c (id1c, dt, sd_name, bet_name, bet_num, string_no) VALUES ($1, $2, $3, $4, $5, $6) ",
+    [id1c, dt, sd_name, bet_name, bet_num, string_no] )
+    .then (function (data) {
+      res.send(string_no+','+id1c+','+dt+','+sd_name+','+bet_name+','+bet_num+' загружено<br>');
 
     })
     .catch(function (error) {

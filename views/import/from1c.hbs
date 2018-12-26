@@ -146,6 +146,10 @@
         {
             doQuery ("/import/get_data", load_data_armrashod, '&filename=' + encodeURIComponent(filename));
         }
+        else if (filename.substring(17) == 'выдача бетона.txt')
+        {
+            doQuery ("/import/get_data", load_data_betrashod, '&filename=' + encodeURIComponent(filename));
+        }
 
     }
 
@@ -178,7 +182,7 @@
                 continue;
             }
 
-            document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
+            document.getElementById("loads").innerHTML += '- загрузка ...'+ lines[i] + '<br>';
 
             doQuery ("/import/load_string_fcrashod", load_string_reply,
                     '&string_no=' + encodeURIComponent(i+1)+
@@ -192,6 +196,7 @@
         }
         document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
     }
+
     //
     // Загрузка содержимого файла fcprihod построчно
     //
@@ -220,7 +225,7 @@
                 continue;
             }
 
-            document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
+            document.getElementById("loads").innerHTML += '- загрузка ...'+ lines[i] + '<br>';
 
             doQuery ("/import/load_string_fcprihod", load_string_reply,
                     '&string_no=' + encodeURIComponent(i+1)+
@@ -265,7 +270,7 @@
                 continue;
             }
 
-            document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
+            document.getElementById("loads").innerHTML += '- загрузка ...'+ lines[i] + '<br>';
 
             doQuery ("/import/load_string_fcformovka", load_string_reply,
                     '&string_no=' + encodeURIComponent(i+1)+
@@ -308,7 +313,7 @@
                 continue;
             }
 
-            document.getElementById("loads").innerHTML += lines[i]+'- загрузка ...<br>';
+            document.getElementById("loads").innerHTML += '- загрузка ...'+ lines[i] + '<br>';
 
             doQuery ("/import/load_string_armrashod_1c", load_string_reply,
                     '&string_no=' + encodeURIComponent(i+1)+
@@ -318,6 +323,49 @@
                     '&sd_name=' + encodeURIComponent(fields[3].trim())+
                     '&arm_name=' + encodeURIComponent(fields[4].trim())+
                     '&arm_num=' + encodeURIComponent(fields[5])
+            );
+        }
+        document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
+    }
+
+    //
+    // Загрузка содержимого файла betrashod построчно
+    //
+    var load_data_betrashod = function (reply) {
+        var text = reply;
+
+        i = text.indexOf("\t");
+        id1c = text.substring(0,i);
+
+        clear_doc2('betrashod_1c', id1c);
+        setTimeout(load_data_betrashod2, 5000, reply); // 5 секунд на проверку и удаление и загружаем новое содержимое
+    }
+    var load_data_betrashod2 = function (reply)
+    {
+        var  text = reply;
+
+        document.getElementById("loads").innerHTML += 'Загрузка содержимого файла Расход бетона <br>';
+
+        var lines = text.split('\n'); // Разбиваем текст на массив из строчек
+        for (var i = 0; i < lines.length; i++) {
+
+            var fields = lines[i].split('\t');
+
+            if (fields.length != 5)
+            {
+                document.getElementById("loads").innerHTML += ' плохая строка [' + lines[i] + ']<br>';
+                continue;
+            }
+
+            document.getElementById("loads").innerHTML += '- загрузка ...'+ lines[i] + '<br>';
+
+            doQuery ("/import/load_string_betrashod_1c", load_string_reply,
+                    '&string_no=' + encodeURIComponent(i+1)+
+                    '&id1c=' + encodeURIComponent(fields[0].trim())+
+                    '&dt=' + encodeURIComponent(fields[1])+
+                    '&sd_name=' + encodeURIComponent(fields[2].trim())+
+                    '&bet_name=' + encodeURIComponent(fields[3].trim())+
+                    '&bet_num=' + encodeURIComponent(fields[4])
             );
         }
         document.getElementById("loads").innerHTML += fields[0]+' - готово ... <br>';
