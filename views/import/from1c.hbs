@@ -39,7 +39,7 @@
     function auto_on() {
 
         document.getElementById("auto").innerHTML = 'Автозагрузка включена<br>';
-        timerId = setInterval(get_filenames, 30000);
+        timerId = setInterval(get_filenames, 45000);
     }
     // начать повторы с интервалом 2 сек
 
@@ -87,6 +87,8 @@
     {
         document.getElementById("loads").innerHTML += 'Проверка ' +table_name+ ' / '+ id1c + '<br>';
 
+        setTimeout(load_doc, 20000, table_name, id1c); // 20 секунд на загрузку, затем разложить инфу в основные таблицы
+
         doQuery ("/import/clear_doc2", clear_doc_reply,
                 '&table_name=' + encodeURIComponent(table_name)+
                 '&id1c=' + encodeURIComponent(id1c)
@@ -96,6 +98,21 @@
     {
         document.getElementById("loads").innerHTML += reply;
     }
+
+
+    //
+    // Загрузка в основные таблицы
+    //
+    function load_doc(table_name, id1c)
+    {
+        document.getElementById("loads").innerHTML += 'Загрузка в основные таблицы ' +table_name+ ' / '+ id1c + '<br>';
+
+        doQuery ("/import/load_doc", clear_doc_reply,
+                '&table_name=' + encodeURIComponent(table_name)+
+                '&id1c=' + encodeURIComponent(id1c)
+        );
+    }
+
 
 
 
@@ -116,7 +133,7 @@
 
             load_file2(files[i]);
 
-            setTimeout(remove_file, i*1000+10000, files[i]); // 10 секунд на загрузку )))
+            setTimeout(remove_file, i*1000+15000, files[i]); // 15 секунд на загрузку )))
         }
     }
     //

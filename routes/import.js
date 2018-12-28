@@ -415,6 +415,42 @@ router.post('/clear_doc2', function(req, res, next) {
     });
 });
 
+//
+// Загрузка в основные таблицы
+//
+router.post('/load_doc', function(req, res, next) {
+  var table_name = req.body.table_name;
+  var id1c = req.body.id1c;
+
+  db.one(
+    "SELECT count(*) AS cnt FROM docs_1c WHERE id1c = $1 AND doc_name = $2", [id1c, table_name])
+    .then(function (data) {
+      if (data.cnt == '0')
+      {
+        db.none(
+          " INSERT INTO docs_1c (id1c, doc_name) VALUES ($1, $2) ", [id1c, table_name] )
+          .then (function (data2) {
+            res.send('load_doc: Вставлена строка ('+id1c+','+table_name+') в таблицу docs_1c, cnt = '+ data.cnt +' <br>');
+          })
+          .catch(function (error) {
+            res.send('load_doc: Ошибка INSERT SQL: '+error);
+          });
+      }
+      else {
+        db.none(
+          " UPDATE docs_1c SET dt = now(), doc_name = $1 WHERE id1c = $2 ", [table_name, id1c] )
+          .then (function (data2) {
+            res.send('load_doc: Обновлена строка документа '+id1c+', '+table_name+' таблицы docs_1c, cnt = '+ data.cnt +' <br>');
+          })
+          .catch(function (error) {
+            res.send('load_doc: Ошибка UPDATE SQL: '+error);
+          });
+      }
+    })
+    .catch(function (error) {
+      res.send('load_doc: Ошибка SELECT SQL: '+error);
+    });
+});
 
 // =====================================
 /*
