@@ -205,13 +205,13 @@ router.get('/plan_fact_s/:spr_name', function(req, res, next) {
     .then(function () {
   db.any(
     "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
-    "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, CAST(pp.dt AS VARCHAR) AS dt, num_fact " +
+    "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, CAST(pp.dt AS VARCHAR) AS dt, num_fact, doc_rf " +
     " FROM (((plan_fact pp " +
     "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
     "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
     "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
     where_clause +
-    " ORDER BY plan.item_name, sd.item_name, item.item_name ")
+    " ORDER BY plan.item_name, pp.dt, sd.item_name, item.item_name ")
     .then(function (data) {
 
       for (var i = 0; i < data.length; i++) {
