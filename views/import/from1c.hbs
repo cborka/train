@@ -25,7 +25,8 @@
         file_name = 'c:\\cborka\\load_log.txt';
 //        text = 'Добавленный текст в файл!!! ';
 
-        doQuery ("/common/add_text_to_file", add_reply,
+        if (document.getElementById("loads").innerHTML != '+1<br>')
+          doQuery ("/common/add_text_to_file", add_reply,
                 '&file_name=' + encodeURIComponent(file_name)+
                 '&text=' + encodeURIComponent(document.getElementById("loads").innerHTML.replace(new RegExp("<br>",'g'),'\r\n'))
     );
@@ -41,7 +42,6 @@
         document.getElementById("auto").innerHTML = 'Автозагрузка включена<br>';
         timerId = setInterval(get_filenames, 45000);
     }
-    // начать повторы с интервалом 2 сек
 
     function auto_off() {
         clearInterval(timerId);
@@ -409,13 +409,11 @@
 
 
 
-
-
-
     //
     // Загрузка одного файла полностью на стороне сервера
     // НЕ РЕАЛИЗОВАНО
     //
+
     var load_file_done = function (reply)
     {
         document.getElementById("loads").innerHTML += reply;
@@ -426,6 +424,7 @@
         doQuery ("/import/load_fcrashod", load_file_done, '&filename=' + encodeURIComponent(filename));
     }
 
+//    setTimeout(auto_on, 5000); // Включаю автозагрузку
 
 
 </script>

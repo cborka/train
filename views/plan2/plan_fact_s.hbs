@@ -13,7 +13,7 @@
             <td class="list"><b>Дата и время</b></td>
             <td class="list"><b>Количество</b></td>
             <td class="list"><b>Код документа</b></td>
-            <td class="list">Кнопки</td>
+<!--            <td class="list">Кнопки</td> -->
         </tr>
         {{#each data}}
             <tr>
@@ -23,10 +23,10 @@
                 <td class="list">{{dt}}</td>
                 <td class="list">{{num_fact}}</td>
                 <td class="list">{{doc_rf}}</td>
-                <td class="list">
+<!--                <td class="list">
                     <button type="button" onclick="edit_plan_fact({{plan_rf}},{{sd_rf}},{{item_rf}} )">Изменить</button>
                     <button type="button" onclick="delete_plan_fact({{plan_rf}},{{sd_rf}},{{item_rf}},'{{plan_name}}','{{sd_name}}','{{item_name}}')">Удалить</button>
-                </td>
+                </td> -->
             </tr>
         {{/each}}
     </table>

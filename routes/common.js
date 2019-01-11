@@ -188,27 +188,28 @@ router.get('/get_spr_names/:spr', function(req, res, next) {
       res.send(result);
     })
     .catch(function (error) {
-      res.send(error);//
+      res.send('get_spr_names: ОШИБКА: ' +error);
+    });
+});
+
+//
 // Сформировать и возвратить весь список для выбора (кроме назавний справочников)
 //
-      router.get('/get_all_items', function(req, res, next) {
-        db.any(
-          "SELECT item_name " +
-          "  FROM item_list " +
-          "  WHERE spr_rf != 3" +
-          "  ORDER BY 1 ")
-          .then (function (data) {
-            var result = '';
-            for (var i = 0; i < data.length; i++) {
-              result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
-            }
-            res.send(result);
-          })
-          .catch(function (error) {
-            res.send(error);
-          });
-      });
-
+router.get('/get_all_items', function(req, res, next) {
+  db.any(
+     "SELECT item_name " +
+     "  FROM item_list " +
+     "  WHERE spr_rf != 3" +
+     "  ORDER BY 1 ")
+    .then (function (data) {
+       var result = '';
+       for (var i = 0; i < data.length; i++) {
+         result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
+       }
+       res.send(result);
+     })
+    .catch(function (error) {
+       res.send('get_all_items: ОШИБКА: ' +error);
     });
 });
 
@@ -222,9 +223,9 @@ router.post('/add_text_to_file', function(req, res, next) {
 
   fs.appendFile(file_name, text, function (err) {
     if (err)
-      res.send('add_text_to_file: ' +err);
+      res.send('add_text_to_file: ОШИБКА: ' +err);
     else
-      res.send('Данные добавлены в файл!<br>');
+      res.send('+1<br>');
 });
 
 });

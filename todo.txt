@@ -43,6 +43,12 @@
 UPDATE user_rights ur
   SET menu_delimiter = (SELECT menu_delimiter FROM user_rights ur2 WHERE user_rf = 9 AND ur.right_name = ur2.right_name)
 WHERE ur.user_rf = 11
+;
+
+
+UPDATE fcformovka_1c SET id1c = year2str(id1c)
+ WHERE CAST(id1c AS INTEGER) > 700
+ ;
 
 ======================================================================
 
@@ -137,7 +143,6 @@ Universe
 Пролёт (идентификатор подразделения в 1С)
 ЖБИ (идентификатор ЖБИ в 1С)
 Количество ЖБИ
-
 
 
 

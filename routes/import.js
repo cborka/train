@@ -64,7 +64,7 @@ router.get('/1c8filenames', function(req, res, next) {
     var s = '';
 
     if (err) {
-      s = 'Ошибка чтения из каталога.';
+      s = 'ОШИБКА чтения из каталога.';
       res.send('from1c: '+s+'<br>');
       return;
     }
@@ -102,7 +102,7 @@ router.post('/remove_file', function(req, res, next) {
   fs.rename(dir+'\\'+filename, dir+'\\111\\'+filename,  function (err) {
     var s = 'x';
     if (err)
-      s = 'Не смог удалить файл '+filename+'---'+dir+'\\'+filename +' --> '+ dir+'\\111\\'+filename+'.<br>';
+      s = 'ОШИБКА: Не смог удалить файл '+filename+'---'+dir+'\\'+filename +' --> '+ dir+'\\111\\'+filename+'.<br>';
     else
       s =  'Файл '+filename+' удалён!<br>';
 
@@ -122,7 +122,7 @@ router.post('/get_data', function(req, res, next) {
   fs.readFile(dir+'\\'+filename, function (err, logData) {
 
     if (err) {
-      text = 'get_data: Ошибка чтения файла ' + filename+'<br>';
+      text = 'get_data: ОШИБКА чтения файла ' + filename+'<br>';
     }
     else {
       text = logData.toString(); // logData это объект типа Buffer, переводим в строку
@@ -405,13 +405,13 @@ router.post('/clear_doc2', function(req, res, next) {
             res.send('Очищено '+data.cnt+' строк документа ('+id1c+') из таблицы '+ table_name + '<br>');
           })
           .catch(function (error) {
-            res.send('clear_doc: Ошибка DELETE SQL: '+error);
+            res.send('clear_doc: ОШИБКА DELETE SQL: '+error);
           });
       }
     })
     .catch(function (error) {
 
-      res.send('clear_doc: Ошибка SELECT SQL: '+error);
+      res.send('clear_doc: ОШИБКА SELECT SQL: '+error);
     });
 });
 
@@ -433,22 +433,22 @@ router.post('/load_doc', function(req, res, next) {
             res.send('load_doc: Вставлена строка ('+id1c+','+table_name+') в таблицу docs_1c, cnt = '+ data.cnt +' <br>');
           })
           .catch(function (error) {
-            res.send('load_doc: Ошибка INSERT SQL: '+error);
+            res.send('load_doc: ОШИБКА INSERT SQL: '+error);
           });
       }
       else {
         db.none(
-          " UPDATE docs_1c SET dt = now(), doc_name = $1 WHERE id1c = $2 ", [table_name, id1c] )
+          " UPDATE docs_1c SET dt = now() WHERE id1c = $1 AND doc_name = $2", [id1c, table_name] )
           .then (function (data2) {
             res.send('load_doc: Обновлена строка документа '+id1c+', '+table_name+' таблицы docs_1c, cnt = '+ data.cnt +' <br>');
           })
           .catch(function (error) {
-            res.send('load_doc: Ошибка UPDATE SQL: '+error);
+            res.send('load_doc: ОШИБКА UPDATE SQL: '+error);
           });
       }
     })
     .catch(function (error) {
-      res.send('load_doc: Ошибка SELECT SQL: '+error);
+      res.send('load_doc: ОШИБКА SELECT SQL: '+error);
     });
 });
 
