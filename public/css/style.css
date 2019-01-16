@@ -134,8 +134,8 @@ label {
 /* ============== Т А Б Л И Ц Ы ============== */
 table {
   border: 0;
-  border-collapse: collapse;
   width: 100%;
+  border-collapse: collapse;
   padding: 0;
   margin: auto;
   font-size: var(--table-font-size, medium);
@@ -160,6 +160,7 @@ td.right {
 }
 td.left {
   text-align: left;
+  padding-left: 5px;
 }
 
 /* Таблицы-списки */
@@ -170,6 +171,19 @@ table.list, thead.list {
 td.list {
   border: 1px solid lightgrey;
 }
+
+/* Таблицы-отчёты */
+table.report, thead.report {
+  width: auto;
+  align: left;
+  border: 1px solid lightgrey;
+  border-collapse: collapse;
+}
+td.report {
+  border: 1px solid lightgrey;
+}
+
+
 tbody tr:hover {
   background: #eee; /* Цвет фона при наведении */
 }

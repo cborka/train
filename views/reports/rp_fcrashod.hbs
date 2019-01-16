@@ -1,0 +1,122 @@
+<a href="/reports" > <-- Отчёты </a>
+<h2>Вывоз ЖБИ со складов </h2>
+
+<table class="form">
+    <tr>
+        <td><label>Заказчик:</label></td>
+        <td>
+            <select width="100%" size="1" name='cust_name' id='cust_name' value=" " onchange="show_report()"></select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>или начало Заказчик:</label></td>
+        <td><input id="custb_name" type="text" name="custb_name" value="" onchange="show_report()" ></td>
+    </tr>
+    <tr>
+        <td><label>ЖБИ полностью:</label></td>
+        <td>
+            <select width="100%" size="1" name='fc_name' id='fc_name' value=" " onchange="show_report()"></select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>или начало ЖБИ:</label></td>
+        <td><input id="fcb_name" type="text" name="fcb_name" value="" onchange="show_report()" ></td>
+    </tr>
+    <tr>
+        <td><label>С даты:</label></td>
+        <td><input id="dtb" type="datetime-local" pattern='[0-9]{4}-[0-9]{2}-[0-9]{2} [0-2][0-9]:[0-5][0-9]' name="dtb" value="" ></td>
+        <td><button type="button" onclick="set_dtb()">01.01.2019</button></td>
+    </tr>
+    <tr>
+        <td><label>По дату:</label></td>
+        <td><input id="dte" type="datetime-local" pattern='[0-9]{4}-[0-9]{2}-[0-9]{2} [0-2][0-9]:[0-5][0-9]' name="dte" value="" ></td>
+        <td><button type="button" onclick="set_dte()">31.01.2019</button></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><button type="button" onclick="show_report()">Показать</button></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <div id="hint" ></div>
+            <div id="erro"></div>
+
+        </td>
+    </tr>
+<br>
+</table>
+
+<div id="table2"></div>
+
+
+<script>
+
+    function show_report()
+    {
+//        document.getElementById("divcust_name").innerHTML = document.getElementById("cust_name").value;
+        get_report();
+    }
+
+
+    // Запросить и показать таблицу
+    var set_report = function (reply)
+    {
+        document.getElementById("table2").innerHTML = reply;
+    }
+    function get_report()
+    {
+        doQuery ("/reports/get_fcrashod_table", set_report,
+           '&cust_name=' + encodeURIComponent(document.getElementById("cust_name").value)+
+           '&custb_name=' + encodeURIComponent(document.getElementById("custb_name").value)+
+           '&fc_name=' + encodeURIComponent(document.getElementById("fc_name").value)+
+           '&fcb_name=' + encodeURIComponent(document.getElementById("fcb_name").value)+
+           '&dtb=' + encodeURIComponent(document.getElementById("dtb").value)+
+           '&dte=' + encodeURIComponent(document.getElementById("dte").value)
+        );
+    }
+
+
+    // Изготовить список заказчиков для выбора
+    var set_cust_names = function (reply)
+    {
+        document.getElementById("cust_name").innerHTML = reply;
+        document.getElementById("cust_name").value = ' ';
+    }
+    function get_cust_names()
+    {
+        doQuery ("/common/get_spr_names/Заказчики", set_cust_names);
+    }
+
+    // Изготовить список ЖБИ для выбора
+    var set_fc_names = function (reply)
+    {
+        document.getElementById("fc_name").innerHTML = reply;
+        document.getElementById("fc_name").value = ' ';
+    }
+    function get_fc_names()
+    {
+        doQuery ("/common/get_spr_names/ЖБИ", set_fc_names);
+    }
+
+
+    function set_dtb()
+    {
+        document.getElementById("dtb").value = '2019-01-01T00:00';
+    }
+    function set_dte()
+    {
+        document.getElementById("dte").value = '2019-01-31T23:59';
+    }
+
+
+
+
+    // Изготовить списки для выбора
+    get_cust_names();
+    get_fc_names();
+    set_dtb();
+    set_dte();
+
+
+</script>

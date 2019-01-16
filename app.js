@@ -17,6 +17,7 @@ var importRouter = require('./routes/import');
 var proRouter = require('./routes/pro');
 var planRouter = require('./routes/plan');
 var plan2Router = require('./routes/plan2');
+var reportsRouter = require('./routes/reports');
 var testRouter = require('./routes/test');
 
 var app = express();
@@ -49,6 +50,7 @@ app.use('/import', importRouter);
 app.use('/pro', proRouter);
 app.use('/plan', planRouter);
 app.use('/plan2', plan2Router);
+app.use('/reports',reportsRouter);
 app.use('/test', testRouter);
 
 // catch 404 and forward to error handler

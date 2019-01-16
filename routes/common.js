@@ -13,14 +13,15 @@ router.get('/common', function(req, res, next) {
 
 });
 
-router.get('/', function(req, res, next) {
+router.get('/index', function(req, res, next) {
 
   res.send('/common/index <br>');
 
 });
 
+
 //
-// Показать СПИСОК
+// Показать СПИСОК всего
 //
 router.get('/items', function(req, res, next) {
   db.any(
@@ -129,6 +130,8 @@ router.get('/item_delete/:item_id', function(req, res, next) {
     });
 });
 
+//========================================================================
+
 //
 // Сформировать и возвратить список Групп для выбора
 //
@@ -169,7 +172,6 @@ router.get('/get_sprs', function(req, res, next) {
 
 
 
-//
 // Сформировать и возвратить список для выбора из справочника :spr
 //
 router.get('/get_spr_names/:spr', function(req, res, next) {
@@ -181,7 +183,7 @@ router.get('/get_spr_names/:spr', function(req, res, next) {
     "    (SELECT item_id FROM item_list WHERE spr_rf = 3 AND item_name = $1)" +
     "  ORDER BY 1 ", [spr])
     .then (function (data) {
-      var result = '';
+      var result = ' <option value=""></option>';
       for (var i = 0; i < data.length; i++) {
         result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
       }
@@ -193,7 +195,7 @@ router.get('/get_spr_names/:spr', function(req, res, next) {
 });
 
 //
-// Сформировать и возвратить весь список для выбора (кроме назавний справочников)
+// Сформировать и возвратить весь список для выбора (кроме названий справочников)
 //
 router.get('/get_all_items', function(req, res, next) {
   db.any(
@@ -213,6 +215,7 @@ router.get('/get_all_items', function(req, res, next) {
     });
 });
 
+//========================================================================
 
 //
 // Добавить содержимое в текстовый файл
