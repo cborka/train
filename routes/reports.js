@@ -54,8 +54,8 @@ router.post('/get_fcrashod_table', function(req, res, next) {
     .then (function (data) {
 
       var result = '';
-      result = result + 'С даты ' + dtb + ' по дату ' + dte +'.<br>';
-      result = result + 'where_date = [' + where_date + ']<br>';
+//      result = result + 'С даты <b>' + dtb + '</b> по дату <b>' + dte +'</b>.<br>';
+//      result = result + 'where_date = [' + where_date + ']<br>';
       result = result + '<br><table class="report" align="left">';
       for (var i = 0; i < data.length; i++) {
 
