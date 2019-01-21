@@ -1,0 +1,46 @@
+<h1>Приход арматуры на склад </h1>
+<div><p>Приход арматуры на склад арматуры.<br>
+</p></div>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Код документа</b></td>
+            <td class="list"><b>Дата и время</b></td>
+            <td class="list"><b>Подразделение</b></td>
+            <!--            <td class="list">Кнопки</td> -->
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{doc_id}}</td>
+                <td class="list">{{dt}}</td>
+                <td class="list">{{sd_name}}</td>
+                                <td class="list">
+                    <button type="button" onclick="edit_armprihod({{doc_id}})">Изменить</button>
+                    <button type="button" onclick="delete_armprihod({{doc_id}})">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/plan2/armprihod_addnew" title="Добавить новый документ" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_armprihod(doc_id) {
+
+        var result = confirm("Удалить "+doc_id+ " ?");
+        if (result) {
+            location.href = '/plan2/armprihod_delete/'+doc_id;
+        }
+        else
+            erro("Оставляю "+doc_id+" !");
+    }
+
+    function edit_armprihod(doc_id) {
+        location.href = '/plan2/armprihod/'+doc_id;
+    }
+
+</script>

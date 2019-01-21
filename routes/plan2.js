@@ -507,4 +507,47 @@ router.get('/sklad_delete/:spr_name/:sklad_rf/:item_rf', function(req, res, next
 });
 
 
+//====== ПРИХОД АРМАТУРЫ ======= таблицы armprihod_h и armprihod ===========================================
+
+//
+// Показать список документов ПРИХОД АРМАТУРЫ
+//
+router.get('/armprihod', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var where_clause = '';
+
+  db.any(
+    "SELECT h.doc_id, SUBSTRING(CAST(h.dt AS VARCHAR), 1, 16) AS dt, i.item_name AS sd_name " +
+    " FROM (armprihod_h h " +
+    "   LEFT JOIN item_list i ON h.sd_rf = i.item_id) " +
+    " ORDER BY 2 ")
+    .then(function (data) {
+
+      data.spr_name = spr_name;
+      res.render('plan2/armprihod_h', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+//
+// Добавить новый документ ПРИХОД АРМАТУРЫ
+//
+router.get('/armprihod_addnew', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  db.one("SELECT 0 AS doc_id, SUBSTRING(CAST(CURRENT_TIMESTAMP AS VARCHAR), 1, 16) AS dt, 1 AS sd_rf ")
+    .then(function (data) {
+
+      res.render('plan2/armprihod', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+
+
 module.exports = router;
