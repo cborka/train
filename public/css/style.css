@@ -162,6 +162,17 @@ td.left {
   text-align: left;
   padding-left: 5px;
 }
+td.input {
+    border: 1px solid lightgrey;
+}
+
+select.td {
+    xwidth:100%;
+    xheight:100%;
+    border: 0px solid red;
+    font-size: var(--table-font-size, medium);
+}
+
 
 /* Таблицы-списки */
 table.list, thead.list {
@@ -188,6 +199,14 @@ tbody tr:hover {
   background: #eee; /* Цвет фона при наведении */
 }
 
+.xy {
+    position: absolute;
+}
+div.xyz {
+    background-color: aquamarine;
+    left: 115px;
+    position: absolute;
+}
 
 /* ============== В Ы Д Е Л Е Н И Е ============= */
 
