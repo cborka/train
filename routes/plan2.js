@@ -537,16 +537,193 @@ router.get('/armprihod', function(req, res, next) {
 //
 router.get('/armprihod_addnew', function(req, res, next) {
   var spr_name = req.params.spr_name;
-  db.one("SELECT 0 AS doc_id, SUBSTRING(CAST(CURRENT_TIMESTAMP AS VARCHAR), 1, 16) AS dt, 1 AS sd_rf ")
-    .then(function (data) {
+  var gdata;
 
-      res.render('plan2/armprihod', data);
+  db.one(
+    "SELECT 0 AS doc_id, " +
+    " SUBSTRING(CAST(CURRENT_TIMESTAMP AS VARCHAR), 1, 16) AS dt, " +
+    " 441 AS sd_rf, " +
+    " (SELECT item_name FROM item_list WHERE item_id=441) AS sd_name"
+  )
+    .then(function (data) {
+      gdata = data;
+      db.any(
+        "SELECT t.doc_rf, t.arm_rf, arm.item_name AS arm_name, t.arm_num " +
+        " FROM (armprihod t " +
+        "   LEFT JOIN item_list arm ON t.arm_rf = arm.item_id) " +
+        " WHERE t.doc_rf=0")
+        .then(function (data) {
+
+          data.doc_id = gdata.doc_id;
+          data.dt = gdata.dt;
+          data.sd_rf = gdata.sd_rf;
+          data.sd_name = gdata.sd_name;
+
+//          res.send(data.sd_name + ',' + data[1].arm_name);
+          res.render('plan2/armprihod', {data: data}); // Показ формы
+//          res.render('plan2/armprihod', data);
+        })
+        .catch(function (error) {
+          res.send(error);
+        });
+
+//      data.doc_id = "0";
+//      data.dt = SUBSTRING(CAST(CURRENT_TIMESTAMP AS VARCHAR), 1, 16);
+//      data.sd_rf = "441";
+//      data.sd_name = 'Склад арматуры №2';
+
+//      res.render('plan2/armprihod', {data: data}); // Показ формы
+//      res.render('plan2/armprihod', data);
     })
     .catch(function (error) {
       res.send(error);
     });
 });
 
+//
+// Показать/обновить документ ПРИХОД АРМАТУРЫ
+//
+router.get('/armprihod/:doc_rf', function(req, res, next) {
+  var doc_rf = req.params.doc_rf;
+  var gdata;
+  db.one(
+    "SELECT h.doc_id, SUBSTRING(CAST(h.dt AS VARCHAR), 1, 16) AS dt, h.sd_rf, sd.item_name AS sd_name " +
+//    "SELECT h.doc_id, CAST(h.dt AS VARCHAR) AS dt, h.sd_rf, sd.item_name AS sd_name " +
+    " FROM (armprihod_h h " +
+    "   LEFT JOIN item_list sd ON h.sd_rf = sd.item_id) " +
+    " WHERE h.doc_id=$1", [doc_rf])
+    .then(function (data) {
+      gdata = data;
+      db.any(
+        "SELECT t.doc_rf, t.arm_rf, arm.item_name AS arm_name, t.arm_num " +
+        " FROM (armprihod t " +
+        "   LEFT JOIN item_list arm ON t.arm_rf = arm.item_id) " +
+        " WHERE t.doc_rf=$1" +
+        " ORDER BY 3 ", [doc_rf])
+        .then(function (data) {
+
+          data.doc_id = gdata.doc_id;
+          data.dt = gdata.dt;
+          data.sd_rf = gdata.sd_rf;
+          data.sd_name = gdata.sd_name;
+
+//          res.send(data.sd_name + ',' + data[1].arm_name);
+          res.render('plan2/armprihod', {data: data}); // Показ формы
+//          res.render('plan2/armprihod', data);
+        })
+        .catch(function (error) {
+          res.send(error);
+        });
+
+//      data.num_fact = Math.round(data.num_fact * 1000) / 1000
+//      data.spr_name = spr_name;
+      //res.send(doc_rf);
+//      res.render('plan2/armprihod', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+//
+// Добавление и корректировка строки документа ПРИХОД АРМАТУРЫ
+//
+router.post('/armprihod_save_row', function(req, res, next) {
+  var doc_id = req.body.doc_id;
+  var old_arm_name = req.body.old_arm_name;
+  var arm_name = req.body.arm_name;
+  var arm_num = req.body.arm_num;
+
+  if (old_arm_name.trim() != "") {
+//  Обновление
+    db.none(
+      "UPDATE armprihod " +
+      "SET arm_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "    arm_num=$2 " +
+      "WHERE doc_rf=$3 AND arm_rf=(SELECT item_id FROM item_list WHERE item_name=$4)",
+      [arm_name, arm_num, doc_id, old_arm_name])
+      .then (function () {
+        res.send("+Строка ["+arm_name+","+arm_num+"] обновлена.");
+      })
+      .catch(function (error) {
+        res.send('x-->'+arm_name+","+arm_num+","+ doc_id+","+ old_arm_name+","+error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO armprihod (doc_rf, arm_rf, arm_num) " +
+      " VALUES ($1, (SELECT item_id FROM item_list WHERE item_name=$2), $3)",
+      [doc_id, arm_name, arm_num])
+      .then (function (data) {
+        res.send("+Строка ["+doc_id+","+arm_name+","+arm_num+"] добавлена.");
+      })
+      .catch(function (error) {
+        res.send("-Строка ["+doc_id+","+arm_name+","+arm_num+"] не добавлена."+error);
+      });
+  }
+});
+
+
+//
+// Добавление и корректировка ШАПКИ документа ПРИХОД АРМАТУРЫ
+//
+router.post('/armprihod_save_head', function(req, res, next) {
+  var doc_id = req.body.doc_id;
+  var dt = req.body.dt;
+  var sd_name = req.body.sd_name;
+
+  if (doc_id != "0") {
+//  Обновление
+    db.none(
+      "UPDATE armprihod_h " +
+      "SET sd_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "    dt=$2 " +
+      "WHERE doc_id=$3",
+      [sd_name, dt, doc_id])
+      .then (function () {
+        res.send("+Шапка документа ["+doc_id+"] обновлена.");
+      })
+      .catch(function (error) {
+        res.send("armprihod_save_head("+doc_id+ ") UPDATE: "+error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO armprihod_h (dt, sd_rf) " +
+      " VALUES ($1, (SELECT item_id FROM item_list WHERE item_name=$2))",
+      [dt, sd_name])
+      .then (function (data) {
+        res.send("+Шапка документа ["+doc_id+"] добавлена.");
+      })
+      .catch(function (error) {
+        res.send("armprihod_save_head("+doc_id+ ") INSERT: "+error);
+      });
+  }
+});
+
+//
+// Вернуть ИД документа ПРИХОД АРМАТУРЫ
+//
+router.post('/armprihod_get_doc_id', function(req, res, next) {
+  var dt = req.body.dt;
+  var sd_name = req.body.sd_name;
+
+  db.one(
+    "SELECT doc_id " +
+    " FROM armprihod_h  " +
+    " WHERE SUBSTRING(CAST(dt AS VARCHAR), 1, 16) = $1 " +
+    "   AND sd_rf = (SELECT item_id FROM item_list WHERE item_name=$2) ", [dt, sd_name])
+    .then(function (data) {
+
+      res.send(data.doc_id.toString());
+    })
+    .catch(function (error) {
+      res.send("armprihod_get_doc_id: "+error);
+    });
+});
 
 
 
