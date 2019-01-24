@@ -1,57 +1,57 @@
-<a href="/plan2/armprihod" title="" > <-- К списку документов  </a>
+<a href="/plan2/betprihod" title="" > <-- К списку документов  </a>
 <br>
 <br>
 <form method="POST" >
-<div>
-    <table class="form">
-        <tr>
-            <td><label>Код документа:</label></td>
-            <td><input id="doc_id" type="text" name="doc_id" readonly value="{{data.doc_id}}"  >{{doc_id}}
-                <input id="old_doc_id" type="text" name="old_doc_id" readonly value="{{data.doc_id}}" hidden >
-            </td>
-        </tr>
-        <tr>
-            <td><label>Дата и время ГГГГ-ММ-ДД ЧЧ:ММ</label></td>
-            <td><input id="dt" type="text" name="dt" value="{{data.dt}}" ></td>
-        </tr>
-        <tr>
-            <td><label>Подразделение:</label></td>
-            <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{data.sd_name}}"></select></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <button id="save_head_btn" type="button" onclick="save_head()" disabled>Сохранить шапку</button>
-                <button type="button" onclick="get_doc_id()" hidden >ИД документа</button>
-            </td>
-        </tr>
-    </table>
-</div>
-
-<div>
-    <table id="doc_rows" class="list">
-        <tr>
-            <td class="list"><b>Арматура</b></td>
-            <td class="list"><b>Количество</b></td>
-            <td class="list">Кнопки</td>
-        </tr>
-        {{#each data}}
-            <tr onclick="save_row_btn = this.cells[2].childNodes[2]">
-            <td class="input" contenteditable onfocus="list_focus(this)" ondblclick="select_arm(this)" title="Двойной клик для выбора значения из списка">{{arm_name}}</td>
-            <td class="input right" contenteditable onfocus="num_focus(this)" >{{arm_num}}</td>
-            <td><button type="button" onclick="delete_row(this)" >Удалить строку</button>
-                <button type="button" onclick="save_row(this)" disabled >Сохранить строку</button></td>
-            <td class="input"  hidden ondblclick="select_arm(this)">{{arm_name}}</td>
-
+    <div>
+        <table class="form">
+            <tr>
+                <td><label>Код документа:</label></td>
+                <td><input id="doc_id" type="text" name="doc_id" readonly value="{{data.doc_id}}"  >{{doc_id}}
+                    <input id="old_doc_id" type="text" name="old_doc_id" readonly value="{{data.doc_id}}" hidden >
+                </td>
             </tr>
-        {{/each}}
-    </table>
-    <button type="button" onclick="add_row()">Добавить строку</button>
-</div>
+            <tr>
+                <td><label>Дата и время ГГГГ-ММ-ДД ЧЧ:ММ</label></td>
+                <td><input id="dt" type="text" name="dt" value="{{data.dt}}" ></td>
+            </tr>
+            <tr>
+                <td><label>Подразделение:</label></td>
+                <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{data.sd_name}}"></select></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button id="save_head_btn" type="button" onclick="save_head()" disabled>Сохранить шапку</button>
+                    <button type="button" onclick="get_doc_id()" hidden >ИД документа</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <table id="doc_rows" class="list">
+            <tr>
+                <td class="list"><b>Бетон</b></td>
+                <td class="list"><b>Количество</b></td>
+                <td class="list">Кнопки</td>
+            </tr>
+            {{#each data}}
+                <tr onclick="save_row_btn = this.cells[2].childNodes[2]">
+                    <td class="input" contenteditable onfocus="list_focus(this)" ondblclick="select_bet(this)" title="Двойной клик для выбора значения из списка">{{bet_name}}</td>
+                    <td class="input right" contenteditable onfocus="num_focus(this)" >{{bet_num}}</td>
+                    <td><button type="button" onclick="delete_row(this)" >Удалить строку</button>
+                        <button type="button" onclick="save_row(this)" disabled >Сохранить строку</button></td>
+                    <td class="input"  hidden ondblclick="select_bet(this)">{{bet_name}}</td>
+
+                </tr>
+            {{/each}}
+        </table>
+        <button type="button" onclick="add_row()">Добавить строку</button>
+    </div>
 </form>
 <br>
 <br><br>
-<select class='xy td' size="10" name="arm_name" title="" id="arm_name" ondblclick="setval(this)" ></select>
+<select class='xy td' size="10" name="bet_name" title="" id="bet_name" ondblclick="setval(this)" ></select>
 <br>
 <br>
 <div id="hint" ></div>
@@ -60,7 +60,7 @@
 
 <script>
     var gcell; // текущая редактируемая ячейка таблицы
-    var si = document.getElementById("arm_name"); // Список для выбора изделий (арматуры)
+    var si = document.getElementById("bet_name"); // Список для выбора изделий (бетона)
     var tb = document.getElementById("doc_rows"); // Табличная часть документа
 
     var save_head_btn = document.getElementById("save_head_btn"); // Кнопки сохранения данных
@@ -72,15 +72,15 @@
     var dt = document.getElementById("dt"); //
     dt.onchange = sd_name.onchange = function () { save_head_btn.disabled = false; };
 
-    // Скрыть список выбора арматуры при отмене и потере фокуса
+    // Скрыть список выбора бетона при отмене и потере фокуса
     si.onabort = function () { this.style.visibility = 'hidden'; };
     si.onblur = function () { this.style.visibility = 'hidden'; };
 
-    // Выбор из списка арматуры, обработка нажатых клавиш
+    // Выбор из списка бетона, обработка нажатых клавиш
     si.onkeyup = onk;
     function onk(f) {
         if (f.keyCode == 13) setval(this);       // здесь this - это список выбора аматуры (select)
-      else if (f.keyCode == 27) {this.onblur(); gcell.focus(); }
+        else if (f.keyCode == 27) {this.onblur(); gcell.focus(); }
     }
 
     // При получении фокуса на ячейку с выбором из списка
@@ -89,7 +89,7 @@
         t.onkeydown = onkdn_list;
     }
     function onk_list(f) {
-        if (f.keyCode == 13) select_arm(this);       // здесь this - это редактируемая ячейка (gcell)
+        if (f.keyCode == 13) select_bet(this);       // здесь this - это редактируемая ячейка (gcell)
     }
     function onkdn_list(f) {
         if (f.keyCode != 9) return false;       // здесь this - это редактируемая ячейка (gcell)
@@ -124,18 +124,18 @@
 
         // Здесь должно быть точно так же как в сверху в html, только здесь нули вместо значений
         tb.innerHTML += '<tr onclick="save_row_btn = this.cells[2].childNodes[2]"> \
-                       <td class="input" contenteditable onfocus="list_focus(this)" ondblclick="select_arm(this)" title="Двойной клик для выбора значения из списка"></td> \
+                       <td class="input" contenteditable onfocus="list_focus(this)" ondblclick="select_bet(this)" title="Двойной клик для выбора значения из списка"></td> \
                        <td class="input right" contenteditable onfocus="num_focus(this)">0</td> \
                        <td><button type="button" onclick="delete_row(this)">Удалить строку</button> \
                            <button type="button" onclick="save_row(this)">Сохранить строку</button></td> \
-                        <td class="input" hidden ondblclick="select_arm(this)"></td>  \
+                        <td class="input" hidden ondblclick="select_bet(this)"></td>  \
                 </tr> ';
 
         tb.rows[tb.rows.length-1].cells[0].focus(); // Встаем на первую ячейку новой строки
     }
 
     // Открыть список для выбора значения
-    function select_arm(t)
+    function select_bet(t)
     {
         si.style.visibility = 'visible';    // Делаем список видимым
         si.focus();                         // Переходим в список
@@ -158,10 +158,10 @@
         if ( confirm("Удалить строку "+r.cells[3].innerHTML+" ?") )
 
         // здесь удалить из Базы Данных
-        doQuery ("/plan2/armprihod_delete_row", check_delete_row,
-                "&doc_id=" + encodeURIComponent(document.getElementById("doc_id").value)+
-                "&old_arm_name=" + encodeURIComponent(r.cells[3].innerHTML)
-        );
+            doQuery ("/plan2/betprihod_delete_row", check_delete_row,
+                    "&doc_id=" + encodeURIComponent(document.getElementById("doc_id").value)+
+                    "&old_bet_name=" + encodeURIComponent(r.cells[3].innerHTML)
+            );
     }
     function check_delete_row(reply)
     {
@@ -183,11 +183,11 @@
 
         r = t.parentNode.parentNode;
 
-        doQuery ("/plan2/armprihod_save_row", check_save_row,
+        doQuery ("/plan2/betprihod_save_row", check_save_row,
                 "&doc_id=" + encodeURIComponent(document.getElementById("doc_id").value)+
-                "&old_arm_name=" + encodeURIComponent(r.cells[3].innerHTML)+
-                "&arm_name=" + encodeURIComponent(r.cells[0].innerHTML)+
-                "&arm_num=" + encodeURIComponent(r.cells[1].innerHTML)
+                "&old_bet_name=" + encodeURIComponent(r.cells[3].innerHTML)+
+                "&bet_name=" + encodeURIComponent(r.cells[0].innerHTML)+
+                "&bet_num=" + encodeURIComponent(r.cells[1].innerHTML)
         );
 
     }
@@ -205,7 +205,7 @@
     // Сохранить шапку документа в базе данных
     function save_head()
     {
-        doQuery ("/plan2/armprihod_save_head", check_save_head,
+        doQuery ("/plan2/betprihod_save_head", check_save_head,
                 "&doc_id=" + encodeURIComponent(document.getElementById("doc_id").value)+
                 "&dt=" + encodeURIComponent(document.getElementById("dt").value)+
                 "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value)
@@ -217,7 +217,7 @@
         {
             if (document.getElementById("doc_id").value == "0") // Надо найти ИД нового документа
             {
-                doQuery ("/plan2/armprihod_get_doc_id", check_get_doc_id,
+                doQuery ("/plan2/betprihod_get_doc_id", check_get_doc_id,
                         "&dt=" + encodeURIComponent(document.getElementById("dt").value)+
                         "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value)
                 );
@@ -236,10 +236,10 @@
     // это было для отладки
     function get_doc_id()
     {
-           doQuery ("/plan2/armprihod_get_doc_id", to_erro,
-                   "&dt=" + encodeURIComponent(document.getElementById("dt").value)+
-                   "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value)
-           );
+        doQuery ("/plan2/betprihod_get_doc_id", to_erro,
+                "&dt=" + encodeURIComponent(document.getElementById("dt").value)+
+                "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value)
+        );
     }
     function to_erro(reply)
     {
@@ -247,12 +247,12 @@
     }
 
 
-    // Изготовить список арматуры для выбора
-    function get_arm_names()
+    // Изготовить список бетона для выбора
+    function get_bet_names()
     {
-        doQuery ("/common/get_spr_names/Арматура", set_arm_names);
+        doQuery ("/common/get_spr_names/Бетон", set_bet_names);
     }
-    var set_arm_names = function (reply)
+    var set_bet_names = function (reply)
     {
         si.innerHTML = reply;
         si.style.visibility = 'hidden';
@@ -269,8 +269,8 @@
         document.getElementById("sd_name").value = '{{data.sd_name}}';
     }
 
-   get_arm_names();
-   get_sd_names();
+    get_bet_names();
+    get_sd_names();
 
-   save_head_btn.disabled = (doc_id.value != "0") ;
+    save_head_btn.disabled = (doc_id.value != "0") ;
 </script>

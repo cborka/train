@@ -52,3 +52,43 @@ function doQuery (url, onOK, params, async = true)
   }
 }
 
+
+
+// Дальше просто библиотека, не аякс, чтобы не плодить файлы
+
+
+// Получение координат элемента
+function getCoords(elem) // кроме IE8-
+{
+  var box = elem.getBoundingClientRect();
+
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+}
+
+
+// Перезагрузить страницу
+function reload_page()
+{
+  location.reload(true);
+}
+
+// Выделяем текст в ячейке таблиццы
+function select_tc_text(table_cell)
+{
+  var target = table_cell.firstChild;
+  var rng, sel;
+  if (document.createRange) {
+    rng = document.createRange();
+    rng.selectNode(target)
+    sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(rng);
+  } else {
+    rng = document.body.createTextRange();
+    rng.moveToElementText(target);
+    rng.select();
+  }
+}

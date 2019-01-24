@@ -1,5 +1,5 @@
-<h1>Приход арматуры на склад </h1>
-<div><p>Приход арматуры на склад арматуры.<br>
+<h1>Приход бетона  </h1>
+<div><p>Приход бетона <br>
 </p></div>
 <div>
     <table class="list">
@@ -14,15 +14,15 @@
                 <td class="list">{{doc_id}}</td>
                 <td class="list">{{dt}}</td>
                 <td class="list">{{sd_name}}</td>
-                                <td class="list">
-                    <button type="button" onclick="edit_armprihod({{doc_id}})">Изменить</button>
-                    <button type="button" onclick="delete_armprihod(this, {{doc_id}})">Удалить</button>
+                <td class="list">
+                    <button type="button" onclick="edit_betprihod({{doc_id}})">Изменить</button>
+                    <button type="button" onclick="delete_betprihod(this, {{doc_id}})">Удалить</button>
                 </td>
             </tr>
         {{/each}}
     </table>
 </div>
-<a href="/plan2/armprihod_addnew" title="Добавить новый документ" > Добавить </a>
+<a href="/plan2/betprihod_addnew" title="Добавить новый документ" > Добавить </a>
 <br>
 <div id="hint" ></div>
 <div id="erro" ></div>
@@ -31,18 +31,18 @@
     var rr;
 
     // Удалить документ
-    function delete_armprihod(t, doc_id)
+    function delete_betprihod(t, doc_id)
     {
         rr = t.parentNode.parentNode;
 
         if ( confirm("Удалить документ "+doc_id+" ?") )
 
         // здесь удалить из Базы Данных
-            doQuery ("/plan2/armprihod_delete", check_delete_armprihod,
+            doQuery ("/plan2/betprihod_delete", check_delete_betprihod,
                     "&doc_id=" + encodeURIComponent(doc_id)
             );
     }
-    function check_delete_armprihod(reply)
+    function check_delete_betprihod(reply)
     {
         if (reply.substr(0,1) == '+') // Строка успешно удалена из базы данных
         {
@@ -52,8 +52,8 @@
     }
 
     // Редактировать документ
-    function edit_armprihod(doc_id) {
-        location.href = '/plan2/armprihod/'+doc_id;
+    function edit_betprihod(doc_id) {
+        location.href = '/plan2/betprihod/'+doc_id;
     }
 
 </script>

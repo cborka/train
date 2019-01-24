@@ -705,6 +705,42 @@ router.post('/armprihod_save_head', function(req, res, next) {
 });
 
 //
+// Удаление строки документа ПРИХОД АРМАТУРЫ
+//
+router.post('/armprihod_delete_row', function(req, res, next) {
+  var doc_id = req.body.doc_id;
+  var old_arm_name = req.body.old_arm_name;
+
+  db.none(
+    "DELETE FROM armprihod " +
+    " WHERE doc_rf=$1 AND arm_rf=(SELECT item_id FROM item_list WHERE item_name=$2)",
+      [doc_id, old_arm_name])
+      .then (function () {
+        res.send("+Строка ["+doc_id+","+old_arm_name+"] удалена.");
+      })
+      .catch(function (error) {
+        res.send('ОШИБКА armprihod_delete_row('+ doc_id+","+ old_arm_name+"): "+error);
+      });
+});
+
+//
+// Удаление всего документа ПРИХОД АРМАТУРЫ
+//
+router.post('/armprihod_delete', function(req, res, next) {
+  var doc_id = req.body.doc_id;
+
+  db.none(
+    "DELETE FROM armprihod WHERE doc_rf=$1;DELETE FROM armprihod_h WHERE doc_id=$1",
+    [doc_id])
+    .then (function () {
+      res.send("+Документ ["+doc_id+"] удален.");
+    })
+    .catch(function (error) {
+      res.send('ОШИБКА armprihod_delete('+ doc_id+"): "+error);
+    });
+});
+
+//
 // Вернуть ИД документа ПРИХОД АРМАТУРЫ
 //
 router.post('/armprihod_get_doc_id', function(req, res, next) {
@@ -722,6 +758,246 @@ router.post('/armprihod_get_doc_id', function(req, res, next) {
     })
     .catch(function (error) {
       res.send("armprihod_get_doc_id: "+error);
+    });
+});
+
+
+//====== ПРИХОД БЕТОНА ======= таблицы betprihod_h и betprihod ===========================================
+
+//
+// Показать список документов ПРИХОД БЕТОНА
+//
+router.get('/betprihod', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var where_clause = '';
+
+  db.any(
+    "SELECT h.doc_id, SUBSTRING(CAST(h.dt AS VARCHAR), 1, 16) AS dt, i.item_name AS sd_name " +
+    " FROM (betprihod_h h " +
+    "   LEFT JOIN item_list i ON h.sd_rf = i.item_id) " +
+    " ORDER BY 2 ")
+    .then(function (data) {
+
+      data.spr_name = spr_name;
+      res.render('plan2/betprihod_h', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+//
+// Добавить новый документ ПРИХОД БЕТОНА
+//
+router.get('/betprihod_addnew', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var gdata;
+
+  db.one(
+    "SELECT 0 AS doc_id, " +
+    " SUBSTRING(CAST(CURRENT_TIMESTAMP AS VARCHAR), 1, 16) AS dt, " +
+    " 441 AS sd_rf, " +
+    " (SELECT item_name FROM item_list WHERE item_id=452) AS sd_name"
+  )
+    .then(function (data) {
+      gdata = data;
+      db.any(
+        "SELECT t.doc_rf, t.bet_rf, bet.item_name AS bet_name, t.bet_num " +
+        " FROM (betprihod t " +
+        "   LEFT JOIN item_list bet ON t.bet_rf = bet.item_id) " +
+        " WHERE t.doc_rf=0")
+        .then(function (data) {
+
+          data.doc_id = gdata.doc_id;
+          data.dt = gdata.dt;
+          data.sd_rf = gdata.sd_rf;
+          data.sd_name = gdata.sd_name;
+
+          res.render('plan2/betprihod', {data: data}); // Показ формы
+        })
+        .catch(function (error) {
+          res.send(error);
+        });
+
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить документ ПРИХОД БЕТОНА
+//
+router.get('/betprihod/:doc_rf', function(req, res, next) {
+  var doc_rf = req.params.doc_rf;
+  var gdata;
+  db.one(
+    "SELECT h.doc_id, SUBSTRING(CAST(h.dt AS VARCHAR), 1, 16) AS dt, h.sd_rf, sd.item_name AS sd_name " +
+    " FROM (betprihod_h h " +
+    "   LEFT JOIN item_list sd ON h.sd_rf = sd.item_id) " +
+    " WHERE h.doc_id=$1", [doc_rf])
+    .then(function (data) {
+      gdata = data;
+      db.any(
+        "SELECT t.doc_rf, t.bet_rf, bet.item_name AS bet_name, t.bet_num " +
+        " FROM (betprihod t " +
+        "   LEFT JOIN item_list bet ON t.bet_rf = bet.item_id) " +
+        " WHERE t.doc_rf=$1" +
+        " ORDER BY 3 ", [doc_rf])
+        .then(function (data) {
+
+          data.doc_id = gdata.doc_id;
+          data.dt = gdata.dt;
+          data.sd_rf = gdata.sd_rf;
+          data.sd_name = gdata.sd_name;
+
+          res.render('plan2/betprihod', {data: data}); // Показ формы
+        })
+        .catch(function (error) {
+          res.send(error);
+        });
+
+//      data.num_fact = Math.round(data.num_fact * 1000) / 1000
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+//
+// Добавление и корректировка строки документа ПРИХОД БЕТОНА
+//
+router.post('/betprihod_save_row', function(req, res, next) {
+  var doc_id = req.body.doc_id;
+  var old_bet_name = req.body.old_bet_name;
+  var bet_name = req.body.bet_name;
+  var bet_num = req.body.bet_num;
+
+  if (old_bet_name.trim() != "") {
+//  Обновление
+    db.none(
+      "UPDATE betprihod " +
+      "SET bet_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "    bet_num=$2 " +
+      "WHERE doc_rf=$3 AND bet_rf=(SELECT item_id FROM item_list WHERE item_name=$4)",
+      [bet_name, bet_num, doc_id, old_bet_name])
+      .then (function () {
+        res.send("+Строка ["+bet_name+","+bet_num+"] обновлена.");
+      })
+      .catch(function (error) {
+        res.send('x-->'+bet_name+","+bet_num+","+ doc_id+","+ old_bet_name+","+error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO betprihod (doc_rf, bet_rf, bet_num) " +
+      " VALUES ($1, (SELECT item_id FROM item_list WHERE item_name=$2), $3)",
+      [doc_id, bet_name, bet_num])
+      .then (function (data) {
+        res.send("+Строка ["+doc_id+","+bet_name+","+bet_num+"] добавлена.");
+      })
+      .catch(function (error) {
+        res.send("-Строка ["+doc_id+","+bet_name+","+bet_num+"] не добавлена."+error);
+      });
+  }
+});
+
+
+//
+// Добавление и корректировка ШАПКИ документа ПРИХОД БЕТОНА
+//
+router.post('/betprihod_save_head', function(req, res, next) {
+  var doc_id = req.body.doc_id;
+  var dt = req.body.dt;
+  var sd_name = req.body.sd_name;
+
+  if (doc_id != "0") {
+//  Обновление
+    db.none(
+      "UPDATE betprihod_h " +
+      "SET sd_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "    dt=$2 " +
+      "WHERE doc_id=$3",
+      [sd_name, dt, doc_id])
+      .then (function () {
+        res.send("+Шапка документа ["+doc_id+"] обновлена.");
+      })
+      .catch(function (error) {
+        res.send("betprihod_save_head("+doc_id+ ") UPDATE: "+error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO betprihod_h (dt, sd_rf) " +
+      " VALUES ($1, (SELECT item_id FROM item_list WHERE item_name=$2))",
+      [dt, sd_name])
+      .then (function (data) {
+        res.send("+Шапка документа ["+doc_id+"] добавлена.");
+      })
+      .catch(function (error) {
+        res.send("betprihod_save_head("+doc_id+ ") INSERT: "+error);
+      });
+  }
+});
+
+//
+// Удаление строки документа ПРИХОД БЕТОНА
+//
+router.post('/betprihod_delete_row', function(req, res, next) {
+  var doc_id = req.body.doc_id;
+  var old_bet_name = req.body.old_bet_name;
+
+  db.none(
+    "DELETE FROM betprihod " +
+    " WHERE doc_rf=$1 AND bet_rf=(SELECT item_id FROM item_list WHERE item_name=$2)",
+    [doc_id, old_bet_name])
+    .then (function () {
+      res.send("+Строка ["+doc_id+","+old_bet_name+"] удалена.");
+    })
+    .catch(function (error) {
+      res.send('ОШИБКА betprihod_delete_row('+ doc_id+","+ old_bet_name+"): "+error);
+    });
+});
+
+//
+// Удаление всего документа ПРИХОД БЕТОНА
+//
+router.post('/betprihod_delete', function(req, res, next) {
+  var doc_id = req.body.doc_id;
+
+  db.none(
+    "DELETE FROM betprihod WHERE doc_rf=$1;DELETE FROM betprihod_h WHERE doc_id=$1",
+    [doc_id])
+    .then (function () {
+      res.send("+Документ ["+doc_id+"] удален.");
+    })
+    .catch(function (error) {
+      res.send('ОШИБКА betprihod_delete('+ doc_id+"): "+error);
+    });
+});
+
+//
+// Вернуть ИД документа ПРИХОД БЕТОНА
+//
+router.post('/betprihod_get_doc_id', function(req, res, next) {
+  var dt = req.body.dt;
+  var sd_name = req.body.sd_name;
+
+  db.one(
+    "SELECT doc_id " +
+    " FROM betprihod_h  " +
+    " WHERE SUBSTRING(CAST(dt AS VARCHAR), 1, 16) = $1 " +
+    "   AND sd_rf = (SELECT item_id FROM item_list WHERE item_name=$2) ", [dt, sd_name])
+    .then(function (data) {
+
+      res.send(data.doc_id.toString());
+    })
+    .catch(function (error) {
+      res.send("betprihod_get_doc_id: "+error);
     });
 });
 
