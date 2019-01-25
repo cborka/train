@@ -56,7 +56,7 @@
     }
     function get_sd_names()
     {
-        doQuery ("/pro/get_prolet_names", set_sd_names);
+        doQuery ("/common/get_spr_names/Подразделения", set_sd_names);
     }
 
     // Изготовить список ЖБИ для выбора
@@ -67,7 +67,7 @@
     }
     function get_fc_names()
     {
-        doQuery ("/pro/get_fc_names", set_fc_names);
+        doQuery ("/common/get_spr_names/ЖБИ", set_fc_names);
     }
     get_sd_names();
     get_fc_names();

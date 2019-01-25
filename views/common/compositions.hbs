@@ -1,0 +1,50 @@
+<h1>Состав ЖБИ</h1>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Продукт</b></td>
+            <td class="list"><b>Вид компонента</b></td>
+            <td class="list"><b>Компонент</b></td>
+            <td class="list"><b>Количество</b></td>
+            <td class="list"><b>Единицы</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{product_name}}</td>
+                <td class="list">{{spr_name}}</td>
+                <td class="list">{{component_name}}</td>
+                <td class="list">{{amount}}</td>
+                <td class="list">{{unit_name}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_item({{product_rf}}, {{component_rf}})">Изменить</button>
+                    <button type="button" onclick="delete_item({{product_rf}}, '{{product_name}}', {{component_rf}}, '{{component_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/common/composition_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+    function delete_item(product_rf, product_name, component_rf, component_name) {
+
+        var result = confirm("Удалить, "+product_name+' -> '+ component_name+"?");
+        if (result) {
+            location.href = '/common/composition_delete/'+product_rf+'/'+component_rf;
+//            window.open('/common/item_delete/'+item_id);
+        }
+        else
+            erro("Оставляю "+product_name+' -> '+ component_name+"!");
+    }
+
+    function edit_item(product_rf, component_rf) {
+        location.href = '/common/composition/'+product_rf+'/'+component_rf;
+    }
+
+</script>

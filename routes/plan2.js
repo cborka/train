@@ -1002,5 +1002,116 @@ router.post('/betprihod_get_doc_id', function(req, res, next) {
 });
 
 
+//=================== ПЛАНЫ (периоды планирования) =====================
+
+//
+// Показать список ПЛАНОВ
+//
+router.get('/plan_s_s', function(req, res, next) {
+  db.any(
+    " INSERT INTO public.plan_s(plan_rf, date_begin, date_end) " +
+    "   SELECT item_id, '1970-01-01', '1970-01-31'  FROM item_list " +
+    " WHERE spr_rf = 6  AND item_id NOT IN (SELECT plan_rf FROM plan_s); " +
+
+    "SELECT p.plan_rf, i.item_name AS plan_name, CAST(p.date_begin AS VARCHAR) AS dtb, CAST(p.date_end AS VARCHAR) AS dte" +
+    " FROM plan_s p " +
+    "   LEFT JOIN item_list i ON p.plan_rf = i.item_id " +
+    " ORDER BY plan_name")
+    .then(function (data) {
+
+      res.render('plan2/plan_s_s', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавить новый ПЛАН
+//
+router.get('/plan_s_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS plan_rf, '' AS plan_name, CAST(CURRENT_DATE AS varchar) AS dtb, CAST(CURRENT_DATE+30 AS varchar) AS dte ")
+    .then(function (data) {
+      res.render('plan2/plan_s', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить ПЛАН
+//
+router.get('/plan_s/:plan_rf', function(req, res, next) {
+  var plan_rf = req.params.plan_rf;
+  db.one(
+    "SELECT p.plan_rf, i.item_name AS plan_name, CAST(p.date_begin AS VARCHAR) AS dtb, CAST(p.date_end AS VARCHAR) AS dte" +
+    " FROM plan_s p " +
+    "   LEFT JOIN item_list i ON p.plan_rf = i.item_id " +
+    " WHERE p.plan_rf = $1", [plan_rf])
+    .then(function (data) {
+      res.render('plan2/plan_s', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Добавление и корректировка ПЛАНА
+//
+router.post('/plan_s_update', function(req, res, next) {
+  var plan_rf = req.body.plan_rf;
+  var plan_name = req.body.plan_name;
+  var dtb = req.body.dtb;
+  var dte = req.body.dte;
+  if (plan_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE item_list " +
+      "SET item_name = $1 " +
+      "WHERE item_id = $4 " +
+      " ; " +
+      "UPDATE plan_s " +
+      "SET date_begin=$2, " +
+      "    date_end=$3 " +
+      "WHERE plan_rf=$4",
+      [plan_name, dtb, dte, plan_rf])
+      .then (function () {
+        res.redirect('/plan2/plan_s_s');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO plan_s (plan_rf, date_begin, date_end) " +
+      "VALUES (add2spr('Планы','Планы', $1), $2, $3)",
+      [plan_name, dtb, dte])
+      .then (function (data) {
+        res.redirect('/plan2/plan_s_s');
+
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+
+// Удалить ПЛАН
+router.get('/plan_s_delete/:plan_rf', function(req, res, next) {
+  var plan_rf = req.params.plan_rf;
+  db.none("DELETE FROM plan_s WHERE plan_rf=$1 ; DELETE FROM item_list WHERE item_id=$1 ", plan_rf)
+    .then(function () {
+      res.redirect('/plan2/plan_s_s'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
 
 module.exports = router;

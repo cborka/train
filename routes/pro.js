@@ -549,11 +549,11 @@ router.get('/get_plan_names', function(req, res, next) {
 //
 router.get('/sd_fc_s', function(req, res, next) {
   db.any(
-    "SELECT sd_rf, sd_name, fc_rf, fc_name, trk, trkk, forming_time, kob " +
-    " FROM ((sd_fc sf " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
-    " ORDER BY sd_name, fc_name ")
+    "SELECT m.sd_rf, sd.item_name AS sd_name, m.fc_rf, fc.item_name AS fc_name, trk, trkk, forming_time, kob " +
+    " FROM ((sd_fc m " +
+    "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list fc ON fc_rf = fc.item_id) " +
+    " ORDER BY 2, 4 ")
     .then(function (data) {
       res.render('pro/sd_fc_s', {data: data}); // Показ формы
     })
@@ -582,11 +582,11 @@ router.get('/sd_fc/:sd_rf/:fc_rf', function(req, res, next) {
   var sd_rf = req.params.sd_rf;
   var fc_rf = req.params.fc_rf;
   db.one(
-    "SELECT sd_rf, sd_name, fc_rf, fc_name, trk, trkk, forming_time, kob " +
-    " FROM ((sd_fc sf " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
-    " WHERE sd_rf = $1 AND fc_rf = $2", [sd_rf, fc_rf])
+    "SELECT m.sd_rf, sd.item_name AS sd_name, m.fc_rf, fc.item_name AS fc_name, trk, trkk, forming_time, kob " +
+    " FROM ((sd_fc m " +
+    "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list fc ON fc_rf = fc.item_id) " +
+    " WHERE m.sd_rf = $1 AND m.fc_rf = $2", [sd_rf, fc_rf])
     .then(function (data) {
       res.render('pro/sd_fc', data);
     })
@@ -613,8 +613,9 @@ router.post('/sd_fc/update', function(req, res, next) {
 //  Обновление
     db.none(
       "UPDATE sd_fc " +
-      "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), fc_rf=(SELECT fc_id FROM fc_list WHERE fc_name=$2), " +
-      "  trk=$3, trkk=$4, forming_time=$5, kob=$6 " +
+      "SET sd_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "    fc_rf=(SELECT item_id FROM item_list WHERE item_name=$2 AND spr_rf = 9), " +
+      "    trk=$3, trkk=$4, forming_time=$5, kob=$6 " +
       "WHERE sd_rf=$7 AND fc_rf=$8",
       [sd_name, fc_name, trk, trkk, forming_time, kob, old_sd_rf, old_fc_rf])
       .then (function () {
@@ -628,7 +629,9 @@ router.post('/sd_fc/update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO  sd_fc (sd_rf, fc_rf, trk, trkk,  forming_time, kob) " +
-      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT fc_id FROM fc_list WHERE fc_name=$2), $3, $4, $5, $6)",
+      "VALUES (" +
+      "  (SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "  (SELECT item_id FROM item_list WHERE item_name=$2 AND spr_rf = 9), $3, $4, $5, $6)",
       [sd_name, fc_name, trk, trkk, forming_time, kob])
       .then (function (data) {
         res.redirect('/pro/sd_fc_s');
@@ -989,9 +992,9 @@ router.get('/get_part_names', function(req, res, next) {
 router.get('/form_part_s', function(req, res, next) {
   db.any(
     "SELECT form_rf, form_name, part_rf, part_name,  cast(part_num AS float) " +
-    " FROM ((form_part ff " +
-    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
-    "   LEFT JOIN part_list fc ON part_rf = part_id) " +
+    " FROM ((form_part m " +
+    "   LEFT JOIN item_list frm ON m.form_rf = form_id) " +
+    "   LEFT JOIN item_list fc ON m.part_rf = part_id) " +
     " ORDER BY form_name, part_name ")
     .then(function (data) {
       res.render('pro/form_part_s', {data: data}); // Показ формы
@@ -1094,11 +1097,11 @@ router.get('/form_part_delete/:form_rf/:part_rf', function(req, res, next) {
 //
 router.get('/sd_part_s', function(req, res, next) {
   db.any(
-    "SELECT sd_rf, sd_name, part_rf, part_name, part_num " +
-    " FROM ((sd_part sf " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN part_list frm ON part_rf = part_id) " +
-    " ORDER BY sd_name, part_name ")
+    "SELECT m.sd_rf, sd.item_name AS sd_name, m.part_rf, p.item_name AS part_name, m.part_num " +
+    " FROM ((sd_part m " +
+    "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list p ON m.part_rf = p.item_id) " +
+    " ORDER BY 2, 4 ")
     .then(function (data) {
 
       // Убираю конечные нули в дробной части
@@ -1117,7 +1120,7 @@ router.get('/sd_part_s', function(req, res, next) {
 // Добавить новый ПРОЛЁТ-ЧАСТЬ
 //
 router.get('/sd_part_addnew', function(req, res, next) {
-  db.one("SELECT 0 AS sd_rf, '' AS sd_name, 0 AS part_rf, '' AS part_name ")
+  db.one("SELECT 0 AS sd_rf, '' AS sd_name, 0 AS part_rf, '' AS part_name, 0 AS part_num ")
     .then(function (data) {
       res.render('pro/sd_part', data);
     })
@@ -1133,11 +1136,11 @@ router.get('/sd_part/:sd_rf/:part_rf', function(req, res, next) {
   var sd_rf = req.params.sd_rf;
   var part_rf = req.params.part_rf;
   db.one(
-    "SELECT sd_rf, sd_name, part_rf, part_name, part_num " +
-    " FROM ((sd_part sf " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN part_list frm ON part_rf = part_id) " +
-    " WHERE sd_rf = $1 AND part_rf = $2", [sd_rf, part_rf])
+    "SELECT m.sd_rf, sd.item_name AS sd_name, m.part_rf, p.item_name AS part_name, m.part_num " +
+    " FROM ((sd_part m " +
+    "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list p ON m.part_rf = p.item_id) " +
+    " WHERE m.sd_rf = $1 AND m.part_rf = $2", [sd_rf, part_rf])
     .then(function (data) {
       res.render('pro/sd_part', data);
     })
@@ -1161,7 +1164,8 @@ router.post('/sd_part/update', function(req, res, next) {
 //  Обновление
     db.none(
       "UPDATE sd_part " +
-      "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), part_rf=(SELECT part_id FROM part_list WHERE part_name=$2), part_num=$3 " +
+      "SET sd_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "  part_rf=(SELECT item_id FROM item_list WHERE item_name=$2), part_num=$3 " +
       "WHERE sd_rf=$4 AND part_rf=$5",
       [sd_name, part_name, part_num, old_sd_rf, old_part_rf])
       .then (function () {
@@ -1175,7 +1179,10 @@ router.post('/sd_part/update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO  sd_part (sd_rf, part_rf, part_num) " +
-      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT part_id FROM part_list WHERE part_name=$2), $3)",
+      " VALUES (" +
+      " (SELECT item_id FROM item_list WHERE item_name=$1), " +
+      " (SELECT item_id FROM item_list WHERE item_name=$2), " +
+      "  $3)",
       [sd_name, part_name, part_num])
       .then (function (data) {
         res.redirect('/pro/sd_part_s');

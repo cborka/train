@@ -46,7 +46,7 @@
     }
     function get_sd_names()
     {
-        doQuery ("/pro/get_prolet_names", set_sd_names);
+        doQuery ("/common/get_spr_names/Подразделения", set_sd_names);
     }
 
     // Изготовить список форм для выбора
@@ -57,7 +57,7 @@
     }
     function get_part_names()
     {
-        doQuery ("/pro/get_part_names", set_part_names);
+        doQuery ("/common/get_spr_names/ЧастиФормЖБИ", set_part_names);
     }
     get_sd_names();
     get_part_names();

@@ -234,18 +234,176 @@ router.post('/add_text_to_file', function(req, res, next) {
 });
 
 
+//====== КОМПОЗИЦИИ (СОСТАВ ПРОДУКТОВ) === Таблица БД compositions ==========
+
+//
+// Показать СПИСОК КОМПОЗИЦИЙ
+//
+router.get('/compositions', function(req, res, next) {
+  db.any(
+    "SELECT m.product_rf,  p.item_name AS product_name, s.item_name AS spr_name, " +
+    "       m.component_rf, c.item_name AS component_name, " +
+    "       m.amount, " +
+    "       m.unit_rf,  u.item_name AS unit_name " +
+    " FROM ((((compositions m " +
+    "   LEFT JOIN item_list p ON m.product_rf = p.item_id) " +
+    "   LEFT JOIN item_list c ON m.component_rf = c.item_id) " +
+    "   LEFT JOIN item_list u ON m.unit_rf = u.item_id) " +
+    "   LEFT JOIN item_list s ON c.spr_rf = s.item_id) " +
+    " ORDER BY 2, 4")
+    .then(function (data) {
+      res.render('common/compositions', {data: data}); // Показ формы
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+//
+// Добавить новое
+//
+router.get('/composition_addnew', function(req, res, next) {
+  db.one("SELECT 0 AS product_rf, '' AS product_rf_name, 0 AS component_rf, '' AS component_name, " +
+                 "0 AS ampount, 0 AS unit_rf, '' AS unit_name ")
+    .then(function (data) {
+      res.render('common/composition', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+//
+// Показать/обновить
+//
+router.get('/composition/:product_rf/:component_rf', function(req, res, next) {
+  var product_rf = req.params.product_rf;
+  var component_rf = req.params.component_rf;
+
+  db.one(
+    "SELECT m.product_rf,   p.item_name AS product_name, " +
+    "       m.component_rf, c.item_name AS component_name, " +
+    "       m.amount, " +
+    "       m.unit_rf,  u.item_name AS unit_name " +
+    " FROM (((compositions m " +
+    "   LEFT JOIN item_list p ON m.product_rf = p.item_id) " +
+    "   LEFT JOIN item_list c ON m.component_rf = c.item_id) " +
+    "   LEFT JOIN item_list u ON m.unit_rf = u.item_id) " +
+    " WHERE m.product_rf = $1 AND m.component_rf = $2", [product_rf, component_rf])
+    .then(function (data) {
+      res.render('common/composition', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+//
+// Добавление и корректировка
+//
+router.post('/composition_update', function(req, res, next) {
+  var product_rf = req.body.product_rf;
+  var product_name = req.body.product_name;
+  var component_name = req.body.component_name;
+  var unit_name = req.body.unit_name;
+  var amount = req.body.amount;
+  var old_product_rf = req.body.old_product_rf;
+  var old_component_rf = req.body.old_component_rf;
+  if (product_rf > 0 ) {
+//  Обновление
+    db.none(
+      "UPDATE compositions " +
+      "SET product_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "   component_rf=(SELECT item_id FROM item_list WHERE item_name=$2), " +
+      "   amount=$3,  " +
+      "   unit_rf=(SELECT item_id FROM item_list WHERE item_name=$4) " +
+      "WHERE product_rf=$5 AND component_rf=$6 ",
+      [product_name, component_name, amount, unit_name, old_product_rf, old_component_rf])
+      .then (function () {
+        res.redirect('/common/compositions');
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+  else {
+//  Добавление
+    db.none(
+      "INSERT INTO  compositions (product_rf, component_rf, amount, unit_rf) " +
+      "VALUES ( " +
+      " (SELECT item_id FROM item_list WHERE item_name=$1), " +
+      " (SELECT item_id FROM item_list WHERE item_name=$2), " +
+      " $3, " +
+      " (SELECT item_id FROM item_list WHERE item_name=$4) " +
+      " )",
+      [product_name, component_name, amount, unit_name])
+      .then (function (data) {
+        res.redirect('/common/compositions');
+
+      })
+      .catch(function (error) {
+        res.send(error);
+      });
+  }
+});
+// Удалить
+router.get('/composition_delete/:product_rf/:component_rf', function(req, res, next) {
+  var product_rf = req.params.product_rf;
+  var component_rf = req.params.component_rf;
+
+  db.none("DELETE FROM compositions WHERE product_rf = $1 AND component_rf = $2", [product_rf, component_rf])
+    .then(function () {
+      res.redirect('/common/compositions'); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
 
 
 
+// ============
 
+//
+// Сформировать и возвратить список ПРОДУКТОВ/ИЗДЕЛИЙ
+//
+router.get('/get_product_names', function(req, res, next) {
+  db.any(
+    "SELECT item_name " +
+    "  FROM item_list " +
+    "  WHERE spr_rf = 9" + // ЖБИ
+    "  ORDER BY 1 ")
+    .then (function (data) {
+      var result = '';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send('get_product_names: ОШИБКА: ' +error);
+    });
+});
 
-
-
-
-
-
-
-
-
+//
+// Сформировать и возвратить список КОМПОНЕНТОВ
+//
+router.get('/get_component_names', function(req, res, next) {
+  db.any(
+    "SELECT item_name " +
+    "  FROM item_list " +
+    "  WHERE spr_rf IN (18, 4) " + // Арматура, Бетон
+    "  ORDER BY spr_rf, item_name ")
+    .then (function (data) {
+      var result = '';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send('get_component_names: ОШИБКА: ' +error);
+    });
+});
 
 module.exports = router;

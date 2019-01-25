@@ -40,11 +40,11 @@ function SEL(buf) {
 router.get('/files', function(req, res, next) {
 
 //  sss = ShowFolderList('c:');
-  var dir = 'c:\\cborka\\fstest';
+  var dir = 'c:\\cborka';
 //  var dir = 'U:\\BUH\\Обмен 1С\\2я площадка\\Выгрузка из 1С';
 //  var dir = '\\\\10.0.0.10\\обменпризводство';
 //  fs.readdir('U:\\BUH\\Обмен 1С\\2я площадка\\Выгрузка из 1С', (err, data) => {
-  fs.readdir(dir, (err, data) => {
+  fs.readdir(dir, function(err, data) {
     var s = '';
 
     if (err) {
@@ -58,11 +58,12 @@ router.get('/files', function(req, res, next) {
     var content = '';
     for (var i = 0; i < data.length; i++) {
 //      if (data[i].substring(17) == 'отгрузка ЖБИ.txt')
-      if (data[i].slice(-5) == 'g.txt')
+      if (data[i].slice(-5) == 'l.txt')  //логи )
       {
         content = fs.readFileSync(dir + '\\' + data[i]);
 
        s = s + data[i] + '<br>'+ SEL(content) + '<br>';
+//       s = s + data[i] + '<br>';
       }
     }
 
