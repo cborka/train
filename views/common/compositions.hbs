@@ -2,19 +2,27 @@
 <div>
     <table class="list">
         <tr>
+            <td class="list">ID</td>
             <td class="list"><b>Продукт</b></td>
+            <td class="list">ID</td>
             <td class="list"><b>Вид компонента</b></td>
+            <td class="list">ID</td>
             <td class="list"><b>Компонент</b></td>
             <td class="list"><b>Количество</b></td>
+            <td class="list">ID</td>
             <td class="list"><b>Единицы</b></td>
             <td class="list">Кнопки</td>
         </tr>
         {{#each data}}
             <tr>
+                <td class="list">{{product_rf}}</td>
                 <td class="list">{{product_name}}</td>
+                <td class="list">{{spr_rf}}</td>
                 <td class="list">{{spr_name}}</td>
+                <td class="list">{{component_rf}}</td>
                 <td class="list">{{component_name}}</td>
                 <td class="list">{{amount}}</td>
+                <td class="list">{{unit_rf}}</td>
                 <td class="list">{{unit_name}}</td>
                 <td class="list">
                     <button type="button" onclick="edit_item({{product_rf}}, {{component_rf}})">Изменить</button>

@@ -50,7 +50,7 @@
     }
     function get_sd_names()
     {
-        doQuery ("/pro/get_prolet_names", set_sd_names);
+        doQuery ("/common/get_spr_names/Подразделения", set_sd_names);
     }
 
     // Изготовить список форм для выбора
@@ -61,7 +61,7 @@
     }
     function get_form_names()
     {
-        doQuery ("/pro/get_form_names", set_form_names);
+        doQuery ("/common/get_spr_names/ФормыЖБИ", set_form_names);
     }
     get_sd_names();
     get_form_names();

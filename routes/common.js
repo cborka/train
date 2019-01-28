@@ -241,7 +241,7 @@ router.post('/add_text_to_file', function(req, res, next) {
 //
 router.get('/compositions', function(req, res, next) {
   db.any(
-    "SELECT m.product_rf,  p.item_name AS product_name, s.item_name AS spr_name, " +
+    "SELECT m.product_rf,  p.item_name AS product_name, s.item_id AS spr_rf, s.item_name AS spr_name, " +
     "       m.component_rf, c.item_name AS component_name, " +
     "       m.amount, " +
     "       m.unit_rf,  u.item_name AS unit_name " +

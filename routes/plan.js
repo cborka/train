@@ -11,12 +11,14 @@ var db = require("../db");
 //
 router.get('/plan_sd_fc_s', function(req, res, next) {
   db.any(
-    "SELECT plan_rf, plan_name, sd_rf, sd_name, fc_rf, fc_name, fc_num, pp.fc_v " +
+    "SELECT pp.plan_rf, p.item_name AS plan_name, " +
+    "       pp.sd_rf,  sd.item_name AS sd_name, " +
+    "       pp.fc_rf,  fc.item_name AS fc_name, pp.fc_num, pp.fc_v " +
     " FROM (((plan_fc_pro pp " +
-    "   LEFT JOIN plan_list p ON plan_rf = plan_id) " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
-    " ORDER BY plan_name, sd_name, fc_name ")
+    "   LEFT JOIN item_list p ON pp.plan_rf = p.item_id) " +
+    "   LEFT JOIN item_list sd ON pp.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list fc ON pp.fc_rf = fc.item_id) " +
+    " ORDER BY 2, 4, 6 ")
     .then(function (data) {
       res.render('plan/plan_sd_fc_s', {data: data}); // Показ формы
     })
@@ -46,11 +48,13 @@ router.get('/plan_sd_fc/:plan_rf/:sd_rf/:fc_rf', function(req, res, next) {
   var sd_rf = req.params.sd_rf;
   var fc_rf = req.params.fc_rf;
   db.one(
-    "SELECT plan_rf, plan_name, sd_rf, sd_name, fc_rf, fc_name, fc_num, pp.fc_v " +
+    "SELECT pp.plan_rf, p.item_name AS plan_name, " +
+    "       pp.sd_rf,  sd.item_name AS sd_name, " +
+    "       pp.fc_rf,  fc.item_name AS fc_name, pp.fc_num, pp.fc_v " +
     " FROM (((plan_fc_pro pp " +
-    "   LEFT JOIN plan_list p ON plan_rf = plan_id) " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
+    "   LEFT JOIN item_list p ON pp.plan_rf = p.item_id) " +
+    "   LEFT JOIN item_list sd ON pp.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list fc ON pp.fc_rf = fc.item_id) " +
     " WHERE plan_rf=$1 AND sd_rf = $2 AND fc_rf = $3", [plan_rf, sd_rf, fc_rf])
     .then(function (data) {
       res.render('plan/plan_sd_fc', data);
@@ -79,7 +83,10 @@ router.post('/plan_sd_fc/update', function(req, res, next) {
 //  Обновление
     db.none(
       "UPDATE plan_fc_pro " +
-      "SET plan_rf=(SELECT plan_id FROM plan_list WHERE plan_name=$1), sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$2), fc_rf=(SELECT fc_id FROM fc_list WHERE fc_name=$3), fc_num=$4, fc_v=$5 " +
+      "SET plan_rf=(SELECT item_id FROM item_list WHERE spr_rf =  6 AND item_name=$1), " +
+      "    sd_rf=(SELECT item_id FROM item_list WHERE spr_rf =  8 AND item_name=$2), " +
+      "    fc_rf=(SELECT item_id FROM item_list WHERE spr_rf =  9 AND item_name=$3), " +
+      "    fc_num=$4, fc_v=$5 " +
       "WHERE plan_rf=$6 AND sd_rf=$7 AND fc_rf=$8",
       [plan_name, sd_name, fc_name, fc_num, fc_v, old_plan_rf, old_sd_rf, old_fc_rf])
       .then (function () {
@@ -93,7 +100,11 @@ router.post('/plan_sd_fc/update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO  plan_fc_pro (plan_rf, sd_rf, fc_rf, fc_num, fc_v) " +
-      "VALUES ((SELECT plan_id FROM plan_list WHERE plan_name=$1), (SELECT sd_id FROM sd_list WHERE sd_name=$2), (SELECT fc_id FROM fc_list WHERE fc_name=$3), $4, $5)",
+      "VALUES (" +
+      " (SELECT item_id FROM item_list WHERE spr_rf =  6 AND item_name=$1), " +
+      " (SELECT item_id FROM item_list WHERE spr_rf =  8 AND item_name=$2), " +
+      " (SELECT item_id FROM item_list WHERE spr_rf =  9 AND item_name=$3), " +
+      " $4, $5)",
       [plan_name, sd_name, fc_name, fc_num, fc_v])
       .then (function (data) {
         res.redirect('/plan/plan_sd_fc_s');
@@ -245,11 +256,12 @@ router.get('/plan_pro_calc/:plan_rf/:sd_rf', function(req, res, next) {
 //
 router.get('/plan_sd_s', function(req, res, next) {
   db.any(
-    "SELECT plan_rf, plan_name, sd_rf, sd_name, days_num, workers_num, CAST(ps.date_begin AS VARCHAR) AS dtb, CAST(ps.date_end AS VARCHAR) AS dte " +
-    " FROM ((plan_sd ps " +
-    "   LEFT JOIN plan_list plan ON plan_rf = plan_id) " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    " ORDER BY plan_name, sd_name ")
+    "SELECT m.plan_rf, plan.item_name AS plan_name, m.sd_rf, sd.item_name AS sd_name, m.days_num, m.workers_num, " +
+    "  CAST(m.date_begin AS VARCHAR) AS dtb, CAST(m.date_end AS VARCHAR) AS dte " +
+    " FROM ((plan_sd m " +
+    "   LEFT JOIN item_list plan ON m.plan_rf = plan.item_id) " +
+    "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
+    " ORDER BY 2, 4 ")
     .then(function (data) {
       res.render('plan/plan_sd_s', {data: data}); // Показ формы
     })
@@ -278,10 +290,11 @@ router.get('/plan_sd/:plan_rf/:sd_rf', function(req, res, next) {
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
   db.one(
-    "SELECT plan_rf, plan_name, sd_rf, sd_name, days_num, workers_num, CAST(ps.date_begin AS VARCHAR) AS dtb, CAST(ps.date_end AS VARCHAR) AS dte " +
-    " FROM ((plan_sd ps " +
-    "   LEFT JOIN plan_list plan ON plan_rf = plan_id) " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
+    "SELECT m.plan_rf, plan.item_name AS plan_name, m.sd_rf, sd.item_name AS sd_name, m.days_num, m.workers_num, " +
+    "  CAST(m.date_begin AS VARCHAR) AS dtb, CAST(m.date_end AS VARCHAR) AS dte " +
+    " FROM ((plan_sd m " +
+    "   LEFT JOIN item_list plan ON m.plan_rf = plan.item_id) " +
+    "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
     " WHERE plan_rf = $1 AND sd_rf = $2", [plan_rf, sd_rf])
     .then(function (data) {
       res.render('plan/plan_sd', data);
@@ -309,8 +322,8 @@ router.post('/plan_sd/update', function(req, res, next) {
 //  Обновление
     db.none(
       "UPDATE plan_sd " +
-      "SET plan_rf=(SELECT plan_id FROM plan_list WHERE plan_name=$1), " +
-      "  sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$2), " +
+      "SET plan_rf=(SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
+      "  sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2), " +
       "  days_num=$3, " +
       "  workers_num=$4, " +
       "  date_begin=$5, " +
@@ -329,8 +342,8 @@ router.post('/plan_sd/update', function(req, res, next) {
     db.none(
       "INSERT INTO  plan_sd (plan_rf, sd_rf, days_num, workers_num, date_begin, date_end ) " +
       "VALUES (" +
-      "  (SELECT plan_id FROM plan_list WHERE plan_name=$1), " +
-      "  (SELECT sd_id FROM sd_list WHERE sd_name=$2),  " +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2),  " +
       "  $3, $4, $5, $6" +
       ")",
       [plan_name, sd_name, days_num, workers_num, dtb, dte])
@@ -365,7 +378,7 @@ router.get('/plan_pro_calc2/:plan_rf/:sd_rf', function(req, res, next) {
   var plan_rf = req.params.plan_rf;
   var sd_rf = req.params.sd_rf;
   db.one(
-    "SELECT sd_name FROM sd_list WHERE sd_id = $1 ",
+    "SELECT item_name AS sd_name FROM item_list WHERE spr_rf = 8 AND item_id = $1 ",
     [sd_rf])
     .then(function (data) {
       var report_url = '/plan/plan_pro_calc33/'+ plan_rf + '/' + sd_rf;
@@ -400,19 +413,20 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
   var gdata;
 
   db.one(
-    "SELECT pp.plan_rf, p.plan_name, pp.sd_rf, sd.sd_name, pp.fc_rf, fc.fc_name, pp.fc_num, fc.fc_v, " +
+    "SELECT pp.plan_rf, p.item_name AS plan_name, pp.sd_rf, sd.item_name AS sd_name, pp.fc_rf, fc.item_name AS fc_name, " +
+    " pp.fc_num, pp.fc_v, " +
     " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, ps.date_begin, ps.date_end, " +
     " sf.form_num, sf.form_num_max, sdf.trk, sdf.trkk, sdf.kob " +
     " FROM (((((((plan_fc_pro pp " +
-    "   LEFT JOIN plan_list p ON pp.plan_rf = p.plan_id) " +
+    "   LEFT JOIN item_list p ON pp.plan_rf = p.item_id) " +
     "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
     "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf AND pp.sd_rf = sf.sd_rf) " +
     "   LEFT JOIN plan_sd ps ON pp.plan_rf = ps.plan_rf AND pp.sd_rf = ps.sd_rf) " +
-    "   LEFT JOIN sd_list sd ON pp.sd_rf = sd.sd_id) " +
-    "   LEFT JOIN fc_list fc ON pp.fc_rf = fc.fc_id) " +
+    "   LEFT JOIN item_list sd ON pp.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list fc ON pp.fc_rf = fc.item_id) " +
     "   LEFT JOIN sd_fc sdf ON pp.fc_rf = sdf.fc_rf) " +
     " WHERE pp.plan_rf = $1 AND pp.sd_rf = $2 " +
-    " ORDER BY fc.fc_name " +
+    " ORDER BY fc.item_name " +
     " LIMIT 1 ",
     [plan_rf, sd_rf])
     .then(function (data) {
@@ -489,6 +503,8 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       data.efficiency =  Math.round((data.fc_num /  data.month_power_max) * 10000) / 100;
 
       // Округляю до двух цифр после запятой для вывода на экран
+      data.day_power = Math.round(data.day_power * 100) / 100 ;
+      data.day_power_max = Math.round(data.day_power_max * 100) / 100 ;
       data.month_power = Math.round(data.month_power * 100) / 100 ;
       data.month_power_max = Math.round(data.month_power_max * 100) / 100 ;
 
@@ -505,8 +521,10 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
 
 
       gdata = data;
+
     })
     .then(function () {
+//      res.send(plan_rf+":"+sd_rf);
        res.render('plan/plan_fc_pro_report33', {data: gdata});
     })
     .catch(function (error) {
@@ -637,14 +655,18 @@ router.get('/plan_pro_calc34/:plan_rf/:sd_rf', function(req, res, next) {
 //
 router.get('/sd34_form_part', function(req, res, next) {
   db.any(
-    "SELECT row_number() OVER (), sp.sd_rf, sd_name, fp.form_rf, sp.part_rf, part_name, sp.part_num AS part_num_all, fp.part_num,  (sp.part_num / fp.part_num) AS form_num " +
+    " SELECT row_number() OVER (), " +
+    " sp.sd_rf, sd.item_name AS sd_name, " +
+    " fp.product_rf, sp.part_rf, pt.item_name AS part_name, " +
+    " sp.part_num AS part_num_all, fp.amount,  (sp.part_num / fp.amount) AS form_num " +
     " FROM ((((sd_part sp " +
-    "   LEFT JOIN sd_list sd ON sp.sd_rf = sd_id) " +
-    "   LEFT JOIN part_list pt ON sp.part_rf = part_id) " +
-    "   LEFT JOIN form_part fp ON sp.part_rf = fp.part_rf) " +
-    "   LEFT JOIN form_list frm ON fp.form_rf = form_id) " +
-    " WHERE sd_name = 'Пролет 34' AND form_name = '17-ПТ-32.61' " +
-    " ORDER BY part_name ")
+    "  LEFT JOIN item_list sd ON sp.sd_rf = sd.item_id) " +
+    "  LEFT JOIN item_list pt ON sp.part_rf = pt.item_id) " +
+    "  LEFT JOIN compositions fp ON sp.part_rf = fp.component_rf) " +
+    "  LEFT JOIN item_list frm ON fp.product_rf = frm.item_id) " +
+    "  WHERE sd.item_name = 'Пролет 34' " +
+    "  AND frm.item_name = '17ПТ-32.61' " +
+    "  ORDER BY pt.item_name  ")
     .then(function (data) {
 
       // Убираю конечные нули в дробной части и ищу наименьшее
@@ -658,7 +680,7 @@ router.get('/sd34_form_part', function(req, res, next) {
       data.form_num_min = Math.floor(data.form_num_min);
 
       // Для обращения к данным вне таблицы
-      data.form_id = data[0].form_rf;
+      data.form_id = data[0].product_rf;
       data.sd_id = data[0].sd_rf;
 
       res.render('plan/sd34_form_part', {data: data}); // Показ формы

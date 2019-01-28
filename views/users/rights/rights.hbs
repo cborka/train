@@ -1,5 +1,5 @@
 <div class="list">
-<h1>Права доступа пользователей</h1>
+<h1>Права доступа пользователей.</h1>
 <table class="list">
     <tr>
         <td class="list"><b>Пользователь</b></td>
@@ -34,8 +34,7 @@
 
 function delete_right(id, login, rn) {
 
-    let result = confirm("Удалить, "+login+","+rn+"?");
-    if (result) {
+    if (confirm("Удалить, "+login+","+rn+"?")) {
         location.href = '/users/right/delete/'+id+'/'+rn;
 //        window.open('/users/right/delete/'+id+'/'+rn);
     }

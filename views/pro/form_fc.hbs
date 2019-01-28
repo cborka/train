@@ -49,7 +49,7 @@
     }
     function get_form_names()
     {
-        doQuery ("/pro/get_form_names", set_form_names);
+        doQuery ("/common/get_spr_names/ФормыЖБИ", set_form_names);
     }
 
     // Изготовить список ЖБИ для выбора
@@ -60,7 +60,7 @@
     }
     function get_fc_names()
     {
-        doQuery ("/pro/get_fc_names", set_fc_names);
+        doQuery ("/common/get_spr_names/ЖБИ", set_fc_names);
     }
     get_form_names();
     get_fc_names();

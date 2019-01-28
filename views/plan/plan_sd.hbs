@@ -58,7 +58,7 @@
     }
     function get_plan_names()
     {
-        doQuery ("/pro/get_plan_names", set_plan_names);
+        doQuery ("/common/get_spr_names/Планы", set_plan_names);
     }
 
     // Изготовить список подразделений для выбора
@@ -69,7 +69,7 @@
     }
     function get_sd_names()
     {
-        doQuery ("/pro/get_prolet_names", set_sd_names);
+        doQuery ("/common/get_spr_names/Подразделения", set_sd_names);
     }
 
     get_plan_names();

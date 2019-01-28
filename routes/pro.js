@@ -662,11 +662,11 @@ router.get('/sd_fc_delete/:sd_rf/:fc_rf', function(req, res, next) {
 //
 router.get('/sd_form_s', function(req, res, next) {
   db.any(
-    "SELECT sd_rf, sd_name, form_rf, form_name, form_num, form_num_max " +
-    " FROM ((sd_form sf " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
-    " ORDER BY sd_name, form_name ")
+    "SELECT m.sd_rf, sd.item_name AS sd_name, m.form_rf, frm.item_name AS form_name, m.form_num, m.form_num_max " +
+    " FROM ((sd_form m " +
+    "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list frm ON m.form_rf = frm.item_id) " +
+    " ORDER BY 2, 4 ")
     .then(function (data) {
       res.render('pro/sd_form_s', {data: data}); // Показ формы
     })
@@ -695,11 +695,11 @@ router.get('/sd_form/:sd_rf/:form_rf', function(req, res, next) {
   var sd_rf = req.params.sd_rf;
   var form_rf = req.params.form_rf;
   db.one(
-    "SELECT sd_rf, sd_name, form_rf, form_name, form_num, form_num_max " +
-    " FROM ((sd_form sf " +
-    "   LEFT JOIN sd_list sd ON sd_rf = sd_id) " +
-    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
-    " WHERE sd_rf = $1 AND form_rf = $2", [sd_rf, form_rf])
+    "SELECT m.sd_rf, sd.item_name AS sd_name, m.form_rf, frm.item_name AS form_name, m.form_num, m.form_num_max " +
+    " FROM ((sd_form m " +
+    "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list frm ON m.form_rf = frm.item_id) " +
+    " WHERE m.sd_rf = $1 AND m.form_rf = $2", [sd_rf, form_rf])
     .then(function (data) {
       res.render('pro/sd_form', data);
     })
@@ -724,7 +724,9 @@ router.post('/sd_form/update', function(req, res, next) {
 //  Обновление
     db.none(
       "UPDATE sd_form " +
-      "SET sd_rf=(SELECT sd_id FROM sd_list WHERE sd_name=$1), form_rf=(SELECT form_id FROM form_list WHERE form_name=$2), form_num=$3, form_num_max=$4 " +
+      "SET sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name = $1), " +
+      "    form_rf=(SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name = $2), " +
+      "    form_num=$3, form_num_max=$4 " +
       "WHERE sd_rf=$5 AND form_rf=$6",
       [sd_name, form_name, form_num, form_num_max, old_sd_rf, old_form_rf])
       .then (function () {
@@ -738,7 +740,9 @@ router.post('/sd_form/update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO  sd_form (sd_rf, form_rf, form_num, form_num_max) " +
-      "VALUES ((SELECT sd_id FROM sd_list WHERE sd_name=$1), (SELECT form_id FROM form_list WHERE form_name=$2), $3, $4)",
+      "VALUES ((SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name = $1), " +
+      "   (SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name = $2), " +
+      "   $3, $4)",
       [sd_name, form_name, form_num, form_num_max])
       .then (function (data) {
         res.redirect('/pro/sd_form_s');
@@ -769,11 +773,11 @@ router.get('/sd_form_delete/:sd_rf/:form_rf', function(req, res, next) {
 //
 router.get('/form_fc_s', function(req, res, next) {
   db.any(
-    "SELECT form_rf, form_name, fc_rf, fc_name,  cast(fc_num AS float), forming_time " +
-    " FROM ((form_fc ff " +
-    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
-    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
-    " ORDER BY form_name, fc_name ")
+    "SELECT m.form_rf, frm.item_name AS form_name, m.fc_rf, fc.item_name AS fc_name,  cast(m.fc_num AS float), m.forming_time " +
+    " FROM ((form_fc m " +
+    "   LEFT JOIN item_list frm ON m.form_rf = frm.item_id) " +
+    "   LEFT JOIN item_list fc ON m.fc_rf = fc.item_id) " +
+    " ORDER BY 2, 4 ")
     .then(function (data) {
       res.render('pro/form_fc_s', {data: data}); // Показ формы
     })
@@ -802,10 +806,10 @@ router.get('/form_fc/:form_rf/:fc_rf', function(req, res, next) {
   var form_rf = req.params.form_rf;
   var fc_rf = req.params.fc_rf;
   db.one(
-    "SELECT form_rf, form_name, fc_rf, fc_name,  cast(fc_num AS float), forming_time " +
-    " FROM ((form_fc ff " +
-    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
-    "   LEFT JOIN fc_list fc ON fc_rf = fc_id) " +
+    "SELECT m.form_rf, frm.item_name AS form_name, m.fc_rf, fc.item_name AS fc_name,  cast(m.fc_num AS float), m.forming_time " +
+    " FROM ((form_fc m " +
+    "   LEFT JOIN item_list frm ON m.form_rf = frm.item_id) " +
+    "   LEFT JOIN item_list fc ON m.fc_rf = fc.item_id) " +
     " WHERE form_rf = $1 AND fc_rf = $2", [form_rf, fc_rf])
     .then(function (data) {
       res.render('pro/form_fc', data);
@@ -830,7 +834,9 @@ router.post('/form_fc/update', function(req, res, next) {
 //  Обновление
     db.none(
       "UPDATE form_fc " +
-      "SET form_rf=(SELECT form_id FROM form_list WHERE form_name=$1), fc_rf=(SELECT fc_id FROM fc_list WHERE fc_name=$2), fc_num=$3, forming_time=$4 " +
+      "SET form_rf=(SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name = $1), " +
+      "  fc_rf=(SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name = $2), " +
+      "  fc_num=$3, forming_time=$4 " +
       "WHERE form_rf=$5 AND fc_rf=$6",
       [form_name, fc_name, fc_num, forming_time, old_form_rf, old_fc_rf])
       .then (function () {
@@ -844,7 +850,10 @@ router.post('/form_fc/update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO  form_fc (form_rf, fc_rf, fc_num, forming_time) " +
-      "VALUES ((SELECT form_id FROM form_list WHERE form_name=$1), (SELECT fc_id FROM fc_list WHERE fc_name=$2), $3, $4)",
+      "VALUES (" +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name = $1), " +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name = $2), " +
+      "  $3, $4)",
       [form_name, fc_name, fc_num, forming_time])
       .then (function (data) {
         res.redirect('/pro/form_fc_s');
@@ -868,226 +877,6 @@ router.get('/form_fc_delete/:form_rf/:fc_rf', function(req, res, next) {
     });
 });
 
-
-
-//=================== ЧАСТИ форма для формовки ЖБИ и просто ЧАСТИ чего-то =====================
-
-//
-// Показать список ЧАСТЕЙ
-//
-router.get('/parts', function(req, res, next) {
-  db.any(
-    "SELECT part_id, part_name " +
-    " FROM part_list " +
-    " WHERE part_id > 1 " +
-    " ORDER BY part_name")
-    .then(function (data) {
-      res.render('pro/parts', {data: data}); // Показ части
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
-
-//
-// Добавить новую ЧАСТЬ
-//
-router.get('/part_addnew', function(req, res, next) {
-  db.one("SELECT 0 AS part_id, '' AS part_name ")
-    .then(function (data) {
-      res.render('pro/part', data);
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
-
-//
-// Показать/обновить ЧАСТЬ
-//
-router.get('/part/:part_id', function(req, res, next) {
-  var part_id = req.params.part_id;
-  db.one(
-    "SELECT part_id, part_name " +
-    " FROM part_list " +
-    " WHERE part_id = $1", part_id)
-    .then(function (data) {
-      res.render('pro/part', data);
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
-//
-// Добавление и корректировка ЧАСТИ
-//
-router.post('/part_update', function(req, res, next) {
-  var part_id = req.body.part_id;
-  var part_name = req.body.part_name;
-  if (part_id > 0 ) {
-//  Обновление
-    db.none(
-      "UPDATE part_list " +
-      "SET part_name=$1 " +
-      "WHERE part_id=$2",
-      [part_name, part_id])
-      .then (function () {
-        res.redirect('/pro/parts');
-      })
-      .catch(function (error) {
-        res.send(error);
-      });
-  }
-  else {
-//  Добавление
-    db.none(
-      "INSERT INTO part_list (part_name) " +
-      "VALUES ($1)",
-      [part_name])
-      .then (function (data) {
-        res.redirect('/pro/parts');
-
-      })
-      .catch(function (error) {
-        res.send(error);
-      });
-  }
-});
-
-// Удалить ЧАСТЬ
-router.get('/part_delete/:part_id', function(req, res, next) {
-  var part_id = req.params.part_id;
-  db.none("DELETE FROM part_list WHERE part_id=$1", part_id)
-    .then(function () {
-      res.redirect('/pro/parts'); // Обновление списка
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
-
-//
-// Сформировать и возвратить список ЧАСТЕЙ для выбора
-//
-router.get('/get_part_names', function(req, res, next) {
-  db.any("SELECT part_name FROM part_list ORDER BY 1 ")
-    .then (function (data) {
-      var result = '';
-      for (var i = 0; i < data.length; i++) {
-        result = result + ' <option value="'+data[i].part_name+'">'+data[i].part_name+'</option>';
-      }
-      res.send(result);
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
-
-
-//=================== ФОРМА-ЧАСТЬ (СОСТАВНЫЕ ФОРМЫ) =====================
-
-//
-// Показать список ФОРМА-ЧАСТЬ
-//
-router.get('/form_part_s', function(req, res, next) {
-  db.any(
-    "SELECT form_rf, form_name, part_rf, part_name,  cast(part_num AS float) " +
-    " FROM ((form_part m " +
-    "   LEFT JOIN item_list frm ON m.form_rf = form_id) " +
-    "   LEFT JOIN item_list fc ON m.part_rf = part_id) " +
-    " ORDER BY form_name, part_name ")
-    .then(function (data) {
-      res.render('pro/form_part_s', {data: data}); // Показ формы
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
-
-//
-// Добавить новый ФОРМА-ЧАСТЬ
-//
-router.get('/form_part_addnew', function(req, res, next) {
-  db.one("SELECT 0 AS form_rf, '' AS form_name, 0 AS part_rf, '' AS part_name, 0 AS part_num ")
-    .then(function (data) {
-      res.render('pro/form_part', data);
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
-
-//
-// Показать/обновить ФОРМА-ЧАСТЬ
-//
-router.get('/form_part/:form_rf/:part_rf', function(req, res, next) {
-  var form_rf = req.params.form_rf;
-  var part_rf = req.params.part_rf;
-  db.one(
-    "SELECT form_rf, form_name, part_rf, part_name,  cast(part_num AS float) " +
-    " FROM ((form_part ff " +
-    "   LEFT JOIN form_list frm ON form_rf = form_id) " +
-    "   LEFT JOIN part_list fc ON part_rf = part_id) " +
-    " WHERE form_rf = $1 AND part_rf = $2", [form_rf, part_rf])
-    .then(function (data) {
-      res.render('pro/form_part', data);
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
-
-//
-// Добавление и корректировка ФОРМА-ЧАСТЬ
-//
-router.post('/form_part/update', function(req, res, next) {
-  var form_rf = req.body.form_rf;
-  var form_name = req.body.form_name;
-  var part_name = req.body.part_name;
-  var part_num = req.body.part_num;
-  var old_form_rf = req.body.old_form_rf;
-  var old_part_rf = req.body.old_part_rf;
-  if (form_rf > 0 ) {
-//  Обновление
-    db.none(
-      "UPDATE form_part " +
-      "SET form_rf=(SELECT form_id FROM form_list WHERE form_name=$1), part_rf=(SELECT part_id FROM part_list WHERE part_name=$2), part_num=$3 " +
-      "WHERE form_rf=$4 AND part_rf=$5",
-      [form_name, part_name, part_num, old_form_rf, old_part_rf])
-      .then (function () {
-        res.redirect('/pro/form_part_s');
-      })
-      .catch(function (error) {
-        res.send(error);
-      });
-  }
-  else {
-//  Добавление
-    db.none(
-      "INSERT INTO  form_part (form_rf, part_rf, part_num) " +
-      "VALUES ((SELECT form_id FROM form_list WHERE form_name=$1), (SELECT part_id FROM part_list WHERE part_name=$2), $3)",
-      [form_name, part_name, part_num])
-      .then (function (data) {
-        res.redirect('/pro/form_part_s');
-      })
-      .catch(function (error) {
-        res.send(error);
-      });
-  }
-});
-
-// Удалить ФОРМА-ЧАСТЬ
-router.get('/form_part_delete/:form_rf/:part_rf', function(req, res, next) {
-  var form_rf = req.params.form_rf;
-  var part_rf = req.params.part_rf;
-  db.none("DELETE FROM form_part WHERE form_rf=$1 AND part_rf=$2", [form_rf, part_rf])
-    .then(function () {
-      res.redirect('/pro/form_part_s'); // Обновление списка
-    })
-    .catch(function (error) {
-      res.send(error);
-    });
-});
 
 
 //=================== ПРОЛЁТ-ЧАСТИ (ФОРМ) =====================
