@@ -174,6 +174,7 @@ select.td {
 }
 
 
+
 /* Таблицы-списки */
 table.list, thead.list {
   border: 1px solid lightgrey;
@@ -186,7 +187,6 @@ td.list {
 /* Таблицы-отчёты */
 table.report, thead.report {
   width: auto;
-  align: left;
   border: 1px solid lightgrey;
   border-collapse: collapse;
 }
@@ -195,14 +195,17 @@ td.report {
 }
 
 
-tbody tr:hover {
+tr:hover {
   background: #eee; /* Цвет фона при наведении */
 }
-
+tr.reports:hover {
+  background: Window  /* Цвет фона при наведении */
+}
 .xy {
     position: absolute;
 }
 div.xyz {
+    font-style: normal;
     background-color: aquamarine;
     left: 115px;
     position: absolute;

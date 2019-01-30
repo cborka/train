@@ -54,7 +54,7 @@ function doQuery (url, onOK, params, async = true)
 
 
 
-// Дальше просто библиотека, не аякс, чтобы не плодить файлы
+// ================== Дальше просто библиотека, не аякс, чтобы не плодить файлы ===========================
 
 
 // Получение координат элемента
@@ -91,4 +91,17 @@ function select_tc_text(table_cell)
     rng.moveToElementText(target);
     rng.select();
   }
+}
+
+// Возвращает дату-время в виде ГГГГ-ММ-ДД ЧЧ:ММ:СС.МС
+function toYYYYMMDDHHMMSS(s)
+{
+  return s.getFullYear() + '-'+ ("0"+(1+s.getMonth())).slice(-2) + '-' + ("0"+s.getDate()).slice(-2)+" "+
+    ("0"+s.getHours()).slice(-2)+":"+("0"+s.getMinutes()).slice(-2)+":"+("0"+s.getSeconds()).slice(-2); //+"."+s.getMilliseconds();
+}
+
+// Возвращает дату-время в виде ГГГГ-ММ-ДД ЧЧ:ММ:СС.МС
+function toYYYYMMDD(s)
+{
+  return s.getFullYear() + '-'+ ("0"+(1+s.getMonth())).slice(-2) + '-' + ("0"+s.getDate()).slice(-2);
 }

@@ -438,6 +438,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       var db = data.date_begin;
       var de = data.date_end;
       var rem_days_num = 0;
+
       // Цикл по дням
       var dw = ': '; // Даты рем. дней (числа месяца)
       while(db.getTime() <= de.getTime()){
@@ -479,7 +480,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       data.fact_workers_num  = Math.round(data.need_workers_num);
       if (data.need_workers_num < 3)  data.fact_workers_num = 3;
       if (data.need_workers_num > data.max_workers_num) data.fact_workers_num = data.max_workers_num;
-
+0
 
       // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
       data.day_power = data.form_num * data.ffc_num * data.kob;
