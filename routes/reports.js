@@ -88,7 +88,7 @@ router.get('/inform1', function(req, res, next) {
 });
 
 
-router.post('/get_formovka', function(req, res, next) {
+router.post('/get_formovka_day', function(req, res, next) {
   var dt = req.body.dt;
 
 //  res.send(dt + (dt+1000*60*60*24));   return;
@@ -109,6 +109,10 @@ router.post('/get_formovka', function(req, res, next) {
       var result = '';
         result = result + 'Формовка за <b>' + dt + '</b><br>';
         result = result + '<br><table class="report" align="left">';
+      result = result + '<thead><td class="report left">Пролёт</td>';
+      result = result + '<td  class="report left">ЖБИ</td>';
+      result = result + '<td  class="report right">Кол-во</td></thead>';
+
       for (var i = 0; i < data.length; i++) {
 
         data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
@@ -130,5 +134,58 @@ router.post('/get_formovka', function(req, res, next) {
 });
 
 
+
+//select * from rep_formovka_daily('2019-01-01', '2019-01-31')
+
+// Формовка по дням за месяц
+
+router.post('/get_formovka_plan', function(req, res, next) {
+  var dtb = req.body.dtb;
+  var dte = req.body.dte;
+  var array_length = 0;
+
+  db.any(
+    "SELECT sd_name, fc_name, fc_num FROM rep_formovka_daily($1, $2)", [dtb, dte])
+    .then (function (data) {
+
+      var result = '';
+      result = result + 'Формовка c <b>' + dtb + ' по ' + dte + '</b><br>';
+      result = result + '<br><table class="report" align="left">';
+
+      array_length = data[0].fc_num.length;
+
+
+      result = result + '<thead><td  class="report left">' + data[0].sd_name + '</td>';
+      result = result + '<td  class="report left">' + data[0].fc_name + '</td>';
+      for(var j = 0; j < array_length; j++)
+        result = result + '<td  class="report ">' + data[0].fc_num[j] + '</td>';
+
+      result = result + '</thead>';
+
+
+
+      for (var i = 1; i < data.length; i++) {
+
+//        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+
+        result = result + '<tr><td  class="report left">' + data[i].sd_name + '</td>';
+        result = result + '<td  class="report left">' + data[i].fc_name + '</td>';
+
+        for(var j = 0; j < array_length; j++)
+          result = result + '<td  class="report ">' + data[i].fc_num[j] + '</td>';
+
+         result = result + '</tr>';
+      }
+      result = result +'</table>';
+
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+
+//  res.send('Здесь формовка за ' + dt+10000);
+
+});
 
 module.exports = router;

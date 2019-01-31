@@ -13,6 +13,7 @@
 
 
 
+
 <br>
 <!--
 <table class="form">
@@ -26,7 +27,13 @@
 -->
 
 <table>
-  <tr class="reports"><td align="left">
+
+    <tr class="reports"><td align="left">
+        <p>
+            Пока картинка меняется раз в несколько секунд или минут. В дальнейшем это будт переделано и картинка будет меняться
+            по сигналу с сервера в момент когда там будут меняться данные.
+        </p>
+  </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
         <h2>Формовка</h2>
@@ -63,11 +70,19 @@
 </table><br>
 -->
 
+
+<button id="btn_tst" type="button" onclick="tst()">ТЕСТ</button>
+<div id="tst"></div>
+
+
+
 <script>
     var timerId = 0;
     var timerFormovkaId = 0;
     var dtNow = new Date();;
     var dtNowAsString= toYYYYMMDDHHMMSS(dtNow);
+    var dtbAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 1));
+    var dteAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 31));
 
     function auto_on()
     {
@@ -101,8 +116,8 @@
     function formovka_auto_on()
     {
         if (timerFormovkaId <= 0) {
-            get_formovka();
-            timerFormovkaId = setInterval(get_formovka, 5000);
+            get_formovka_plan();
+            timerFormovkaId = setInterval(get_formovka_plan, 60000);
             document.getElementById("btnFormovkaOnOff").innerHTML = 'Выключить автообновление';
         }
         else if (timerFormovkaId > 0) {
@@ -115,8 +130,6 @@
 
 
 
-
-
     // Запросить и показать формовку за дату
     var set_formovka = function (reply)
     {
@@ -124,13 +137,32 @@
     }
     function get_formovka()
     {
-        document.getElementById("formovka").innerHTML = '';
+//        document.getElementById("formovka").innerHTML = '';
 
         doQuery ("/reports/get_formovka", set_formovka,
                 '&dt=' + encodeURIComponent(dtNowAsString.substr(0, 10))
 //        '&dt=' + encodeURIComponent(document.getElementById("dt").value.substr(0, 10))
         );
     }
+
+
+    // Запросить и показать формовку за период
+    var set_formovka_plan = function (reply)
+    {
+        document.getElementById("formovka").innerHTML = reply;
+    }
+    function get_formovka_plan()
+    {
+//        document.getElementById("formovka").innerHTML = '';
+
+        doQuery ("/reports/get_formovka_plan", set_formovka_plan,
+                '&dtb=' + encodeURIComponent(dtbAsString.substr(0, 10))+
+                '&dte=' + encodeURIComponent(dteAsString.substr(0, 10))
+//        '&dt=' + encodeURIComponent(document.getElementById("dt").value.substr(0, 10))
+        );
+    }
+
+
 
 
     // Изготовить список дат для выбора
@@ -143,6 +175,68 @@
     {
         doQuery ("/report/Даты", set_date);
     }
+
+
+    function tst()
+    {
+      dt1 = new Date(2019, 1, 1);
+      dt2 = new Date(2019, 1, 11);
+
+      document.getElementById("tst").innerHTML = mon_days(dt1, dt2);
+//    document.getElementById("tst").innerHTML = 'xxx';
+//        document.getElementById("tst").innerHTML = mon2_days('2019-01-01', '2019-01-11');
+
+    }
+
+
+    // Сформировать список чисел месяца от даты до даты
+    function mon2_days(dtb, dte)
+    {
+        day_ms = 1000*3600*24;
+
+        y1 = dtb.substr(0, 4);
+        m1 = dtb.substr(5, 2) - 1;
+        d1 = dtb.substr(8, 2);
+
+        y2 = dte.substr(0, 4);
+        m2 = dte.substr(5, 2) - 1;
+        d2 = dte.substr(8, 2);
+
+        dt1 = new Date(y1, m1, d1);
+        dt2 = new Date(y2, m2, d2);
+
+        result = 'z';
+        result = result + y1 + m1+ d1;
+        result = result + '<br>'+ dt1 + "," + dt2;
+
+//        var ms = new Date().getTime() + 86400000;
+//        var tomorrow = new Date(ms);
+
+        dt1.setTime( dt1.getTime() + day_ms);
+        result = result + '<br>'+ dt1 + "," + dt2;
+        dt1.setTime( dt1.getTime() + day_ms);
+        result = result + '<br>'+ dt1 + "," + dt2;
+
+        return result;
+    }
+
+    function mon_days(dtb, dte)
+    {
+        result = 'z';
+//        result = result + "<br>" + dtb + "<br>" + dte;
+        day_ms = 1000*3600*24;
+
+       for (var t=dtb; t <= dte; t.setTime( t.getTime() + day_ms))
+        {
+            result = result + ("0"+t.getDate()).slice(-2) + ',';
+//            result = result + "<br>" + t;
+
+        }
+
+        return result;
+    }
+
+
 
 
 </script>

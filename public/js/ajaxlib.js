@@ -105,3 +105,43 @@ function toYYYYMMDD(s)
 {
   return s.getFullYear() + '-'+ ("0"+(1+s.getMonth())).slice(-2) + '-' + ("0"+s.getDate()).slice(-2);
 }
+
+// Сформировать список чисел месяца от даты до даты
+function month_days(dtb, dte)
+{
+  result = '';
+  day_ms = 1000*3600*24;
+
+  for (var dt=dtb; dt <=dte; dt+=days_ms)
+  {
+
+    result = result + ("0"+dt.getDate()).slice(-2) + ',';
+  }
+  return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -146,6 +146,11 @@ td {
   padding: 3px;
 }
 
+thead {
+  font-weight: bolder ;
+}
+
+
 /* Таблицы-формы */
 table.form {
   width: auto;
@@ -198,6 +203,7 @@ td.report {
 tr:hover {
   background: #eee; /* Цвет фона при наведении */
 }
+
 tr.reports:hover {
   background: Window  /* Цвет фона при наведении */
 }
