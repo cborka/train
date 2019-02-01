@@ -100,11 +100,61 @@ function toYYYYMMDDHHMMSS(s)
     ("0"+s.getHours()).slice(-2)+":"+("0"+s.getMinutes()).slice(-2)+":"+("0"+s.getSeconds()).slice(-2); //+"."+s.getMilliseconds();
 }
 
-// Возвращает дату-время в виде ГГГГ-ММ-ДД ЧЧ:ММ:СС.МС
+// Возвращает дату в виде ГГГГ-ММ-ДД
 function toYYYYMMDD(s)
 {
   return s.getFullYear() + '-'+ ("0"+(1+s.getMonth())).slice(-2) + '-' + ("0"+s.getDate()).slice(-2);
 }
+
+// Возвращает год и месяц в виде ГГГГ-ММ
+function toYYYYMM(s)
+{
+  return s.getFullYear() + '-'+ ("0"+(1+s.getMonth())).slice(-2);
+}
+
+
+CurrentPlanName
+
+// Возвращает ЧИСЛО последнего дня План-месяца, где План-месяц начинается с ГГГГ-ММ, например 2019-02
+function PlanLastDay(plan_name)
+{
+  return 32 - new Date(plan_name.substr(0, 4),  plan_name.substr(5, 2)-1, 32).getDate();
+}
+
+// Возвращает ДАТУ ПЕРВОГО дня План-месяца, где План-месяц начинается с ГГГГ-ММ, например 2019-02
+function PlanFirstDate(plan_name)
+{
+  return new Date(plan_name.substr(0, 4),  plan_name.substr(5, 2)-1, 1);
+}
+// Возвращает ДАТУ ПОСЛЕДНЕГО дня План-месяца, где План-месяц начинается с ГГГГ-ММ, например 2019-02
+function PlanLastDate(plan_name)
+{
+  return new Date(plan_name.substr(0, 4),  plan_name.substr(5, 2), 0);
+}
+
+// Возвращает ДАТУ ПОСЛЕДНЕГО дня План-месяца, где План-месяц начинается с ГГГГ-ММ, например 2019-02
+function PlanFirstDateAsSting(plan_name)
+{
+  return plan_name.substr(0, 7) + '-01';
+}
+function PlanLastDateAsSting(plan_name)
+{
+  return plan_name + '-' + PlanLastDay(plan_name);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Сформировать список чисел месяца от даты до даты
 function month_days(dtb, dte)

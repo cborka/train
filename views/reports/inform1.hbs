@@ -1,5 +1,6 @@
 
 <div style='overflow: auto;'>
+
   <div style='float: left; overflow: auto;'>
     <h1>{{header}}</h1>
   </div>
@@ -9,12 +10,10 @@
     <br><br>
     <div id="datetime" style="float: right; color: green; font-weight: bold; font-size: larger" ></div>
   </div>
+
 </div>
 
 
-
-
-<br>
 <!--
 <table class="form">
     <tr>
@@ -30,9 +29,12 @@
 
     <tr class="reports"><td align="left">
         <p>
-            Пока картинка меняется раз в несколько секунд или минут. В дальнейшем это будт переделано и картинка будет меняться
+            Пока картинка меняется раз в несколько секунд или минут. В дальнейшем это будет переделано и картинка будет меняться
             по сигналу с сервера в момент когда там будут меняться данные.
         </p>
+
+        План-месяц: <select size="1" name='plan_name' id='plan_name' title="" value="x" onchange="plan_change()"></select>
+
   </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
@@ -57,8 +59,8 @@
     </td></tr>
 </table>
 
-<div id="hint" >_</div>
-<div id="erro" >_</div>
+<div id="hint" ></div>
+<div id="erro" ></div>
 
 <!--
 <table class="report" align="left" align="left">
@@ -83,6 +85,7 @@
     var dtNowAsString= toYYYYMMDDHHMMSS(dtNow);
     var dtbAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 1));
     var dteAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 31));
+    var PlanName = toYYYYMM(new Date());
 
     function auto_on()
     {
@@ -155,39 +158,58 @@
     {
 //        document.getElementById("formovka").innerHTML = '';
 
-        doQuery ("/reports/get_formovka_plan", set_formovka_plan,
-                '&dtb=' + encodeURIComponent(dtbAsString.substr(0, 10))+
-                '&dte=' + encodeURIComponent(dteAsString.substr(0, 10))
+        if (PlanName == '') {
+            document.getElementById("formovka").innerHTML = '';
+           }
+        else
+          doQuery ("/reports/get_formovka_plan", set_formovka_plan,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
 //        '&dt=' + encodeURIComponent(document.getElementById("dt").value.substr(0, 10))
         );
     }
 
-
-
-
-    // Изготовить список дат для выбора
-    var set_date = function (reply)
+    // Изготовить список Планов для выбора
+    var set_plan_names = function (reply)
     {
-        document.getElementById("sd_name").innerHTML = reply;
-        document.getElementById("sd_name").value = '{{sd_name}}';
-    }
-    function get_date()
-    {
-        doQuery ("/report/Даты", set_date);
+        document.getElementById("plan_name").innerHTML = reply;
+        document.getElementById("plan_name").value = PlanName;
     }
 
+    function get_plan_names()
+    {
+        doQuery ("/common/get_spr_names/Планы", set_plan_names);
+    }
 
+    function plan_change()
+    {
+        PlanName = document.getElementById("plan_name").value;
+        document.getElementById("tst").innerHTML = PlanName;
+
+        if (timerFormovkaId > 0) get_formovka_plan();
+
+
+
+    }
+
+
+    // ======================= ТЕСТЫ =========================
     function tst()
     {
-      dt1 = new Date(2019, 1, 1);
-      dt2 = new Date(2019, 1, 11);
+      tst_result = PlanName;
 
-      document.getElementById("tst").innerHTML = mon_days(dt1, dt2);
-//    document.getElementById("tst").innerHTML = 'xxx';
+//      tst_result = PlanFirstDateAsSting(PlanName) + '<br>' + PlanLastDateAsSting(PlanName);
+ //       tst_result =  document.getElementById("plan_name").value;
+
+
+//      dt1 = new Date(2019, 1, 1);
+//      dt2 = new Date(2019, 1, 11);
+
+//      document.getElementById("tst").innerHTML = mon_days(dt1, dt2);
+      document.getElementById("tst").innerHTML = tst_result;
 //        document.getElementById("tst").innerHTML = mon2_days('2019-01-01', '2019-01-11');
 
     }
-
 
     // Сформировать список чисел месяца от даты до даты
     function mon2_days(dtb, dte)
@@ -236,7 +258,5 @@
         return result;
     }
 
-
-
-
+    get_plan_names();
 </script>
