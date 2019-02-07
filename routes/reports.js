@@ -171,8 +171,11 @@ router.post('/get_formovka_plan', function(req, res, next) {
         result = result + '<tr><td  class="report left">' + data[i].sd_name + '</td>';
         result = result + '<td  class="report left">' + data[i].fc_name + '</td>';
 
-        for(var j = 0; j < array_length; j++)
+        for(var j = 0; j < array_length; j++) {
+          if (data[i].fc_num[j] == 0)  data[i].fc_num[j] = '';
+
           result = result + '<td  class="report ">' + data[i].fc_num[j] + '</td>';
+        }
 
          result = result + '</tr>';
       }
@@ -187,5 +190,121 @@ router.post('/get_formovka_plan', function(req, res, next) {
 //  res.send('Здесь формовка за ' + dt+10000);
 
 });
+
+
+
+//
+// СГП (Склад ЖБИ)
+//
+router.post('/get_sklad_fc', function(req, res, next) {
+
+  db.any(
+    "SELECT pp.sklad_rf, sklad.item_name AS sklad_name, " +
+    "    pp.item_rf, item.item_name AS item_name, num_fact, num_max, (num_max - num_fact) AS num_free " +
+    " FROM ((sklad pp " +
+    "   LEFT JOIN item_list sklad ON pp.sklad_rf = sklad.item_id) " +
+    "   LEFT JOIN item_list item ON pp.item_rf = item.item_id) " +
+    " WHERE item.spr_rf = 9 " + // ЖБИ
+    "   AND pp.item_rf IN (13, 112) " + // Пока работаем только с двумя ЖБИ
+    " ORDER BY sklad.item_name, item.item_name ")
+    .then (function (data) {
+
+      var result = '';
+//      result = result + 'Склад ЖБИ <br>';
+      result = result + '<br><table class="report" align="left">';
+      result = result + '<thead><td class="report left">Склад</td>';
+      result = result + '<td  class="report left">ЖБИ</td>';
+      result = result + '<td  class="report right">Кол-во ЖБИ на складе</td>';
+      result = result + '<td  class="report right">Макс. кол-во</td>';
+      result = result + '<td  class="report right">Осталось мест</td></thead>';
+
+      for (var i = 0; i < data.length; i++) {
+
+        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+        if (data[i].num_fact == 0)  data[i].num_fact = '';
+        if (data[i].num_max == 0)  data[i].num_max = '';
+        if (data[i].num_free == 0)  data[i].num_free = '';
+
+        result = result + '<tr><td  class="report left">' + data[i].sklad_name + '</td>';
+        result = result + '<td  class="report left">' + data[i].item_name + '</td>';
+        result = result + '<td  class="report right"><b>' + data[i].num_fact + '</b></td>';
+        result = result + '<td  class="report right">' + data[i].num_max + '</td>';
+        result = result + '<td  class="report right">' + data[i].num_free + '</td></tr>';
+      }
+      result = result +'</table>';
+
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+
+//
+// Склад АРМАТУРЫ
+//
+router.post('/get_sklad_arm', function(req, res, next) {
+
+  db.any(
+    "SELECT pp.sklad_rf, sklad.item_name AS sklad_name, " +
+    "    pp.item_rf, item.item_name AS item_name, num_fact, num_max, (num_max - num_fact) AS num_free " +
+    " FROM ((sklad pp " +
+    "   LEFT JOIN item_list sklad ON pp.sklad_rf = sklad.item_id) " +
+    "   LEFT JOIN item_list item ON pp.item_rf = item.item_id) " +
+    " WHERE item.spr_rf = 18 " + // Арматуры
+    "   AND pp.item_rf IN ( " +
+    "     SELECT DISTINCT component_rf FROM compositions WHERE product_rf IN (13, 112) " +// Пока работаем только с двумя ЖБИ
+    "   ) " + // Пока работаем только с двумя ЖБИ
+    " ORDER BY sklad.item_name, item.item_name ")
+    .then (function (data) {
+
+      var result = '';
+//      result = result + 'Склад МЕТАЛЛА <br>';
+      result = result + '<br><table class="report" align="left">';
+      result = result + '<thead><td class="report left">Склад</td>';
+      result = result + '<td  class="report left">Металл</td>';
+      result = result + '<td  class="report right">Кол-во на складе</td>';
+      result = result + '<td  class="report right">Макс. кол-во</td>';
+      result = result + '<td  class="report right">Осталось мест</td></thead>';
+
+      for (var i = 0; i < data.length; i++) {
+
+        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+        if (data[i].num_fact == 0)  data[i].num_fact = '';
+        if (data[i].num_max == 0)  data[i].num_max = '';
+        if (data[i].num_free == 0)  data[i].num_free = '';
+
+        result = result + '<tr><td  class="report left">' + data[i].sklad_name + '</td>';
+        result = result + '<td  class="report left">' + data[i].item_name + '</td>';
+        result = result + '<td  class="report right"><b>' + data[i].num_fact + '</b></td>';
+        result = result + '<td  class="report right">' + data[i].num_max + '</td>';
+        result = result + '<td  class="report right">' + data[i].num_free + '</td></tr>';
+      }
+      result = result +'</table>';
+
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = router;

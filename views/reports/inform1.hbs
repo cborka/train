@@ -38,7 +38,7 @@
   </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
-        <h2>Формовка</h2>
+       <h2>Формовка</h2>
        <button id="btnFormovkaOnOff" type="button"  onclick="formovka_auto_on()">Включить автообновление</button>
     </div>
       <br>
@@ -46,13 +46,21 @@
 
   </td></tr><tr class="reports"><td>
 
-     <h2>СГП</h2>
-    <div id="sklad_fc" ></div>
+    <div style='overflow: auto;'>
+        <h2>СГП</h2>
+        <button id="btnSkladFcOnOff" type="button"  onclick="sklad_fc_auto_on()">Включить автообновление</button>
+    </div>
+    <br>
+    <div id="sklad_fc" align="left" style='float: left; overflow: auto;'></div>
 
     </td></tr><tr class="reports"><td>
 
-    <h2>Арматура</h2>
-    <div id="fc_arm" ></div>
+    <div style='overflow: auto;'>
+        <h2>Склад металла</h2>
+        <button id="btnSkladArmOnOff" type="button"  onclick="sklad_arm_auto_on()">Включить автообновление</button>
+    </div>
+    <br>
+    <div id="sklad_arm" align="left" style='float: left; overflow: auto;'></div>
 
 
 
@@ -81,6 +89,8 @@
 <script>
     var timerId = 0;
     var timerFormovkaId = 0;
+    var timerSkladFcId = 0;
+    var timerSkladArmId = 0;
     var dtNow = new Date();;
     var dtNowAsString= toYYYYMMDDHHMMSS(dtNow);
     var dtbAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 1));
@@ -101,8 +111,6 @@
             document.getElementById("datetime").innerHTML = '' ;
         }
     }
-
-
     // Перерисовка данных на странице (или можно для каждого блока задать свой интервал)
     function show_info()
     {
@@ -110,12 +118,9 @@
         document.getElementById("datetime").innerHTML = dtNowAsString = toYYYYMMDDHHMMSS(dtNow);
     }
 
-    function set_now()
-    {
-        document.getElementById("dt").value = '2019-01-29';
-    }
 
 
+    // ФОРМОВКА
     function formovka_auto_on()
     {
         if (timerFormovkaId <= 0) {
@@ -130,9 +135,6 @@
             document.getElementById("formovka").innerHTML = '';
         }
     }
-
-
-
     // Запросить и показать формовку за дату
     var set_formovka = function (reply)
     {
@@ -147,8 +149,6 @@
 //        '&dt=' + encodeURIComponent(document.getElementById("dt").value.substr(0, 10))
         );
     }
-
-
     // Запросить и показать формовку за период
     var set_formovka_plan = function (reply)
     {
@@ -166,6 +166,66 @@
                 '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
                 '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
 //        '&dt=' + encodeURIComponent(document.getElementById("dt").value.substr(0, 10))
+        );
+    }
+
+
+    // СГП (склад ЖБИ)
+    function sklad_fc_auto_on()
+    {
+        if (timerSkladFcId <= 0) {
+            get_sklad_fc();
+            timerSkladFcId = setInterval(get_sklad_fc, 60000);
+            document.getElementById("btnSkladFcOnOff").innerHTML = 'Выключить автообновление';
+        }
+        else if (timerSkladFcId > 0) {
+            clearInterval(timerSkladFcId);
+            timerSkladFcId = 0;
+            document.getElementById("btnSkladFcOnOff").innerHTML = 'Включить автообновление';
+            document.getElementById("sklad_fc").innerHTML = '';
+        }
+    }
+    var set_sklad_fc = function (reply)
+    {
+        document.getElementById("sklad_fc").innerHTML = reply;
+    }
+    function get_sklad_fc()
+    {
+//        document.getElementById("formovka").innerHTML = '';
+
+          doQuery ("/reports/get_sklad_fc", set_sklad_fc,
+                    '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                    '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
+            );
+    }
+
+
+    // Склад МЕТАЛЛА
+    function sklad_arm_auto_on()
+    {
+        if (timerSkladArmId <= 0) {
+            get_sklad_arm();
+            timerSkladArmId = setInterval(get_sklad_arm, 60000);
+            document.getElementById("btnSkladArmOnOff").innerHTML = 'Выключить автообновление';
+        }
+        else if (timerSkladArmId > 0) {
+            clearInterval(timerSkladArmId);
+            timerSkladarmId = 0;
+            document.getElementById("btnSkladArmOnOff").innerHTML = 'Включить автообновление';
+            document.getElementById("sklad_arm").innerHTML = '';
+        }
+    }
+    var set_sklad_arm = function (reply)
+    {
+        document.getElementById("sklad_arm").innerHTML = reply;
+    }
+    function get_sklad_arm()
+    {
+//        document.getElementById("formovka").innerHTML = '';
+
+        doQuery ("/reports/get_sklad_arm", set_sklad_arm,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
         );
     }
 
