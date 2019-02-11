@@ -413,18 +413,18 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
   var gdata;
 
   db.one(
-    "SELECT pp.plan_rf, p.item_name AS plan_name, pp.sd_rf, sd.item_name AS sd_name, pp.fc_rf, fc.item_name AS fc_name, " +
-    " pp.fc_num, pp.fc_v, " +
+    "SELECT pp.plan_rf, p.item_name AS plan_name, pp.sd_rf, sd.item_name AS sd_name, pp.item_rf AS fc_rf, fc.item_name AS fc_name, " +
+    " pp.num_plan AS fc_num, 0 AS fc_v, " +
     " ff.fc_num AS ffc_num, sdf.forming_time,  ps.days_num, ps.workers_num, ps.date_begin, ps.date_end, " +
     " sf.form_num, sf.form_num_max, sdf.trk, sdf.trkk, sdf.kob " +
-    " FROM (((((((plan_fc_pro pp " +
-    "   LEFT JOIN item_list p ON pp.plan_rf = p.item_id) " +
-    "   LEFT JOIN form_fc ff ON pp.fc_rf = ff.fc_rf) " +
+    " FROM (((((((plan_plan pp " +
+    "   LEFT JOIN item_list p ON p.spr_rf = 6 AND pp.plan_rf = p.item_id) " +
+    "   LEFT JOIN form_fc ff ON pp.item_rf = ff.fc_rf) " +
     "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf AND pp.sd_rf = sf.sd_rf) " +
     "   LEFT JOIN plan_sd ps ON pp.plan_rf = ps.plan_rf AND pp.sd_rf = ps.sd_rf) " +
-    "   LEFT JOIN item_list sd ON pp.sd_rf = sd.item_id) " +
-    "   LEFT JOIN item_list fc ON pp.fc_rf = fc.item_id) " +
-    "   LEFT JOIN sd_fc sdf ON pp.fc_rf = sdf.fc_rf) " +
+    "   LEFT JOIN item_list sd ON sd.spr_rf = 8 AND pp.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list fc ON fc.spr_rf = 9 AND pp.item_rf = fc.item_id) " +
+    "   LEFT JOIN sd_fc sdf ON pp.item_rf = sdf.fc_rf) " +
     " WHERE pp.plan_rf = $1 AND pp.sd_rf = $2 " +
     " ORDER BY fc.item_name " +
     " LIMIT 1 ",
@@ -480,7 +480,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       data.fact_workers_num  = Math.round(data.need_workers_num);
       if (data.need_workers_num < 3)  data.fact_workers_num = 3;
       if (data.need_workers_num > data.max_workers_num) data.fact_workers_num = data.max_workers_num;
-0
+
 
       // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
       data.day_power = data.form_num * data.ffc_num * data.kob;
@@ -520,6 +520,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       // Если не можем сделать нужное по плану кол-во ЖБИ, то выводим красным цветом (пока ставлю !!!)
       if (data.fc_num > data.month_power) data.fc_num = '(!!!)' + data.fc_num;
 
+      data.fc_num = Math.round(data.fc_num * 1000) / 1000 ;
 
       gdata = data;
 
