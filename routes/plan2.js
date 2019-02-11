@@ -127,13 +127,33 @@ router.post('/plan_plan/update', function(req, res, next) {
   var old_plan_rf = req.body.old_plan_rf;
   var old_sd_rf = req.body.old_sd_rf;
   var old_item_rf = req.body.old_item_rf;
-  if (sd_rf > 0 ) {
+  var spr_rf = 0;
+  var where_spr_clause = 'spr_rf > 0';
+
+  db.any(
+    "SELECT item_id " +
+    "  FROM item_list " +
+    "  WHERE  item_name = $1 ", [spr_name])
+    .then(function (data) {
+
+      if (data.length == 1) {
+        where_spr_clause = " spr_rf = " + data[0].item_id;
+      }
+      else
+        where_spr_clause = " spr_rf > 0 ";
+
+//      res.render('plan2/sklad_s', {data: data}); // Показ формы
+
+    })
+    .then(function () {
+
+      if (sd_rf > 0 ) {
 //  Обновление
     db.none(
       "UPDATE plan_plan " +
-      "SET plan_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
-      "    sd_rf=(SELECT item_id FROM item_list WHERE item_name=$2), " +
-      "    item_rf=(SELECT item_id FROM item_list WHERE item_name=$3), " +
+      "SET plan_rf=(SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1), " +
+      "    sd_rf=(SELECT item_id FROM item_list WHERE spr_rf= 8 AND item_name=$2), " +
+      "    item_rf=(SELECT item_id FROM item_list WHERE "+ where_spr_clause + " AND item_name=$3), " +
       "    num_plan=$4, num_day=$5 " +
       "WHERE plan_rf=$6 AND sd_rf=$7 AND item_rf=$8",
       [plan_name, sd_name, item_name, num_plan, num_day, old_plan_rf, old_sd_rf, old_item_rf])
@@ -148,17 +168,19 @@ router.post('/plan_plan/update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO  plan_plan (plan_rf, sd_rf, item_rf, num_plan, num_day) " +
-      "VALUES ((SELECT item_id FROM item_list WHERE item_name=$1), " +
-      "  (SELECT item_id FROM item_list WHERE item_name=$2), " +
-      "  (SELECT item_id FROM item_list WHERE item_name=$3), $4, $5)",
+      "VALUES ((SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1), " +
+      "  (SELECT item_id FROM item_list WHERE spr_rf= 8 AND  item_name=$2), " +
+      "  (SELECT item_id FROM item_list WHERE "+ where_spr_clause + " AND  item_name=$3), $4, $5)",
       [plan_name, sd_name, item_name, num_plan, num_day])
       .then (function (data) {
         res.redirect('/plan2/plan_plan_s/'+spr_name);
       })
       .catch(function (error) {
-        res.send(error);
+        res.send('ОШИБКА: INSERT ('+plan_name+','+ sd_name+','+item_name+','+ num_plan+','+ num_day+'): '+error);
       });
   }
+
+  });
 });
 
 // Удалить  ПЛАН ПРОИЗВОДСТВА ЖБИ
