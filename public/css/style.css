@@ -181,14 +181,16 @@ select.td {
 
 
 /* Таблицы-списки */
-table.list, thead.list {
+table.list, table.list10, thead.list {
   border: 1px solid lightgrey;
   border-collapse: collapse;
 }
 td.list {
   border: 1px solid lightgrey;
 }
-
+table.list10 {
+    font-size: 14px;
+}
 /* Таблицы-отчёты */
 table.report, thead.report {
   width: auto;

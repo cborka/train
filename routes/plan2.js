@@ -11,6 +11,12 @@ var db = require("../db");
 //   plan_fact
 //   sklad
 
+function format_num(num) {
+  if (num == null || num == 0) {num = ''} else num = Math.round(num * 1000) / 1000;
+  return num;
+}
+
+
 
 
 //====== ПЛАН ======= таблица plan_plan =============
@@ -42,10 +48,10 @@ router.get('/plan_plan_d_s/:spr_name', function(req, res, next) {
     })
     .then(function () {
       num_days = '';
-      for(var j = 1; j <=2; j++) {
+      for(var j = 1; j <=30; j++) {
         num_days = num_days + ' nums_plan['+j+'] AS np'+j+', ';
       }
-      num_days = num_days + ' nums_plan[3] AS np3 ';
+      num_days = num_days + ' nums_plan[31] AS np31 ';
 //      res.send(num_days); // Показ формы
 
       db.any(
@@ -63,9 +69,37 @@ router.get('/plan_plan_d_s/:spr_name', function(req, res, next) {
             data[i].num_plan = Math.round(data[i].num_plan * 1000) / 1000
             data[i].num_day = Math.round(data[i].num_day * 1000) / 1000
 
-            if (data[i].np1 == 0) {data[i].np1 = ''} else data[i].np1 = Math.round(data[i].np1 * 1000) / 1000;
-            if (data[i].np2 == 0) {data[i].np2 = ''} else data[i].np2 = Math.round(data[i].np2 * 1000) / 1000;
-            if (data[i].np3 == 0) {data[i].np3 = ''} else data[i].np3 = Math.round(data[i].np3 * 1000) / 1000;
+            data[i].np1 = format_num (data[i].np1);
+            data[i].np2 = format_num (data[i].np2);
+            data[i].np3 = format_num (data[i].np3);
+            data[i].np4 = format_num (data[i].np4);
+            data[i].np5 = format_num (data[i].np5);
+            data[i].np6 = format_num (data[i].np6);
+            data[i].np7 = format_num (data[i].np7);
+            data[i].np8 = format_num (data[i].np8);
+            data[i].np9 = format_num (data[i].np9);
+            data[i].np10 = format_num (data[i].np10);
+            data[i].np11 = format_num (data[i].np11);
+            data[i].np12 = format_num (data[i].np12);
+            data[i].np13 = format_num (data[i].np13);
+            data[i].np14 = format_num (data[i].np14);
+            data[i].np15 = format_num (data[i].np15);
+            data[i].np16 = format_num (data[i].np16);
+            data[i].np17 = format_num (data[i].np17);
+            data[i].np18 = format_num (data[i].np18);
+            data[i].np19 = format_num (data[i].np19);
+            data[i].np20 = format_num (data[i].np20);
+            data[i].np21 = format_num (data[i].np21);
+            data[i].np22 = format_num (data[i].np22);
+            data[i].np23 = format_num (data[i].np23);
+            data[i].np24 = format_num (data[i].np24);
+            data[i].np25 = format_num (data[i].np25);
+            data[i].np26 = format_num (data[i].np26);
+            data[i].np27 = format_num (data[i].np27);
+            data[i].np28 = format_num (data[i].np28);
+            data[i].np29 = format_num (data[i].np29);
+            data[i].np30 = format_num (data[i].np30);
+            data[i].np31 = format_num (data[i].np31);
 
           }
 
