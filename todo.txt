@@ -50,6 +50,10 @@ UPDATE fcformovka_1c SET id1c = year2str(id1c)
  WHERE CAST(id1c AS INTEGER) > 700
  ;
 
+ALTER TABLE plan_fc_pro RENAME TO zx_plan_fc_pro
+;
+
+
 ======================================================================
 
 для самостоятельных игроков, хотя взаимопомощь приветствуется

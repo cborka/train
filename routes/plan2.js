@@ -16,6 +16,71 @@ var db = require("../db");
 //====== ПЛАН ======= таблица plan_plan =============
 // То, что запланировано сделать. На месяц и по дням
 
+
+//
+// Показать список ПЛАН с кол-вом по дням месяца
+//
+router.get('/plan_plan_d_s/:spr_name', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var where_clause = '';
+  var num_days = '';
+
+  db.any(
+    "SELECT item_id " +
+    "  FROM item_list " +
+    "  WHERE  item_name = $1 ", [spr_name])
+    .then(function (data) {
+
+      if (data.length == 1) {
+        where_clause = " WHERE item.spr_rf = " + data[0].item_id;
+      }
+      else
+        where_clause = " WHERE item.spr_rf = 0 ";
+
+//      res.render('plan2/sklad_s', {data: data}); // Показ формы
+
+    })
+    .then(function () {
+      num_days = '';
+      for(var j = 1; j <=2; j++) {
+        num_days = num_days + ' nums_plan['+j+'] AS np'+j+', ';
+      }
+      num_days = num_days + ' nums_plan[3] AS np3 ';
+//      res.send(num_days); // Показ формы
+
+      db.any(
+        "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
+        "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, num_plan, num_day, " + num_days +
+        " FROM (((plan_plan pp " +
+        "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
+        "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
+        "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+        where_clause +
+        " ORDER BY plan.item_name, sd.item_name, item.item_name ")
+        .then(function (data) {
+
+          for (var i = 0; i < data.length; i++) {
+            data[i].num_plan = Math.round(data[i].num_plan * 1000) / 1000
+            data[i].num_day = Math.round(data[i].num_day * 1000) / 1000
+
+            if (data[i].np1 == 0) {data[i].np1 = ''} else data[i].np1 = Math.round(data[i].np1 * 1000) / 1000;
+            if (data[i].np2 == 0) {data[i].np2 = ''} else data[i].np2 = Math.round(data[i].np2 * 1000) / 1000;
+            if (data[i].np3 == 0) {data[i].np3 = ''} else data[i].np3 = Math.round(data[i].np3 * 1000) / 1000;
+
+          }
+
+          data.spr_name = spr_name;
+          res.render('plan2/plan_plan_d_s', {data: data}); // Показ формы
+        })
+        .catch(function (error) {
+          res.send('ОШИБКА: '+error);
+        });
+    });
+});
+
+
+
+
 //
 // Показать список ПЛАН
 //
