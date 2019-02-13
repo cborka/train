@@ -668,9 +668,9 @@ router.post('/plan_fact/update', function(req, res, next) {
 //  Обновление
     db.none(
       "UPDATE plan_fact " +
-      "SET plan_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
-      "    sd_rf=(SELECT item_id FROM item_list WHERE item_name=$2), " +
-      "    item_rf=(SELECT item_id FROM item_list WHERE item_name=$3), " +
+      "SET plan_rf=(SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
+      "    sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2), " +
+      "    item_rf=(SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$3), " +
       "    dt=$4, num_fact=$5 " +
       "WHERE plan_rf=$6 AND sd_rf=$7 AND item_rf=$8",
       [plan_name, sd_name, item_name, dt, num_fact, old_plan_rf, old_sd_rf, old_item_rf])
@@ -685,9 +685,9 @@ router.post('/plan_fact/update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO  plan_fact (plan_rf, sd_rf, item_rf, dt, num_fact) " +
-      "VALUES ((SELECT item_id FROM item_list WHERE item_name=$1), " +
-      "  (SELECT item_id FROM item_list WHERE item_name=$2), " +
-      "  (SELECT item_id FROM item_list WHERE item_name=$3), $4, $5)",
+      "VALUES ((SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2), " +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$3), $4, $5)",
       [plan_name, sd_name, item_name, dt, num_fact])
       .then (function (data) {
         res.redirect('/plan2/plan_fact_s/'+spr_name);
@@ -838,8 +838,8 @@ router.post('/sklad/update', function(req, res, next) {
 //  Обновление
     db.none(
       "UPDATE sklad " +
-      "SET sklad_rf=(SELECT item_id FROM item_list WHERE item_name=$1), " +
-      "    item_rf=(SELECT item_id FROM item_list WHERE item_name=$2), " +
+      "SET sklad_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$1), " +
+      "    item_rf=(SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$2), " +
       "    num_fact=$3, num_max=$4 " +
       "WHERE sklad_rf=$5 AND item_rf=$6",
       [sklad_name, item_name, num_fact, num_max, old_sklad_rf, old_item_rf])
@@ -854,8 +854,8 @@ router.post('/sklad/update', function(req, res, next) {
 //  Добавление
     db.none(
       "INSERT INTO sklad (sklad_rf, item_rf, num_fact, num_max) " +
-      "VALUES ((SELECT item_id FROM item_list WHERE item_name=$1), " +
-      "  (SELECT item_id FROM item_list WHERE item_name=$2), $3, $4)",
+      "VALUES ((SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$1), " +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$2), $3, $4)",
       [sklad_name, item_name, num_fact, num_max])
       .then (function (data) {
         res.redirect('/plan2/sklad_s/'+spr_name);
