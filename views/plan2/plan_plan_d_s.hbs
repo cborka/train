@@ -5,13 +5,16 @@
 <div><p>То, что запланировано сделать в данном месяце и сколько нужно делать каждый день.<br>
 </p></div>
 <div>
+    <a href="/plan2/plan_plan_d_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
     <table class="list">
         <tr>
-            <td class="list"><b>_План_</b></td>
-            <td class="list"><b>_Пролет__</b></td>
+            <td class="list"><b>План</b></td>
+            <td class="list"><b>Пролет</b></td>
             <td class="list"><b>Предмет</b></td>
             <td class="list"><b>План</b></td>
+<!--
             <td class="list"><b>День</b></td>
+-->
             <td class="list"><b>1</b></td>
             <td class="list"><b>2</b></td>
             <td class="list"><b>3</b></td>
@@ -51,7 +54,9 @@
                 <td class="list">{{sd_name}}</td>
                 <td class="list">{{item_name}}</td>
                 <td class="list">{{num_plan}}</td>
+                    <!--
                 <td class="list">{{num_day}}</td>
+-->
                 <td class="list">{{np1}}</td>
                 <td class="list">{{np2}}</td>
                 <td class="list">{{np3}}</td>
@@ -91,7 +96,7 @@
         {{/each}}
     </table>
 </div>
-<a href="/plan2/plan_plan_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
+<a href="/plan2/plan_plan_d_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
 <br>
 <div id="hint" ></div>
 <div id="erro" ></div>
@@ -109,7 +114,7 @@
     }
 
     function edit_plan_sd(plan_rf,sd_rf,item_rf) {
-        location.href = '/plan2/plan_plan/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+        location.href = '/plan2/plan_plan_d/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
     }
 
 </script>

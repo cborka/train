@@ -19,7 +19,7 @@ function format_num(num) {
 
 
 
-//====== ПЛАН ======= таблица plan_plan =============
+//====== ПЛАН ======= таблица plan_plan ======== вариант 2 (по дням) =====
 // То, что запланировано сделать. На месяц и по дням
 
 
@@ -113,7 +113,260 @@ router.get('/plan_plan_d_s/:spr_name', function(req, res, next) {
 });
 
 
+//
+// Добавить новую строку в ПЛАН
+//
+router.get('/plan_plan_d_addnew/:spr_name', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name, 0 AS item_rf, '' AS item_name, 0 AS num_plan, " +
+    " 0 AS num_day, " +
+    " 0 AS np1, 0 AS np2, 0 AS np3, 0 AS np4, 0 AS np5, 0 AS np6, 0 AS np7, 0 AS np8, 0 AS np9, 0 AS np10," +
+    " 0 AS np11, 0 AS np12, 0 AS np13, 0 AS np14, 0 AS np15, 0 AS np16, 0 AS np17, 0 AS np18, 0 AS np19, 0 AS np20," +
+    " 0 AS np21, 0 AS np22, 0 AS np23, 0 AS np24, 0 AS np25, 0 AS np26, 0 AS np27, 0 AS np28, 0 AS np29, 0 AS np30," +
+    " 0 AS np31 " )
+    .then(function (data) {
 
+      data.spr_name = spr_name;
+
+      res.render('plan2/plan_plan_d', data);
+    })
+    .catch(function (error) {
+      res.send('ОШИБКА: '+error);
+    });
+});
+
+
+//
+// Показать/обновить строку ПЛАНа
+//
+router.get('/plan_plan_d/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var plan_rf = req.params.plan_rf;
+  var sd_rf = req.params.sd_rf;
+  var item_rf = req.params.item_rf;
+  db.one(
+    "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
+    "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, num_plan, num_day, " +
+    "    nums_plan[1] AS np1, " +
+    "    nums_plan[2] AS np2, " +
+    "    nums_plan[3] AS np3, " +
+    "    nums_plan[4] AS np4, " +
+    "    nums_plan[5] AS np5, " +
+    "    nums_plan[6] AS np6, " +
+    "    nums_plan[7] AS np7, " +
+    "    nums_plan[8] AS np8, " +
+    "    nums_plan[9] AS np9, " +
+    "    nums_plan[10] AS np10, " +
+    "    nums_plan[11] AS np11, " +
+    "    nums_plan[12] AS np12, " +
+    "    nums_plan[13] AS np13, " +
+    "    nums_plan[14] AS np14, " +
+    "    nums_plan[15] AS np15, " +
+    "    nums_plan[16] AS np16, " +
+    "    nums_plan[17] AS np17, " +
+    "    nums_plan[18] AS np18, " +
+    "    nums_plan[19] AS np19, " +
+    "    nums_plan[20] AS np20, " +
+    "    nums_plan[21] AS np21, " +
+    "    nums_plan[22] AS np22, " +
+    "    nums_plan[23] AS np23, " +
+    "    nums_plan[24] AS np24, " +
+    "    nums_plan[25] AS np25, " +
+    "    nums_plan[26] AS np26, " +
+    "    nums_plan[27] AS np27, " +
+    "    nums_plan[28] AS np28, " +
+    "    nums_plan[29] AS np29, " +
+    "    nums_plan[30] AS np30, " +
+    "    nums_plan[31] AS np31 " +
+    " FROM (((plan_plan pp " +
+    "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
+    "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+    " WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
+    .then(function (data) {
+
+      data.num_plan = Math.round(data.num_plan * 1000) / 1000
+      data.num_day = Math.round(data.num_day * 1000) / 1000
+
+      data.np1 = format_num (data.np1);
+      data.np2 = format_num (data.np2);
+      data.np3 = format_num (data.np3);
+      data.np4 = format_num (data.np4);
+      data.np5 = format_num (data.np5);
+      data.np6 = format_num (data.np6);
+      data.np7 = format_num (data.np7);
+      data.np8 = format_num (data.np8);
+      data.np9 = format_num (data.np9);
+      data.np10 = format_num (data.np10);
+      data.np11 = format_num (data.np11);
+      data.np12 = format_num (data.np12);
+      data.np13 = format_num (data.np13);
+      data.np14 = format_num (data.np14);
+      data.np15 = format_num (data.np15);
+      data.np16 = format_num (data.np16);
+      data.np17 = format_num (data.np17);
+      data.np18 = format_num (data.np18);
+      data.np19 = format_num (data.np19);
+      data.np20 = format_num (data.np20);
+      data.np21 = format_num (data.np21);
+      data.np22 = format_num (data.np22);
+      data.np23 = format_num (data.np23);
+      data.np24 = format_num (data.np24);
+      data.np25 = format_num (data.np25);
+      data.np26 = format_num (data.np26);
+      data.np27 = format_num (data.np27);
+      data.np28 = format_num (data.np28);
+      data.np29 = format_num (data.np29);
+      data.np30 = format_num (data.np30);
+      data.np31 = format_num (data.np31);
+
+
+      data.spr_name = spr_name;
+
+      res.render('plan2/plan_plan_d', data);
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+
+
+
+//
+// Добавление и корректировка строки ПЛАНа
+//
+router.post('/plan_plan_d/update', function(req, res, next) {
+  var spr_name = req.body.spr_name;
+  var plan_rf = req.body.plan_rf;
+  var sd_rf = req.body.sd_rf;
+  var item_rf = req.body.item_rf;
+  var plan_name = req.body.plan_name;
+  var sd_name = req.body.sd_name;
+  var item_name = req.body.item_name;
+  var num_plan = req.body.num_plan;
+  var num_day = req.body.num_day;
+  var np = [req.body.np1, req.body.np2];
+  var old_plan_rf = req.body.old_plan_rf;
+  var old_sd_rf = req.body.old_sd_rf;
+  var old_item_rf = req.body.old_item_rf;
+  var spr_rf = 0;
+  var where_spr_clause = 'spr_rf > 0';
+
+  db.any(
+    "SELECT item_id " +
+    "  FROM item_list " +
+    "  WHERE  item_name = $1 ", [spr_name])
+    .then(function (data) {
+
+      if (data.length == 1) {
+        where_spr_clause = " spr_rf = " + data[0].item_id;
+      }
+      else
+        where_spr_clause = " spr_rf > 0 ";
+
+
+      np = '{'+
+        req.body.np1+','+
+        req.body.np2+','+
+        req.body.np3+','+
+        req.body.np4+','+
+        req.body.np5+','+
+        req.body.np6+','+
+        req.body.np7+','+
+        req.body.np8+','+
+        req.body.np9+','+
+        req.body.np10+','+
+        req.body.np11+','+
+        req.body.np12+','+
+        req.body.np13+','+
+        req.body.np14+','+
+        req.body.np15+','+
+        req.body.np16+','+
+        req.body.np17+','+
+        req.body.np18+','+
+        req.body.np19+','+
+        req.body.np20+','+
+        req.body.np21+','+
+        req.body.np22+','+
+        req.body.np23+','+
+        req.body.np24+','+
+        req.body.np25+','+
+        req.body.np26+','+
+        req.body.np27+','+
+        req.body.np28+','+
+        req.body.np29+','+
+        req.body.np30+','+
+        req.body.np31+
+        '}'
+
+//      res.render('plan2/sklad_s', {data: data}); // Показ формы
+
+    })
+    .then(function () {
+
+      if (sd_rf > 0 ) {
+//  Обновление
+        db.none(
+          "UPDATE plan_plan " +
+          "SET plan_rf=(SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1), " +
+          "    sd_rf=(SELECT item_id FROM item_list WHERE spr_rf= 8 AND item_name=$2), " +
+          "    item_rf=(SELECT item_id FROM item_list WHERE "+ where_spr_clause + " AND item_name=$3), " +
+          "    num_plan=$4, num_day=$5, nums_plan = $9 " +
+          "WHERE plan_rf=$6 AND sd_rf=$7 AND item_rf=$8",
+          [plan_name, sd_name, item_name, num_plan, 0, old_plan_rf, old_sd_rf, old_item_rf, np])
+          .then (function () {
+            res.redirect('/plan2/plan_plan_d_s/'+spr_name);
+          })
+          .catch(function (error) {
+            res.send('ОШИБКА: UPDATE: '+error);
+          });
+      }
+      else {
+//  Добавление
+        db.none(
+          "INSERT INTO  plan_plan (plan_rf, sd_rf, item_rf, num_plan, num_day, nums_plan) " +
+          "VALUES ((SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1), " +
+          "  (SELECT item_id FROM item_list WHERE spr_rf= 8 AND  item_name=$2), " +
+          "  (SELECT item_id FROM item_list WHERE "+ where_spr_clause + " AND  item_name=$3), $4, $5, $6)",
+          [plan_name, sd_name, item_name, num_plan, 0, np])
+          .then (function (data) {
+            res.redirect('/plan2/plan_plan_d_s/'+spr_name);
+          })
+          .catch(function (error) {
+            res.send('ОШИБКА: INSERT ('+plan_name+','+ sd_name+','+item_name+','+ num_plan+','+ num_day+'): '+error);
+          });
+      }
+
+    });
+});
+
+
+
+// Удалить  ПЛАН ПРОИЗВОДСТВА ЖБИ
+router.get('/plan_plan_delete/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+  var spr_name = req.params.spr_name;
+  var plan_rf = req.params.plan_rf;
+  var sd_rf = req.params.sd_rf;
+  var item_rf = req.params.item_rf;
+  db.none("DELETE FROM plan_plan WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
+    .then(function () {
+      res.redirect('/plan2/plan_plan_d_s/'+spr_name); // Обновление списка
+    })
+    .catch(function (error) {
+      res.send(error);
+    });
+});
+
+
+
+
+
+
+
+//====== ПЛАН ======= таблица plan_plan =============
+// То, что запланировано сделать за месяц
 
 //
 // Показать список ПЛАН
