@@ -35,7 +35,7 @@
 
         План-месяц: <select size="1" name='plan_name' id='plan_name' title="" value="x" onchange="plan_change()"></select>
 
-  </td></tr><tr class="reports"><td>
+    </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
        <h2>Формовка</h2>
@@ -44,7 +44,17 @@
       <br>
     <div id="formovka" align="left" style='float: left; overflow: auto;'></div>
 
-  </td></tr><tr class="reports"><td>
+    </td></tr><tr class="reports"><td>
+
+    <div style='overflow: auto;'>
+        <h2>План-Факт ЖБИ</h2>
+        <button id="btnPlanFactFcOnOff" type="button" onclick="plan_fact_fc_auto_on()">Включить автообновление</button>
+        <button id="btnDayPlan" type="button" disabled onclick="day_or_plan()"><b>День</b>/План  </button>
+    </div>
+    <br>
+    <div id="plan_fact_fc" align="left" style='float: left; overflow: auto;'></div>
+
+    </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
         <h2>СГП</h2>
@@ -61,7 +71,6 @@
     </div>
     <br>
     <div id="sklad_arm" align="left" style='float: left; overflow: auto;'></div>
-
 
 
     </td></tr>
@@ -89,6 +98,7 @@
 <script>
     var timerId = 0;
     var timerFormovkaId = 0;
+    var timerPlanFactFcId = 0;
     var timerSkladFcId = 0;
     var timerSkladArmId = 0;
     var dtNow = new Date();;
@@ -96,6 +106,7 @@
     var dtbAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 1));
     var dteAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 31));
     var PlanName = toYYYYMM(new Date());
+    var DayPlan = 'Day';
 
     function auto_on()
     {
@@ -167,6 +178,49 @@
                 '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
 //        '&dt=' + encodeURIComponent(document.getElementById("dt").value.substr(0, 10))
         );
+    }
+
+
+    // План-факт ЖБИ
+    function plan_fact_fc_auto_on()
+    {
+        if (timerPlanFactFcId <= 0) {
+            get_plan_fact_fc();
+            timerPlanFactFcId = setInterval(get_plan_fact_fc, 60000);
+            document.getElementById("btnPlanFactFcOnOff").innerHTML = 'Выключить автообновление';
+            document.getElementById("btnDayPlan").disabled = false;
+        }
+        else if (timerPlanFactFcId > 0) {
+            clearInterval(timerPlanFactFcId);
+            timerPlanFactFcId = 0;
+            document.getElementById("btnPlanFactFcOnOff").innerHTML = 'Включить автообновление';
+            document.getElementById("btnDayPlan").disabled = true;
+            document.getElementById("plan_fact_fc").innerHTML = '';
+        }
+    }
+    var set_plan_fact_fc = function (reply)
+    {
+        document.getElementById("plan_fact_fc").innerHTML = reply;
+    }
+    function get_plan_fact_fc()
+    {
+        doQuery ("/reports/get_plan_fact_fc", set_plan_fact_fc,
+                '&plan=' + encodeURIComponent(PlanName)+
+                '&day_plan=' + encodeURIComponent(DayPlan)
+        );
+    }
+    // Переключение вида показа День или План
+    function day_or_plan() {
+        if (DayPlan == 'Plan') {
+            DayPlan = 'Day';
+            get_plan_fact_fc();
+            document.getElementById("btnDayPlan").innerHTML = '<b>День</b>/План';
+        }
+        else {
+            DayPlan = 'Plan';
+            get_plan_fact_fc();
+            document.getElementById("btnDayPlan").innerHTML = 'День/<b>План</b>';
+        }
     }
 
 

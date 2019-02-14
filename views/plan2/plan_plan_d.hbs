@@ -36,9 +36,11 @@
     </table>
     <br>
     Количество на день по дням месяца
-    <button type="button" onclick="calc_num_days()">Рассчитать</button
+    <button type="button" onclick="calc_num_days()">Рассчитать</button>
+    <button type="button" onclick="make_table_days()">Изготовить таблицу</button>
+
     <br>
-    <table class="form">
+    <table id="table_days" class="form">
         <tr>
             <td><b>1</b></td>
             <td><b>2</b></td>
@@ -121,6 +123,9 @@
     // Расчитать кол-во ЖБИ по дням месяца
     function calc_num_days ()
     {
+
+        if(!confirm("Пересчитать кол-во по дням? Уверены?")) return;
+
         var nps = document.getElementById("num_plan").value;
         var npd = nps / 31;
         var npds = npd;
@@ -152,8 +157,23 @@
 //        document.getElementById("np5").value = 12;
     }
 
+    // При корректировке дней пересчитывать план на месяц.
+    function make_table_days()
+    {
+        for (var i=1; i<=31; i++){
+             document.getElementById("np"+i).onchange = sum_days;
 
-
+        }
+    }
+    make_table_days();
+    function sum_days() {
+        nps = 0;
+        for (var j=1; j<=31; j++) {
+           nps = nps + +document.getElementById("np" + j).value;
+        }
+//        document.getElementById("hint").innerHTML = "Сумма по дням: " + nps;
+        document.getElementById("num_plan").value = nps;
+    }
 
 
     // Изготовить список планов для выбора

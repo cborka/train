@@ -23,6 +23,20 @@ router.get('/fcrashod', function(req, res, next) {
 
 });
 
+
+function num2str(num) {
+  var str;
+  if (num == null || num == 0) {str = ''} else str = Math.round(num * 1000) / 1000;
+  return str;
+}
+function str2num(str) {
+  var num;
+  if (str == null || str == '') {num = 0} else num = +str;
+  return num;
+}
+
+
+
 //
 // Показать выборку из таблицы БД fcrashod_1c
 //
@@ -137,7 +151,7 @@ router.post('/get_formovka_day', function(req, res, next) {
 
 //select * from rep_formovka_daily('2019-01-01', '2019-01-31')
 
-// Формовка по дням за месяц
+// ================== Формовка по дням за месяц =========================
 
 router.post('/get_formovka_plan', function(req, res, next) {
   var dtb = req.body.dtb;
@@ -191,6 +205,100 @@ router.post('/get_formovka_plan', function(req, res, next) {
 
 });
 
+//
+// // План-факт ЖБИ
+//
+router.post('/get_plan_fact_fc', function(req, res, next) {
+  var plan = req.body.plan;
+  var day_plan = req.body.day_plan; // Выводим за день или накопительно на План-месяц
+
+
+  db.any(
+    "SELECT pp.sd_rf, sd.item_name AS sd_name, " +
+    "    pp.item_rf, item.item_name AS item_name, num_plan, num_fact, nums_plan, nums_fact " +
+    " FROM ((plan_plan pp " +
+    "   LEFT JOIN item_list sd ON pp.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list item ON pp.item_rf = item.item_id) " +
+    " WHERE item.spr_rf = 9 " + // ЖБИ
+    "   AND pp.item_rf IN (13, 112) " + // Пока работаем только с двумя ЖБИ
+    "   AND plan_rf = (SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1)" +
+    " ORDER BY sd.item_name, item.item_name ", [plan])
+    .then (function (data) {
+
+      var result = '';
+      result = result + 'План-месяц: '+plan+'<br>';
+      result = result + '<br><table class="report" align="left">';
+      result = result + '<thead><td class="report left">Пролет</td>';
+      result = result + '<td  class="report left">ЖБИ</td>';
+      result = result + '<td  class="report left">План</td>';
+      result = result + '<td  class="report left">Факт</td>';
+      result = result + '<td  class="report right">По дням</td>';
+
+      for (var j = 1; j <= 31; j++) {
+        result = result + '<td  class="report right">'+j+'</td>';
+      }
+      result = result  + '</thead>';
+
+      for (var i = 0; i < data.length; i++) {
+
+//        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+//        if (data[i].num_fact == 0)  data[i].num_fact = '';
+
+        result = result + '<tr><td  class="report left">' + data[i].sd_name + '</td>';
+        result = result + '<td  class="report left">' + data[i].item_name + '</td>';
+        result = result + '<td  class="report left">' + str2num(data[i].num_plan) + '</td>';
+        result = result + '<td  class="report left">' + str2num(data[i].num_fact) + '</td>';
+//        result = result + '<td  class="report left">' +  (+data[i].num_fact - +data[i].num_plan) + '</td>';
+        result = result + '<td  class="report left">План<br>Факт<br>Отклонение</td>';
+        var n_pln = 0;
+        var n_fct = 0;
+        var n_otkl = 0;
+        for (var j = 0; j <= 30; j++) {
+//          result = result + '<td  class="report right">' + num2str(data[i].nums_plan[j]) + '/' +
+//                            '<td  class="report right">' + num2str(data[i].nums_fact[j]) + '</td>';
+
+          var pln = str2num(num2str(data[i].nums_plan[j]));
+          var fct = str2num(num2str(data[i].nums_fact[j]));
+          var otkl = fct - pln;
+
+          n_pln = n_pln + pln;
+          n_fct = n_fct + fct;
+          n_otkl = n_fct - n_pln;
+
+          // Раскраска цифр
+          // день
+          if (pln == 0)  pln = '<span class="silver">'+pln+'</span>';
+          if (fct == 0)  fct = '<span class="silver">'+fct+'</span>';
+          if (otkl == 0)  otkl = '<span class="silver">'+otkl+'</span>';
+          if (otkl < 0)  otkl = '<span class="red">'+otkl+'</span>';
+          if (otkl > 0)  otkl = '<span class="green">'+otkl+'</span>';
+
+          // план
+          var sn_pln = n_pln; //В n_pln копится сумма, нельзя менять, поэтому ввёл переменную sn_pln (строка)
+          var sn_fct = n_fct; // аналогично
+          if (n_pln == 0)  sn_pln = '<span class="silver">'+n_pln+'</span>';
+          if (n_fct == 0)  sn_fct = '<span class="silver">'+n_fct+'</span>';
+          if (n_otkl == 0)  n_otkl = '<span class="silver">'+n_otkl+'</span>';
+          if (n_otkl < 0)  n_otkl = '<span class="red">'+n_otkl+'</span>';
+          if (n_otkl > 0)  n_otkl = '<span class="green">'+n_otkl+'</span>';
+
+          if (day_plan == 'Day')
+            result = result + '<td  class="report right">' + pln + '<br>' + fct + '<br>'+ otkl + '</td>';
+          else
+            result = result + '<td  class="report right">' + sn_pln + '<br>' + sn_fct + '<br>'+ n_otkl + '</td>';
+
+//          result = result + '<td  class="report right">' + str2num(num2str(data[i].nums_plan[j])) + '/' + str2num(num2str(data[i].nums_fact[j])) + '</td>';
+        }
+//        result = result + '<td  class="report right">' + data[i].num_free + '</td></tr>';
+      }
+      result = result +'</table>';
+
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send('ОШИБКА: '+error);
+    });
+});
 
 
 //

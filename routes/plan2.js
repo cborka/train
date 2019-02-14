@@ -11,8 +11,14 @@ var db = require("../db");
 //   plan_fact
 //   sklad
 
-function format_num(num) {
-  if (num == null || num == 0) {num = ''} else num = Math.round(num * 1000) / 1000;
+function num2str(num) {
+  var str;
+  if (num == null || num == 0) {str = ''} else str = Math.round(num * 1000) / 1000;
+  return str;
+}
+function str2num(str) {
+  var num;
+  if (str == null || str == '') {num = 0} else num = +str;
   return num;
 }
 
@@ -69,37 +75,37 @@ router.get('/plan_plan_d_s/:spr_name', function(req, res, next) {
             data[i].num_plan = Math.round(data[i].num_plan * 1000) / 1000
             data[i].num_day = Math.round(data[i].num_day * 1000) / 1000
 
-            data[i].np1 = format_num (data[i].np1);
-            data[i].np2 = format_num (data[i].np2);
-            data[i].np3 = format_num (data[i].np3);
-            data[i].np4 = format_num (data[i].np4);
-            data[i].np5 = format_num (data[i].np5);
-            data[i].np6 = format_num (data[i].np6);
-            data[i].np7 = format_num (data[i].np7);
-            data[i].np8 = format_num (data[i].np8);
-            data[i].np9 = format_num (data[i].np9);
-            data[i].np10 = format_num (data[i].np10);
-            data[i].np11 = format_num (data[i].np11);
-            data[i].np12 = format_num (data[i].np12);
-            data[i].np13 = format_num (data[i].np13);
-            data[i].np14 = format_num (data[i].np14);
-            data[i].np15 = format_num (data[i].np15);
-            data[i].np16 = format_num (data[i].np16);
-            data[i].np17 = format_num (data[i].np17);
-            data[i].np18 = format_num (data[i].np18);
-            data[i].np19 = format_num (data[i].np19);
-            data[i].np20 = format_num (data[i].np20);
-            data[i].np21 = format_num (data[i].np21);
-            data[i].np22 = format_num (data[i].np22);
-            data[i].np23 = format_num (data[i].np23);
-            data[i].np24 = format_num (data[i].np24);
-            data[i].np25 = format_num (data[i].np25);
-            data[i].np26 = format_num (data[i].np26);
-            data[i].np27 = format_num (data[i].np27);
-            data[i].np28 = format_num (data[i].np28);
-            data[i].np29 = format_num (data[i].np29);
-            data[i].np30 = format_num (data[i].np30);
-            data[i].np31 = format_num (data[i].np31);
+            data[i].np1 = num2str (data[i].np1);
+            data[i].np2 = num2str (data[i].np2);
+            data[i].np3 = num2str (data[i].np3);
+            data[i].np4 = num2str (data[i].np4);
+            data[i].np5 = num2str (data[i].np5);
+            data[i].np6 = num2str (data[i].np6);
+            data[i].np7 = num2str (data[i].np7);
+            data[i].np8 = num2str (data[i].np8);
+            data[i].np9 = num2str (data[i].np9);
+            data[i].np10 = num2str (data[i].np10);
+            data[i].np11 = num2str (data[i].np11);
+            data[i].np12 = num2str (data[i].np12);
+            data[i].np13 = num2str (data[i].np13);
+            data[i].np14 = num2str (data[i].np14);
+            data[i].np15 = num2str (data[i].np15);
+            data[i].np16 = num2str (data[i].np16);
+            data[i].np17 = num2str (data[i].np17);
+            data[i].np18 = num2str (data[i].np18);
+            data[i].np19 = num2str (data[i].np19);
+            data[i].np20 = num2str (data[i].np20);
+            data[i].np21 = num2str (data[i].np21);
+            data[i].np22 = num2str (data[i].np22);
+            data[i].np23 = num2str (data[i].np23);
+            data[i].np24 = num2str (data[i].np24);
+            data[i].np25 = num2str (data[i].np25);
+            data[i].np26 = num2str (data[i].np26);
+            data[i].np27 = num2str (data[i].np27);
+            data[i].np28 = num2str (data[i].np28);
+            data[i].np29 = num2str (data[i].np29);
+            data[i].np30 = num2str (data[i].np30);
+            data[i].np31 = num2str (data[i].np31);
 
           }
 
@@ -188,37 +194,37 @@ router.get('/plan_plan_d/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res,
       data.num_plan = Math.round(data.num_plan * 1000) / 1000
       data.num_day = Math.round(data.num_day * 1000) / 1000
 
-      data.np1 = format_num (data.np1);
-      data.np2 = format_num (data.np2);
-      data.np3 = format_num (data.np3);
-      data.np4 = format_num (data.np4);
-      data.np5 = format_num (data.np5);
-      data.np6 = format_num (data.np6);
-      data.np7 = format_num (data.np7);
-      data.np8 = format_num (data.np8);
-      data.np9 = format_num (data.np9);
-      data.np10 = format_num (data.np10);
-      data.np11 = format_num (data.np11);
-      data.np12 = format_num (data.np12);
-      data.np13 = format_num (data.np13);
-      data.np14 = format_num (data.np14);
-      data.np15 = format_num (data.np15);
-      data.np16 = format_num (data.np16);
-      data.np17 = format_num (data.np17);
-      data.np18 = format_num (data.np18);
-      data.np19 = format_num (data.np19);
-      data.np20 = format_num (data.np20);
-      data.np21 = format_num (data.np21);
-      data.np22 = format_num (data.np22);
-      data.np23 = format_num (data.np23);
-      data.np24 = format_num (data.np24);
-      data.np25 = format_num (data.np25);
-      data.np26 = format_num (data.np26);
-      data.np27 = format_num (data.np27);
-      data.np28 = format_num (data.np28);
-      data.np29 = format_num (data.np29);
-      data.np30 = format_num (data.np30);
-      data.np31 = format_num (data.np31);
+      data.np1 = num2str (data.np1);
+      data.np2 = num2str (data.np2);
+      data.np3 = num2str (data.np3);
+      data.np4 = num2str (data.np4);
+      data.np5 = num2str (data.np5);
+      data.np6 = num2str (data.np6);
+      data.np7 = num2str (data.np7);
+      data.np8 = num2str (data.np8);
+      data.np9 = num2str (data.np9);
+      data.np10 = num2str (data.np10);
+      data.np11 = num2str (data.np11);
+      data.np12 = num2str (data.np12);
+      data.np13 = num2str (data.np13);
+      data.np14 = num2str (data.np14);
+      data.np15 = num2str (data.np15);
+      data.np16 = num2str (data.np16);
+      data.np17 = num2str (data.np17);
+      data.np18 = num2str (data.np18);
+      data.np19 = num2str (data.np19);
+      data.np20 = num2str (data.np20);
+      data.np21 = num2str (data.np21);
+      data.np22 = num2str (data.np22);
+      data.np23 = num2str (data.np23);
+      data.np24 = num2str (data.np24);
+      data.np25 = num2str (data.np25);
+      data.np26 = num2str (data.np26);
+      data.np27 = num2str (data.np27);
+      data.np28 = num2str (data.np28);
+      data.np29 = num2str (data.np29);
+      data.np30 = num2str (data.np30);
+      data.np31 = num2str (data.np31);
 
 
       data.spr_name = spr_name;
@@ -248,6 +254,7 @@ router.post('/plan_plan_d/update', function(req, res, next) {
   var num_plan = req.body.num_plan;
   var num_day = req.body.num_day;
   var np = [req.body.np1, req.body.np2];
+  var nps = '';
   var old_plan_rf = req.body.old_plan_rf;
   var old_sd_rf = req.body.old_sd_rf;
   var old_item_rf = req.body.old_item_rf;
@@ -267,39 +274,45 @@ router.post('/plan_plan_d/update', function(req, res, next) {
         where_spr_clause = " spr_rf > 0 ";
 
 
-      np = '{'+
-        req.body.np1+','+
-        req.body.np2+','+
-        req.body.np3+','+
-        req.body.np4+','+
-        req.body.np5+','+
-        req.body.np6+','+
-        req.body.np7+','+
-        req.body.np8+','+
-        req.body.np9+','+
-        req.body.np10+','+
-        req.body.np11+','+
-        req.body.np12+','+
-        req.body.np13+','+
-        req.body.np14+','+
-        req.body.np15+','+
-        req.body.np16+','+
-        req.body.np17+','+
-        req.body.np18+','+
-        req.body.np19+','+
-        req.body.np20+','+
-        req.body.np21+','+
-        req.body.np22+','+
-        req.body.np23+','+
-        req.body.np24+','+
-        req.body.np25+','+
-        req.body.np26+','+
-        req.body.np27+','+
-        req.body.np28+','+
-        req.body.np29+','+
-        req.body.np30+','+
-        req.body.np31+
-        '}'
+      np = [
+        req.body.np1,
+        req.body.np2,
+        req.body.np3,
+        req.body.np4,
+        req.body.np5,
+        req.body.np6,
+        req.body.np7,
+        req.body.np8,
+        req.body.np9,
+        req.body.np10,
+        req.body.np11,
+        req.body.np12,
+        req.body.np13,
+        req.body.np14,
+        req.body.np15,
+        req.body.np16,
+        req.body.np17,
+        req.body.np18,
+        req.body.np19,
+        req.body.np20,
+        req.body.np21,
+        req.body.np22,
+        req.body.np23,
+        req.body.np24,
+        req.body.np25,
+        req.body.np26,
+        req.body.np27,
+        req.body.np28,
+        req.body.np29,
+        req.body.np30,
+        req.body.np31
+      ];
+
+      nps = '{'
+      for(var j = 0; j <=29; j++) {
+        nps = nps + str2num(np[j]) +',';
+      }
+      nps = nps + str2num(np[30]) +'}';
 
 //      res.render('plan2/sklad_s', {data: data}); // Показ формы
 
@@ -315,7 +328,7 @@ router.post('/plan_plan_d/update', function(req, res, next) {
           "    item_rf=(SELECT item_id FROM item_list WHERE "+ where_spr_clause + " AND item_name=$3), " +
           "    num_plan=$4, num_day=$5, nums_plan = $9 " +
           "WHERE plan_rf=$6 AND sd_rf=$7 AND item_rf=$8",
-          [plan_name, sd_name, item_name, num_plan, 0, old_plan_rf, old_sd_rf, old_item_rf, np])
+          [plan_name, sd_name, item_name, num_plan, 0, old_plan_rf, old_sd_rf, old_item_rf, nps])
           .then (function () {
             res.redirect('/plan2/plan_plan_d_s/'+spr_name);
           })
@@ -330,7 +343,7 @@ router.post('/plan_plan_d/update', function(req, res, next) {
           "VALUES ((SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1), " +
           "  (SELECT item_id FROM item_list WHERE spr_rf= 8 AND  item_name=$2), " +
           "  (SELECT item_id FROM item_list WHERE "+ where_spr_clause + " AND  item_name=$3), $4, $5, $6)",
-          [plan_name, sd_name, item_name, num_plan, 0, np])
+          [plan_name, sd_name, item_name, num_plan, 0, nps])
           .then (function (data) {
             res.redirect('/plan2/plan_plan_d_s/'+spr_name);
           })
