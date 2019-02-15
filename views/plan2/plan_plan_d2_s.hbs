@@ -1,0 +1,198 @@
+План-План: <a href="/plan2/plan_plan_s/ЖБИ" > ЖБИ </a> | <a href="/plan2/plan_plan_d_s/ЖБИ" > ЖБИ по дням </a> |
+<a href="/plan2/plan_plan_s/Арматура" > Арматура </a> |
+<a href="/plan2/plan_plan_s/Бетон" > Бетон </a>
+<h1>План - План {{data.spr_name}}</h1>
+<div><p>То, что запланировано сделать в данном месяце и сколько нужно делать каждый день.<br>
+</p></div>
+
+<table class="form">
+    <tr>
+        <td><label>План-месяц:</label></td>
+        <td>
+            <select width="100%" size="1" name='plan_name' id='plan_name' value=" " onchange="show_plan()"></select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Пролет:</label></td>
+        <td>
+            <select width="100%" size="1" name='sd_name' id='sd_name' value=" " onchange="show_plan()"></select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Часть названия ЖБИ:</label></td>
+        <td><input id="fcb_name" type="text" name="fcb_name" value="" onchange="show_plan()" ></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><button type="button" onclick="show_plan()">Показать</button></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <div id="hint" ></div>
+            <div id="erro"></div>
+
+        </td>
+    </tr>
+    <br>
+</table>
+
+
+<div>
+    <a href="/plan2/plan_plan_d_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
+    <table class="list">
+        <tr>
+            <!--
+         <td class="list"><b>План</b></td>
+         <td class="list"><b>Пролет</b></td>
+         -->
+            <td class="list"><b>Предмет</b></td>
+            <td class="list"><b>План</b></td>
+            <!--
+                        <td class="list"><b>День</b></td>
+            -->
+            <td class="list"><b>1</b></td>
+            <td class="list"><b>2</b></td>
+            <td class="list"><b>3</b></td>
+            <td class="list"><b>4</b></td>
+            <td class="list"><b>5</b></td>
+            <td class="list"><b>6</b></td>
+            <td class="list"><b>7</b></td>
+            <td class="list"><b>8</b></td>
+            <td class="list"><b>9</b></td>
+            <td class="list"><b>10</b></td>
+            <td class="list"><b>11</b></td>
+            <td class="list"><b>12</b></td>
+            <td class="list"><b>13</b></td>
+            <td class="list"><b>14</b></td>
+            <td class="list"><b>15</b></td>
+            <td class="list"><b>16</b></td>
+            <td class="list"><b>17</b></td>
+            <td class="list"><b>18</b></td>
+            <td class="list"><b>19</b></td>
+            <td class="list"><b>20</b></td>
+            <td class="list"><b>21</b></td>
+            <td class="list"><b>22</b></td>
+            <td class="list"><b>23</b></td>
+            <td class="list"><b>24</b></td>
+            <td class="list"><b>25</b></td>
+            <td class="list"><b>26</b></td>
+            <td class="list"><b>27</b></td>
+            <td class="list"><b>28</b></td>
+            <td class="list"><b>29</b></td>
+            <td class="list"><b>30</b></td>
+            <td class="list"><b>31</b></td>
+            <td class="list">Кнопки</td>
+        </tr>
+        {{#each data}}
+            <tr>
+                <!--
+                <td class="list">{{plan_name}}</td>
+                <td class="list">{{sd_name}}</td>
+-->
+                <td class="list">{{item_name}}</td>
+                <td class="list">{{num_plan}}</td>
+                <!--
+                <td class="list">{{num_day}}</td>
+-->
+                <td class="list">{{np1}}</td>
+                <td class="list">{{np2}}</td>
+                <td class="list">{{np3}}</td>
+                <td class="list">{{np4}}</td>
+                <td class="list">{{np5}}</td>
+                <td class="list">{{np6}}</td>
+                <td class="list">{{np7}}</td>
+                <td class="list">{{np8}}</td>
+                <td class="list">{{np9}}</td>
+                <td class="list">{{np10}}</td>
+                <td class="list">{{np11}}</td>
+                <td class="list">{{np12}}</td>
+                <td class="list">{{np13}}</td>
+                <td class="list">{{np14}}</td>
+                <td class="list">{{np15}}</td>
+                <td class="list">{{np16}}</td>
+                <td class="list">{{np17}}</td>
+                <td class="list">{{np18}}</td>
+                <td class="list">{{np19}}</td>
+                <td class="list">{{np20}}</td>
+                <td class="list">{{np21}}</td>
+                <td class="list">{{np22}}</td>
+                <td class="list">{{np23}}</td>
+                <td class="list">{{np24}}</td>
+                <td class="list">{{np25}}</td>
+                <td class="list">{{np26}}</td>
+                <td class="list">{{np27}}</td>
+                <td class="list">{{np28}}</td>
+                <td class="list">{{np29}}</td>
+                <td class="list">{{np30}}</td>
+                <td class="list">{{np31}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}} )">Изменить</button>
+                    <button type="button" onclick="delete_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}},'{{plan_name}}','{{sd_name}}','{{item_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/plan2/plan_plan_d_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_plan_sd(plan_rf, sd_rf, item_rf, plan_name, sd_name, item_name) {
+
+        var result = confirm("Удалить "+plan_name+'/'+sd_name+'/'+item_name+ " ?");
+        if (result) {
+            location.href = '/plan2/plan_plan_delete/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf+'/'+plan_name+'/'+sd_name;
+        }
+        else
+            erro("Оставляю "+plan_name+'/'+sd_name+'/'+item_name+" !");
+    }
+
+    function edit_plan_sd(plan_rf,sd_rf,item_rf) {
+        location.href = '/plan2/plan_plan_d/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+    }
+
+
+
+    function show_plan() {
+
+        var plan_name = document.getElementById("plan_name").value;
+        var sd_name = document.getElementById("sd_name").value;
+
+        location.href = '/plan2/plan_plan_d2_s/{{data.spr_name}}/'+plan_name+'/'+sd_name;
+    }
+
+
+
+
+
+    // Изготовить список планов для выбора
+    var set_plan_names = function (reply)
+    {
+        document.getElementById("plan_name").innerHTML = reply;
+        document.getElementById("plan_name").value = '{{data.plan_name}}';
+
+    }
+    function get_plan_names()
+    {
+        doQuery ("/common/get_spr_names/Планы", set_plan_names);
+    }
+
+    // Изготовить список подразделений для выбора
+    var set_sd_names = function (reply)
+    {
+        document.getElementById("sd_name").innerHTML = reply;
+        document.getElementById("sd_name").value = '{{data.sd_name}}';
+    }
+    function get_sd_names()
+    {
+        doQuery ("/pro/get_prolet_names", set_sd_names);
+    }
+
+    get_plan_names();
+    get_sd_names();
+
+</script>

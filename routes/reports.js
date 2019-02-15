@@ -220,7 +220,7 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
     "   LEFT JOIN item_list sd ON pp.sd_rf = sd.item_id) " +
     "   LEFT JOIN item_list item ON pp.item_rf = item.item_id) " +
     " WHERE item.spr_rf = 9 " + // ЖБИ
-    "   AND pp.item_rf IN (13, 112) " + // Пока работаем только с двумя ЖБИ
+    "   AND pp.item_rf IN (13, 112, 279) " + // Пока работаем только с двумя ЖБИ
     "   AND plan_rf = (SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1)" +
     " ORDER BY sd.item_name, item.item_name ", [plan])
     .then (function (data) {
@@ -313,7 +313,7 @@ router.post('/get_sklad_fc', function(req, res, next) {
     "   LEFT JOIN item_list sklad ON pp.sklad_rf = sklad.item_id) " +
     "   LEFT JOIN item_list item ON pp.item_rf = item.item_id) " +
     " WHERE item.spr_rf = 9 " + // ЖБИ
-    "   AND pp.item_rf IN (13, 112) " + // Пока работаем только с двумя ЖБИ
+    "   AND pp.item_rf IN (13, 112, 279) " + // Пока работаем только с двумя ЖБИ
     " ORDER BY sklad.item_name, item.item_name ")
     .then (function (data) {
 
@@ -363,7 +363,7 @@ router.post('/get_sklad_arm', function(req, res, next) {
     "   LEFT JOIN item_list item ON pp.item_rf = item.item_id) " +
     " WHERE item.spr_rf = 18 " + // Арматуры
     "   AND pp.item_rf IN ( " +
-    "     SELECT DISTINCT component_rf FROM compositions WHERE product_rf IN (13, 112) " +// Пока работаем только с двумя ЖБИ
+    "     SELECT DISTINCT component_rf FROM compositions WHERE product_rf IN (13, 112, 279) " +// Пока работаем только с двумя ЖБИ
     "   ) " + // Пока работаем только с двумя ЖБИ
     " ORDER BY sklad.item_name, item.item_name ")
     .then (function (data) {

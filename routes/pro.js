@@ -118,23 +118,27 @@ router.get('/get_sd_names', function(req, res, next) {
 });
 
 // Сформировать и возвратить список ПРОЛЕТОВ для выбора
-  router.get('/get_prolet_names', function(req, res, next) {
-    db.any(
-      "SELECT sd_name " +
-      "  FROM sd_list " +
-      "  WHERE sd_id = 1 OR sd_name LIKE 'Пролет%'" +
-      "  ORDER BY 1 ")
-      .then (function (data) {
-        var result = '';
-        for (var i = 0; i < data.length; i++) {
-          result = result + ' <option value="'+data[i].sd_name+'">'+data[i].sd_name+'</option>';
-        }
-        res.send(result);
-      })
-      .catch(function (error) {
-        res.send(error);
-      });
+//
+router.get('/get_prolet_names', function(req, res, next) {
+  var spr = req.params.spr;
+  db.any(
+    "SELECT item_name " +
+    "  FROM item_list " +
+    "  WHERE spr_rf = 8 " +
+    "    AND item_name LIKE 'Пролет%'" +
+    "  ORDER BY 1 ")
+    .then (function (data) {
+      var result = ' <option value=""></option>';
+      for (var i = 0; i < data.length; i++) {
+        result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
+      }
+      res.send(result);
+    })
+    .catch(function (error) {
+      res.send('get_prolet_names: ОШИБКА: ' +error);
+    });
 });
+
 
 //=================== ЖБИ =====================
 

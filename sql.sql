@@ -1,3 +1,36 @@
+select f.*, i.item_name from fcformovka f
+  left join item_list i ON f.fc_rf = i.item_id
+where doc_rf > 3790
+order by 1 desc
+
+
+
+
+select f.*, h.*, i.item_name
+from ((fcformovka f
+  left join item_list i ON f.fc_rf = i.item_id)
+  left join fcformovka_h h ON f.doc_rf = h.doc_id)
+where doc_rf =3794
+
+
+
+update fcformovka f
+set fc_rf = fc_rf
+where doc_rf = 3802
+      and fc_rf = 62
+
+
+
+
+
+
+
+
+
+
+
+
+
 CREATE OR REPLACE FUNCTION rep_formovka_daily(dtb DATE, dte DATE)
   RETURNS TABLE(sd_name VARCHAR, fc_name VARCHAR, fc_num NUMERIC []) AS
 $$
