@@ -211,7 +211,14 @@ router.post('/get_formovka_plan', function(req, res, next) {
 router.post('/get_plan_fact_fc', function(req, res, next) {
   var plan = req.body.plan;
   var day_plan = req.body.day_plan; // Выводим за день или накопительно на План-месяц
+  var dt_now = new Date();
 
+  var dt_now_year = dt_now.getFullYear();
+  var dt_now_month = dt_now.getMonth() + 1;
+  var dt_now_day = dt_now.getDate();
+  //var is_current_month = false;
+  //if (((plane.substr(0, 4)) == dt_now_year)) is_current_month = true; // && (+plan.substr(5, 2) == dt_now_month));
+  var is_current_month = ((+plan.substr(0, 4) == dt_now_year) && (+plan.substr(5, 2) == dt_now_month));
 
   db.any(
     "SELECT pp.sd_rf, sd.item_name AS sd_name, " +
@@ -226,7 +233,8 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
     .then (function (data) {
 
       var result = '';
-      result = result + 'План-месяц: '+plan+'<br>';
+//      result = result + plan.substr(0, 4)+' == ' + dt_now_year+') && ('+ plan.substr(5, 2)+ ' == ' + dt_now_month;
+      result = result + 'План-месяц: '+plan+dt_now_day+'<br>'; // is_current_month = ' + is_current_month+'<br>';
       result = result + '<br><table class="report" align="left">';
       result = result + '<thead><td class="report left">Пролет</td>';
       result = result + '<td  class="report left">ЖБИ</td>';
@@ -266,22 +274,39 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
           n_otkl = n_fct - n_pln;
 
           // Раскраска цифр
-          // день
-          if (pln == 0)  pln = '<span class="silver">'+pln+'</span>';
-          if (fct == 0)  fct = '<span class="silver">'+fct+'</span>';
-          if (otkl == 0)  otkl = '<span class="silver">'+otkl+'</span>';
-          if (otkl < 0)  otkl = '<span class="red">'+otkl+'</span>';
-          if (otkl > 0)  otkl = '<span class="green">'+otkl+'</span>';
+          if (is_current_month && j > dt_now_day-1) { // будущее не определено, красим всё бледно-серым
+            pln = '<span class="silver">'+pln+'</span>';
+            fct = '<span class="silver">'+fct+'</span>';
+            otkl = '<span class="silver">'+otkl+'</span>';
+            otkl = '<span class="silver">'+otkl+'</span>';
+            otkl = '<span class="silver">'+otkl+'</span>';
+          }
+          else {
+            // день
+            if (pln == 0)  pln = '<span class="silver">'+pln+'</span>';
+            if (fct == 0)  fct = '<span class="silver">'+fct+'</span>';
+            if (otkl == 0)  otkl = '<span class="silver">'+otkl+'</span>';
+            if (otkl < 0)  otkl = '<span class="red">'+otkl+'</span>';
+            if (otkl > 0)  otkl = '<span class="green">'+otkl+'</span>';
+          }
 
           // план
           var sn_pln = n_pln; //В n_pln копится сумма, нельзя менять, поэтому ввёл переменную sn_pln (строка)
           var sn_fct = n_fct; // аналогично
-          if (n_pln == 0)  sn_pln = '<span class="silver">'+n_pln+'</span>';
-          if (n_fct == 0)  sn_fct = '<span class="silver">'+n_fct+'</span>';
-          if (n_otkl == 0)  n_otkl = '<span class="silver">'+n_otkl+'</span>';
-          if (n_otkl < 0)  n_otkl = '<span class="red">'+n_otkl+'</span>';
-          if (n_otkl > 0)  n_otkl = '<span class="green">'+n_otkl+'</span>';
-
+          if (is_current_month && j > dt_now_day-1) { // будущее не определено, красим всё бледно-серым
+            sn_pln = '<span class="silver">' + n_pln + '</span>';
+            sn_fct = '<span class="silver">' + n_fct + '</span>';
+            n_otkl = '<span class="silver">' + n_otkl + '</span>';
+            n_otkl = '<span class="silver">' + n_otkl + '</span>';
+            n_otkl = '<span class="silver">' + n_otkl + '</span>';
+          }
+          else {
+            if (n_pln == 0) sn_pln = '<span class="silver">' + n_pln + '</span>';
+            if (n_fct == 0) sn_fct = '<span class="silver">' + n_fct + '</span>';
+            if (n_otkl == 0) n_otkl = '<span class="silver">' + n_otkl + '</span>';
+            if (n_otkl < 0) n_otkl = '<span class="red">' + n_otkl + '</span>';
+            if (n_otkl > 0) n_otkl = '<span class="green">' + n_otkl + '</span>';
+          }
           if (day_plan == 'Day')
             result = result + '<td  class="report right">' + pln + '<br>' + fct + '<br>'+ otkl + '</td>';
           else
