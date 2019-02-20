@@ -536,7 +536,7 @@ router.get('/get_user_names', function(req, res, next) {
       res.send(result);
     })
     .catch(function (error) {
-      res.send(error);
+      res.send('ОШИБКА: '+error);
     });
 });
 
