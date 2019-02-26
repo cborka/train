@@ -285,6 +285,7 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
             // день
             if (pln == 0)  pln = '<span class="silver">'+pln+'</span>';
             if (fct == 0)  fct = '<span class="silver">'+fct+'</span>';
+            if (fct > 0)  fct = '<span class="blue">'+fct+'</span>';
             if (otkl == 0)  otkl = '<span class="silver">'+otkl+'</span>';
             if (otkl < 0)  otkl = '<span class="red">'+otkl+'</span>';
             if (otkl > 0)  otkl = '<span class="green">'+otkl+'</span>';
@@ -303,6 +304,7 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
           else {
             if (n_pln == 0) sn_pln = '<span class="silver">' + n_pln + '</span>';
             if (n_fct == 0) sn_fct = '<span class="silver">' + n_fct + '</span>';
+            if (n_fct > 0) sn_fct = '<span class="blue">' + n_fct + '</span>';
             if (n_otkl == 0) n_otkl = '<span class="silver">' + n_otkl + '</span>';
             if (n_otkl < 0) n_otkl = '<span class="red">' + n_otkl + '</span>';
             if (n_otkl > 0) n_otkl = '<span class="green">' + n_otkl + '</span>';

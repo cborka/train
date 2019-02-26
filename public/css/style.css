@@ -91,8 +91,43 @@ DIV.center {
 div.main_menu {
   padding: 13px;
   margin: auto;
-  font-size: 14px;
+  font-size: 15px;
 }
+
+/* ВЕРХНЕЕ МЕНЮ */
+div.top_menu, .popup_menu {
+  padding: 5px;
+  margin: auto;
+  font-size: 16px;
+  border: 1px solid lightgrey;
+
+  background: lavender;
+  color: dimgrey;
+}
+
+.top_menu_item, .popup_menu_item{
+  color: dimgrey;
+}
+.popup_menu {
+  color: dimgrey;
+  background: lavender;
+
+}
+
+div.top_menu_item {
+  display: inline;
+
+}
+
+
+.top_menu_item:hover, .popup_menu_item:hover
+{
+  text-decoration: underline;
+}
+
+
+
+
 
 
 /* ТЕЛО */
@@ -117,12 +152,14 @@ div.headerz {
 /* ССЫЛКИ */
 a {
   color: #00B7FF;
+  color: dimgrey;
+  text-decoration: none;
 }
 a:hover {
-  color: aquamarine;
+  text-decoration: underline;
 }
 ax:visited {
-  color: darkcyan;
+  color: grey;
 }
 
 label {

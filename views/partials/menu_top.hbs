@@ -1,0 +1,109 @@
+<div class="top_menu" id="top_user_menu" ondblclick="">
+    <nav>
+        <a href="/">Главная</a> |
+        <a href="/users/login">Вход</a> |
+        <a href="/users/reg">Регистрация |</a>
+    </nav>
+
+    <div id="kkk" hidden onclick="sh1()"> wwwwwwwwwwwwwwwwwwwwwwwwwww
+    </div>
+    <div id="kkk2" hidden onclick="sh1()"> eeeeeeeeeeeeeeeeeee
+    </div>
+    <div  onclick="sh()"> покажи
+    </div>
+</div>
+
+<div class="popup_menu xy" id="popup_menu" hidden onmouseenter=""></div>
+
+
+
+<script>
+    var pm = document.getElementById('popup_menu');
+    var tm = document.getElementById('top_user_menu');
+    var mie = document.getElementById('top_user_menu');
+
+
+    // Скрыть всплывающее меню при отмене и потере фокуса
+//    pm.onabort = function () { alert('esc');this.style.display = 'none'; };
+    pm.onmouseleave = function () { this.style.display = 'none'; };
+//    pm.onmousemove = function () { this.style.display = 'none'; };
+
+
+    function hide_pm()
+    {
+        pm.style.display = 'none';
+    }
+
+
+    function sh()
+    {
+        document.getElementById('kkk').hidden = false; //   style.visibility = 'visible';
+//        document.getElementById('kkk').style.display = 'block';
+    }
+    function sh1()
+    {
+        document.getElementById('kkk').hidden = true;
+//        document.getElementById('kkk').style.visibility = 'hidden';
+//       document.getElementById('kkk').style.display = 'none';
+    }
+
+    // Показать всплывающее меню
+    function show_pm(mi) {
+
+//        pm.innerHTML = mi + '<br>' + document.getElementById(mi).innerHTML + '<br>' + document.getElementById(mi).innerText;
+
+        mie = document.getElementById(mi); // Элемент верхнего меню
+
+        get_popup_menu(mie.innerText.trim());
+
+//        c = getCoords(mie);
+
+//        pm.style.top = c.top + tm.height;    // Размещаем в нужном месте
+//        pm.style.left = c.left + 5 + 'px';
+    }
+
+
+    function set_popup_menu (reply)
+    {
+        pm.innerHTML = reply;
+
+//        mie = document.getElementById(mi); // Элемент верхнего меню
+        var c = getCoords(mie);
+
+        pm.style.display = 'block';
+
+        pm.style.top = c.top + tm.height;    // Размещаем в нужном месте
+        pm.style.left = c.left + 5 + 'px';
+
+//        setInterval(hide_pm, 5000);
+
+         //  alert(reply);
+    }
+
+    function get_popup_menu(menu_item)
+    {
+
+        document.getElementById("hint").innerHTML = menu_item;
+       doQuery ('/users/get_popup_user_menu', set_popup_menu,
+         "&menu_item=" + encodeURIComponent(menu_item)
+       );
+    }
+
+
+
+    function set_top_user_menu (reply)
+    {
+        document.getElementById("top_user_menu").innerHTML = reply;
+      //  alert(reply);
+    }
+
+    function get_top_user_menu()
+    {
+        doQuery ('/users/get_top_user_menu_top', set_top_user_menu);
+    }
+
+    get_top_user_menu();
+    pm.innerHTML = '';
+   // document.getElementById("top_user_menu").innerHTML = '';
+
+</script>

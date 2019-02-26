@@ -181,3 +181,13 @@ xcopy   %SRC%\20*.txt %DEST% /C /Y >>%DIR%\xcopy_log.txt
 move /Y %SRC%\20*.txt %DEST2%    >>%DIR%\xcopy_log.txt
 
 <><><><><><><>
+
+Файл login.bat
+
+set PG_CONNECT=postgresql://postgres:zxcv123@x321.ru:5432/zkpde
+
+cd c:\cborka\train
+
+npm start
+
+<><><><><><><>
