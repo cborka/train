@@ -21,7 +21,7 @@
     var pm = document.getElementById('popup_menu');
     var tm = document.getElementById('top_user_menu');
     var mie = document.getElementById('top_user_menu');
-
+    var coords = getCoords(mie);
 
     // Скрыть всплывающее меню при отмене и потере фокуса
 //    pm.onabort = function () { alert('esc');this.style.display = 'none'; };
@@ -62,7 +62,7 @@
 //        pm.style.left = c.left + 5 + 'px';
     }
 
-
+    // Получить и показать всплывающее меню для данного пункта верхнего меню
     function set_popup_menu (reply)
     {
         pm.innerHTML = reply;
@@ -79,15 +79,37 @@
 
          //  alert(reply);
     }
-
     function get_popup_menu(menu_item)
     {
-
-        document.getElementById("hint").innerHTML = menu_item;
        doQuery ('/users/get_popup_user_menu', set_popup_menu,
          "&menu_item=" + encodeURIComponent(menu_item)
        );
     }
+
+
+    // Показать всплывающее меню
+    function show_pm2(tag) {
+
+        var tm2 =  document.getElementById('tmi'+tag);
+        var pm2 =  document.getElementById('pm'+tag);
+        pm2.style.display = 'block';
+
+        coords = getCoords(tm2);
+
+//        pm2.style.display = 'block';
+
+        pm2.style.top = coords.top + tm2.height;    // Размещаем в нужном месте
+        pm2.style.left = coords.left + 1 +'px';
+
+    }
+    // Показать всплывающее меню
+    function hide_pm2(mi) {
+       document.getElementById(mi).style.display = 'none';
+    }
+
+
+
+
 
 
 
@@ -99,11 +121,11 @@
 
     function get_top_user_menu()
     {
-        doQuery ('/users/get_top_user_menu_top', set_top_user_menu);
+        doQuery ('/users/get_top_user_menu', set_top_user_menu);
     }
 
     get_top_user_menu();
-    pm.innerHTML = '';
+
    // document.getElementById("top_user_menu").innerHTML = '';
 
 </script>

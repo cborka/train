@@ -287,7 +287,7 @@ router.get('/get_main_menu', function(req, res, next) {
     "SELECT DISTINCT ur.right_group, ur.right_order, right_name, pre_url, url, url_attributes, post_url " +
       " FROM user_right ur LEFT JOIN right_list ON right_rf = right_id " +
       " WHERE user_rf IN ($1, $2, $3) " +
-      " ORDER BY ur.right_group, ur.right_order, right_name ", [uid ,gid, guest])
+      " ORDER BY ur.right_order, ur.right_group, right_name ", [uid ,gid, guest])
     .then (function (data) {
         var result = 'Меню '+ req.session.login +
           ':<br>  <a href="/" >Домой</a> <br> <a href="/users/logout">Выход</a> <br> <a href="/users/profile">Профиль</a>  <br> ';
@@ -314,15 +314,27 @@ router.get('/get_main_menu', function(req, res, next) {
 });
 
 //
-// Сформировать и возвратить ВЕРХНЕЕ МЕНЮ ПОЛЬЗОВАТЕЛЯ на основе имеющихся у него ПРАВ
+// Сформировать и возвратить МЕНЮ ПОЛЬЗОВАТЕЛЯ на основе имеющихся у него ПРАВ
 //
 router.get('/get_top_user_menu', function(req, res, next) {
   var id = req.session.uid;
+  var current_group = '';
+  var result = '';
 
   // Пользователь не зашёл в систему, начальное меню
   if (id == "" || id == undefined)
   {
-    var result = '<a href="/" > Главная</a> | <a href="/users/login"> Вход</a> | <a href="/users/reg"> Регистрация</a> | ';
+    result =
+        '<div id="tmi0" class="top_menu_item" tag="0" onmouseenter="show_pm2(\'0\')" onmouseleave = "hide_pm2(\'pm0\')" >' +
+        ' <span id="tmin0">Что?</span> ' +
+        ' <div class="popup_menu" id="pm0" hidden" >' +
+        '   <div class="popup_menu_item"><a href="/" >Домой</a> </div> ' +
+        '   <div class="popup_menu_item"><a href="/users/login">Вход</a></div> ' +
+        '   <div class="popup_menu_item"><a href="/users/reg">Регистрация</a></div> '+
+        ' </div>' +
+        '</div> '
+    ;
+//    result = '<a href="/" > Главная</a> | <a href="/users/login"> Вход</a> | <a href="/users/reg"> Регистрация</a> | ';
     res.send(result);
     return;
   }
@@ -331,60 +343,58 @@ router.get('/get_top_user_menu', function(req, res, next) {
   var uid = req.session.uid; // Пользователь
   var guest = 1;             // Гость
 
-  var popup_menu = '';
-
-
   db.any(
       "SELECT DISTINCT ur.right_group, ur.right_order, right_name, pre_url, url, url_attributes, post_url " +
       " FROM user_right ur LEFT JOIN right_list ON right_rf = right_id " +
       " WHERE user_rf IN ($1, $2, $3) " +
-      " ORDER BY ur.right_group, ur.right_order, right_name ", [uid ,gid, guest])
+      " ORDER BY ur.right_order, ur.right_group, right_name ", [uid ,gid, guest])
       .then (function (data) {
-        var result = 'Меню '+ req.session.login +
-            '|| <a href="/" >Домой</a> | <a href="/users/logout">Выход</a> | <a href="/users/profile">Профиль</a> || ';
 
-        var current_group = 'nnn';
+        // Первый пункт верхнего меню - меню пользователя
+        result =
+            '<div id="tmi77" class="top_menu_item" tag="0" onmouseenter="show_pm2(\'77\')" onmouseleave = "hide_pm2(\'pm77\')" >' +
+            ' <span id="tmin77">'+req.session.login+'</span> ' +
+            ' <div class="popup_menu" id="pm77" hidden" >' +
+            '   <div class="popup_menu_item"><a href="/" >Домой</a></div> ' +
+            '   <div class="popup_menu_item"><a href="/users/logout">Выход</a></div> ' +
+            '   <div class="popup_menu_item"><a href="/users/profile">Профиль</a></div> '+
+            ' </div>' +
+            '</div>| '
+        ;
+
         for (var i = 0; i < data.length; i++) {
 
           if (data[i].right_group != current_group)  { // Поменялась Группа меню
 
             if (i > 0 ) {
-              result = result + ' </div> '; // Закрываю  popup_menu
-//              result = result + '</div> | '; // Закрываю top_menu
+              result = result + '</div>'; // Закрываю popup_menu
+              result = result + '</div>|'; // Закрываю top_menu_item
             }
 
-            current_group = data[i].right_group; // Меняю название текущей группы
-//            result = result + current_group;
+            current_group = data[i].right_group; // Меняю название текущей группы (top_menu_item)
 
             result = result +
-                ' <div class="top_menu_item"  id="mi'+i+ '" ' +// Открываю очередной пункт top_menu
-//                ' onclick="show_pm(\'pm'+i+'\', \'pm\'+i+\') "  ' +
-//                ' onclick="{document.getElementById(\'pm'+i+'\').hidden = !document.getElementById(\'pm'+i+'\').hidden; } "  ' +
-//                ' onclick="{alert(document.getElementById(\'pm'+i+'\').innerHTML); alert(\'ok\') } "  ' +
-                ' onclick="show_pm(\'pm'+i+'\', \'mi'+i+'\') "  ' +
-//                ' onclick="alert(\'xxyxx\') "  ' +
-//                ' ondblclick="alert(\'xcd\')"  ' +
-                ' > '+ current_group +
-                + ' </div> | ' + // всплывающее меню отдельно (не входит в) от пункта верхнего меню
-                ' <div class="xtop_menu_item xy" id="pm'+i+'" hidden >'; // Открываю вложенное popup_menu
+                '<div id="tmi'+i+'" class="top_menu_item" tag="'+i+'" onmouseenter="show_pm2(\''+i+'\')" onmouseleave = "hide_pm2(\'pm'+i+'\')" >' +
+                ' <span id="tmin'+i+'">'+current_group+'</span> ' +
+                ' <div class="popup_menu" id="pm'+i+'" hidden" >';
           } // Поменялась Группа меню
 
-          result = result +  ' <span class="top_menu_item" id="pmi'+i+'"> '+
+          result = result +  ' <div class="popup_menu_item"> '+
               data[i].pre_url +
               ' <a href="'+ data[i].url +'" ' + data[i].url_attributes + '>'+ data[i].right_name + '</a> ' +
-              data[i].post_url + ' </span> ';
+              data[i].post_url + ' </div> ';
         }
-        result = result + '</div> '; // Закрываю последнее popup_menu
-        result = result + '</div> | '; // Закрываю псоледний пункт top_menu
+        result = result + '</div>'; // Закрываю последнее popup_menu
+        result = result + '</div>|'; // Закрываю последний пункт top_menu_item
 
-        res.send('x'+result+'x');
+        res.send(result);
       })
       .catch(function (error) {
         res.send(error);
       });
 
 });
-
+/*
 //
 // Сформировать и возвратить ВЕРХНЕЕ МЕНЮ ПОЛЬЗОВАТЕЛЯ на основе имеющихся у него ПРАВ
 //
@@ -467,7 +477,7 @@ router.post('/get_popup_user_menu', function(req, res, next) {
 
 });
 
-
+*/
 
 
 /*
