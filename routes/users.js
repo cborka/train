@@ -149,7 +149,7 @@ router.post('/login', function(req, res, next) {
 //      res.send(data.cnt);
     })
     .catch(function (error) {
-      res.send(error);
+      res.send('ОШИБКА login: '+error);
     });
 });
 
@@ -261,7 +261,7 @@ router.post('/isValidUser', function(req, res, next) {
       res.send(data.cnt);
     })
     .catch(function (error) {
-      res.send(error);
+      res.send('ОШИБКА isValidUser: '+error);
     });
 });
 

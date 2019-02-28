@@ -46,6 +46,7 @@ DIV.header, DIV.footer, DIV.wrapper_1 {
 
 DIV.wrapper_1 {
   overflow: auto;
+  line-height: 1.2;
 }
 
 DIV.leftcol {
@@ -87,7 +88,7 @@ DIV.center {
 
 
 
-/* ГЛАВНОЕ МЕНЮ */
+/* ГЛАВНОЕ МЕНЮ (боковое) */
 div.main_menu {
   padding: 13px;
   margin: auto;
@@ -98,6 +99,7 @@ div.main_menu {
 div.top_menu, .popup_menu {
   padding: 5px;
   margin: auto;
+  margin-bottom: 5px;
   font-size: 16px;
   border: 1px solid lightgrey;
 
@@ -105,14 +107,13 @@ div.top_menu, .popup_menu {
   color: dimgrey;
 }
 
-.top_menu_item, .popup_menu_item, .top_menu_item1, .top_menu_item2 {
+.top_menu_item, .popup_menu_item {
   color: dimgrey;
 }
-.popup_menu, .popup_menu1, .popup_menu2 {
+.popup_menu {
   color: dimgrey;
   background: lavender;
   display: none;
-  xdisplay: flow;
   position: absolute;
 }
 

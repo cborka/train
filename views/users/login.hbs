@@ -7,16 +7,18 @@
         </tr>
         <tr>
             <td><label>Пароль:</label></td>
-            <td><input id="password" type="password" name="password" value="" onchange="check_data()" ></td>
+            <td><input id="password" type="password" name="password" value="" onclick="enable_batton()" onchange="check_data()" ></td>
         </tr>
+<!--
         <tr>
             <td><label>А ты не робот? Проверка:</label></td>
             <td><input id="test" type="text" name="test" placeholder="11 х 11 =" value="" onchange="check_data()" ></td>
         </tr>
+-->
         <tr>
             <td></td>
             <td>
-                <button name="button_submit" type="submit" disabled="true" >Вход</button>
+                <button name="button_submit" type="button" onclick="check_data()">Вход</button>
             </td>
         </tr>
         <tr>
@@ -31,9 +33,14 @@
 
 <script>
 
+    function login() {
+
+//       userlogin.button_submit.disabled = false;
+    }
+
     let check_logpass = function (reply)
     {
-        userlogin.button_submit.disabled = true;
+//        userlogin.button_submit.disabled = true;
 
         if (reply == "0") {
             info("Неправильное имя или пароль, попробуйте ещё раз!");
@@ -41,13 +48,14 @@
         }
 
         info('');
-        userlogin.button_submit.disabled = false;
+        userlogin.submit();
+//        userlogin.button_submit.disabled = false;
         return true;
     }
 
     function check_data()
     {
-        userlogin.button_submit.disabled = true;
+//        userlogin.button_submit.disabled = true;
 
         if (userlogin.login.value == "")
         {
@@ -59,11 +67,11 @@
             info("Пароль не заполнен");
             return false;
         }
-        if (userlogin.test.value != "121")
-        {
-            info("А не робот ли ты?");
-            return false;
-        }
+//        if (userlogin.test.value != "121")
+//        {
+//            info("А не робот ли ты?");
+//            return false;
+//        }
         // Запрос серверу, есть ли пользователь с такими логином и паролем
         doQuery ("/users/isValidUser", check_logpass,
                 "&login=" + encodeURIComponent(userlogin.login.value)+
