@@ -113,7 +113,7 @@ function toYYYYMM(s)
 }
 
 
-CurrentPlanName
+//CurrentPlanName
 
 // Возвращает ЧИСЛО последнего дня План-месяца, где План-месяц начинается с ГГГГ-ММ, например 2019-02
 function PlanLastDay(plan_name)

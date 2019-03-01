@@ -2,7 +2,7 @@
     <table class="form">
         <tr>
             <td><label>План-месяц:</label></td>
-            <td><select width="100%" size="1" name='plan_name' id='plan_name' value="{{plan_name}}"></select>
+            <td><select width="100%" size="1" name='plan_name' id='plan_name' value="{{plan_name}}" onchange="change_plan_name()"></select>
                 <input id="plan_rf" type="text" name="plan_rf" readonly value={{plan_rf}} hidden >
                 <input id="old_plan_rf" type="text" name="old_plan_rf" readonly value={{plan_rf}} hidden >
             </td>
@@ -49,14 +49,6 @@
             <td><b>5</b></td>
             <td><b>6</b></td>
             <td><b>7</b></td>
-            <td><b>8</b></td>
-            <td><b>9</b></td>
-            <td><b>10</b></td>
-            <td><b>11</b></td>
-            <td><b>12</b></td>
-            <td><b>13</b></td>
-            <td><b>14</b></td>
-            <td><b>15</b></td>
         </tr>
         <tr>
             <td><input class="day" id="np1" type="number" name="np1" step="0.001" value={{np1}} ></td>
@@ -66,6 +58,17 @@
             <td><input class="day" id="np5" type="number" name="np5" step="0.001" value={{np5}} ></td>
             <td><input class="day" id="np6" type="number" name="np6" step="0.001" value={{np6}} ></td>
             <td><input class="day" id="np7" type="number" name="np7" step="0.001" value={{np7}} ></td>
+        </tr>
+        <tr>
+            <td><b>8</b></td>
+            <td><b>9</b></td>
+            <td><b>10</b></td>
+            <td><b>11</b></td>
+            <td><b>12</b></td>
+            <td><b>13</b></td>
+            <td><b>14</b></td>
+        </tr>
+        <tr>
             <td><input class="day" id="np8" type="number" name="np8" step="0.001" value={{np8}} ></td>
             <td><input class="day" id="np9" type="number" name="np9" step="0.001" value={{np9}} ></td>
             <td><input class="day" id="np10" type="number" name="np10" step="0.001" value={{np10}} ></td>
@@ -73,15 +76,26 @@
             <td><input class="day" id="np12" type="number" name="np12" step="0.001" value={{np12}} ></td>
             <td><input class="day" id="np13" type="number" name="np13" step="0.001" value={{np13}} ></td>
             <td><input class="day" id="np14" type="number" name="np14" step="0.001" value={{np14}} ></td>
-            <td><input class="day" id="np15" type="number" name="np15" step="0.001" value={{np15}} ></td>
         </tr>
         <tr>
+            <td><b>15</b></td>
             <td><b>16</b></td>
             <td><b>17</b></td>
             <td><b>18</b></td>
             <td><b>19</b></td>
             <td><b>20</b></td>
             <td><b>21</b></td>
+        </tr>
+        <tr>
+            <td><input class="day" id="np15" type="number" name="np15" step="0.001" value={{np15}} ></td>
+            <td><input class="day" id="np16" type="number" name="np16" step="0.001" value={{np16}} ></td>
+            <td><input class="day" id="np17" type="number" name="np17" step="0.001" value={{np17}} ></td>
+            <td><input class="day" id="np18" type="number" name="np18" step="0.001" value={{np18}} ></td>
+            <td><input class="day" id="np19" type="number" name="np19" step="0.001" value={{np19}} ></td>
+            <td><input class="day" id="np20" type="number" name="np20" step="0.001" value={{np20}} ></td>
+            <td><input class="day" id="np21" type="number" name="np21" step="0.001" value={{np21}} ></td>
+        </tr>
+        <tr>
             <td><b>22</b></td>
             <td><b>23</b></td>
             <td><b>24</b></td>
@@ -89,17 +103,8 @@
             <td><b>26</b></td>
             <td><b>27</b></td>
             <td><b>28</b></td>
-            <td><b>29</b></td>
-            <td><b>30</b></td>
-            <td><b>31</b></td>
         </tr>
         <tr>
-            <td><input class="day" id="np16" type="number" name="np16" step="0.001" value={{np16}} ></td>
-            <td><input class="day" id="np17" type="number" name="np17" step="0.001" value={{np17}} ></td>
-            <td><input class="day" id="np18" type="number" name="np18" step="0.001" value={{np18}} ></td>
-            <td><input class="day" id="np19" type="number" name="np19" step="0.001" value={{np19}} ></td>
-            <td><input class="day" id="np20" type="number" name="np20" step="0.001" value={{np20}} ></td>
-            <td><input class="day" id="np21" type="number" name="np21" step="0.001" value={{np21}} ></td>
             <td><input class="day" id="np22" type="number" name="np22" step="0.001" value={{np22}} ></td>
             <td><input class="day" id="np23" type="number" name="np23" step="0.001" value={{np23}} ></td>
             <td><input class="day" id="np24" type="number" name="np24" step="0.001" value={{np24}} ></td>
@@ -107,6 +112,13 @@
             <td><input class="day" id="np26" type="number" name="np26" step="0.001" value={{np26}} ></td>
             <td><input class="day" id="np27" type="number" name="np27" step="0.001" value={{np27}} ></td>
             <td><input class="day" id="np28" type="number" name="np28" step="0.001" value={{np28}} ></td>
+        </tr>
+        <tr>
+            <td><b>29</b></td>
+            <td><b>30</b></td>
+            <td><b>31</b></td>
+        </tr>
+        <tr>
             <td><input class="day" id="np29" type="number" name="np29" step="0.001" value={{np29}} ></td>
             <td><input class="day" id="np30" type="number" name="np30" step="0.001" value={{np30}} ></td>
             <td><input class="day" id="np31" type="number" name="np31" step="0.001" value={{np31}} ></td>
@@ -117,7 +129,57 @@
                 <div id="erro" ></div>
 </form>
 
+
+<button type="button" onclick="paint_num_days()">Дни недели</button>
+
+
+
 <script>
+    var plan_name = '{{plan_name}}';
+    var dtc = new Date();
+    var dtb = PlanFirstDate(plan_name);
+    var i = 0;
+    var j = 0;
+    var k = 0;
+    var month_days = PlanLastDay(plan_name);
+
+
+    function change_plan_name() {
+        plan_name = document.getElementById("plan_name").value;
+//        alert(plan_name);
+        paint_num_days ();
+    }
+
+    // Раскрасить календарь
+    function paint_num_days ()
+    {
+      // dtc = new Date();
+        dtb = PlanFirstDate(plan_name);
+        dtc = dtb;
+
+        month_days = PlanLastDay(plan_name);
+
+        for (i=1; i<=month_days; i++){
+            dtc.setDate(dtc.getDate() + 1);
+            k = dtc.getDay(); // (dtb.getDate()+i).getDay;
+  //              alert(k);
+            document.getElementById("np"+i).value = k; //dtc.getDay(); // (dtb.getDate()+i).getDay;
+            if (k > 1)
+                document.getElementById("np"+i).style.backgroundColor = 'white';
+           if (k == 0)
+               document.getElementById("np"+i).style.backgroundColor = 'khaki'; //  Суббота
+           if (k == 1)
+                document.getElementById("np"+i).style.backgroundColor = 'lightpink'; //  Воскресенье
+        }
+        //  Несуществующие дни
+        for (i=month_days+1; i<=31; i++){
+            dtc.setDate(dtc.getDate() + 1);
+            k = dtc.getDay(); // (dtb.getDate()+i).getDay;
+            document.getElementById("np"+i).value = 0; //dtc.getDay(); // (dtb.getDate()+i).getDay;
+            document.getElementById("np"+i).style.backgroundColor = 'lightgrey';
+        }
+    }
+
 
 
     // Расчитать кол-во ЖБИ по дням месяца
@@ -131,7 +193,7 @@
         var npds = npd;
         var npr = Math.round(npds);
 
-        for (var i=30; i>=1; i--){
+        for (i=30; i>=1; i--){
 
 //            npd = Math.round(npd);
 //            document.getElementById("np"+i).value = npd; //Math.round(npd);
@@ -160,15 +222,16 @@
     // При корректировке дней пересчитывать план на месяц.
     function make_table_days()
     {
-        for (var i=1; i<=31; i++){
+        for (i=1; i<=31; i++){
              document.getElementById("np"+i).onchange = sum_days;
 
         }
     }
     make_table_days();
+
     function sum_days() {
         nps = 0;
-        for (var j=1; j<=31; j++) {
+        for (j=1; j<=31; j++) {
            nps = nps + +document.getElementById("np" + j).value;
         }
 //        document.getElementById("hint").innerHTML = "Сумма по дням: " + nps;

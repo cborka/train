@@ -118,6 +118,12 @@ router.get('/plan_plan_d_s/:spr_name', function(req, res, next) {
     });
 });
 
+// Возвращает ЧИСЛО последнего дня План-месяца, где План-месяц начинается с ГГГГ-ММ, например 2019-02
+function PlanLastDay(plan_name)
+{
+    return 32 - new Date(plan_name.substr(0, 4),  plan_name.substr(5, 2)-1, 32).getDate();
+}
+
 //
 // Показать список ПЛАН ЖБИ с кол-вом по дням месяца на выбранный План и Пролет
 //
@@ -127,9 +133,12 @@ router.get('/plan_plan_d2_s/:spr_name/:plan_name/:sd_name', function(req, res, n
   var sd_name = req.params.sd_name;
   var where_clause = '';
   var num_days = '';
+  var month_days = 31;
+
+//  month_days =  PlanLastDay(plan_name);
 
       num_days = '';
-      for(var j = 1; j <=30; j++) {
+      for(var j = 1; j <= 30; j++) {
         num_days = num_days + ' nums_plan['+j+'] AS np'+j+', ';
       }
       num_days = num_days + ' nums_plan[31] AS np31 ';
@@ -183,7 +192,9 @@ router.get('/plan_plan_d2_s/:spr_name/:plan_name/:sd_name', function(req, res, n
             data[i].np26 = num2str (data[i].np26);
             data[i].np27 = num2str (data[i].np27);
             data[i].np28 = num2str (data[i].np28);
-            data[i].np29 = num2str (data[i].np29);
+
+//            if (month_days > 28)
+                data[i].np29 = num2str (data[i].np29);
             data[i].np30 = num2str (data[i].np30);
             data[i].np31 = num2str (data[i].np31);
 
@@ -935,10 +946,11 @@ router.post('/sklad/update', function(req, res, next) {
     db.none(
       "UPDATE sklad " +
       "SET sklad_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$1), " +
-      "    item_rf=(SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$2), " +
+      "    item_rf=(SELECT item_id FROM item_list WHERE item_name=$2 AND " +
+        "    spr_rf = (SELECT item_id FROM item_list WHERE spr_rf = 3 AND item_name=$7)  ), " +
       "    num_fact=$3, num_max=$4 " +
       "WHERE sklad_rf=$5 AND item_rf=$6",
-      [sklad_name, item_name, num_fact, num_max, old_sklad_rf, old_item_rf])
+      [sklad_name, item_name, num_fact, num_max, old_sklad_rf, old_item_rf, spr_name])
       .then (function () {
         res.redirect('/plan2/sklad_s/'+spr_name);
       })
@@ -951,8 +963,10 @@ router.post('/sklad/update', function(req, res, next) {
     db.none(
       "INSERT INTO sklad (sklad_rf, item_rf, num_fact, num_max) " +
       "VALUES ((SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$1), " +
-      "  (SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$2), $3, $4)",
-      [sklad_name, item_name, num_fact, num_max])
+      "  (SELECT item_id FROM item_list WHERE " +
+        " spr_rf = (SELECT item_id FROM item_list WHERE spr_rf = 3 AND item_name=$5) AND item_name=$2), " +
+        "$3, $4)", //
+      [sklad_name, item_name, num_fact, num_max, spr_name])
       .then (function (data) {
         res.redirect('/plan2/sklad_s/'+spr_name);
       })
