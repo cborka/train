@@ -23,100 +23,145 @@ function str2num(str) {
 }
 
 
+//
+// Показать список КАЛЕНДАРЕЙ по дням месяца
+// динамическое создание экранной формы
+//
+router.get('/get_table_form_kalendar', function(req, res, next) {
+    var ret = '';
+
+    ret +=
+      '<table class="form">'+
+        '<tr>' +
+          '<td><label>План-месяц:</label></td>'+
+          '<td> <select width="100%" size="1" name="plan_name" id="plan_name" value=" " onchange="show_plan()"></select></td>'+
+        '</tr>'+
+        '<tr>'+
+          '<td><label>Пролет:</label></td>'+
+          '<td><select width="100%" size="1" name="sd_name" id="sd_name" value=" " onchange="show_plan()"></select></td>'+
+        '</tr>'+
+    '</table>';
+
+    res.send(ret);
+});
+
+router.get('/get_days_form_kalendar', function(req, res, next) {
+    var ret = '';
+    var j = 0;
+
+    ret += '<a href="/plan2/plan_plan_dk_addnew" title="Добавить" > Добавить </a>';
+    ret +=
+        '<table class="list">' +
+        '<tr>' +
+          '<td class="list"><b>Предмет</b></td>'+
+          '<td class="list"><b>План</b></td>';
+
+    // Заголовок таблицы
+    for(var j = 1; j <=31; j++) {
+        ret += '<td class="list"><b>'+j+'</b></td>';
+    }
+    ret +='</tr>';
+
+    ret +='\{\{#each data\}\}';
+
+    ret += '<tr>'+
+      '<td class="list">\{\{item_name\}\}</td>'+
+      '<td class="list">\{\{num_plan\}\}</td>';
+
+    // Строки таблицы
+    for(var j = 1; j <=31; j++) {
+        ret += '<td class="list">\{\{np'+j+'\}\}</td>';
+    }
+
+    ret +=   '</tr>';
+
+    ret +=  '\{\{/each\}\}';
+
+    ret += '</table>';
+
+    ret += '<a href="/plan2/plan_plan_dk_addnew" title="Добавить" > Добавить </a>';
+
+    res.send(ret);
+});
+
+
+//
+// Показать список КАЛЕНДАРЕЙ по дням месяца
+//
+router.get('/plan_plan_dk_s', function(req, res, next) {
+    var spr_name = 'Календари';
+    var where_clause = '';
+    var num_days = '';
+
+
+            num_days = '';
+            for(var j = 1; j <=30; j++) {
+                num_days = num_days + ' nums_plan['+j+'] AS np'+j+', ';
+            }
+            num_days = num_days + ' nums_plan[31] AS np31 ';
+
+            db.any(
+                "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
+                "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, num_plan, num_day, " + num_days +
+                " FROM (((plan_plan pp " +
+                "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
+                "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
+                "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+                "  WHERE  item.spr_rf = 532 " +
+                " ORDER BY plan.item_name, sd.item_name, item.item_name ")
+                .then(function (data) {
+
+                    for (var i = 0; i < data.length; i++) {
+                        data[i].num_plan = Math.round(data[i].num_plan * 1000) / 1000;
+                        data[i].num_day = Math.round(data[i].num_day * 1000) / 1000;
+
+                        data[i].np1 = num2str (data[i].np1);
+                        data[i].np2 = num2str (data[i].np2);
+                        data[i].np3 = num2str (data[i].np3);
+                        data[i].np4 = num2str (data[i].np4);
+                        data[i].np5 = num2str (data[i].np5);
+                        data[i].np6 = num2str (data[i].np6);
+                        data[i].np7 = num2str (data[i].np7);
+                        data[i].np8 = num2str (data[i].np8);
+                        data[i].np9 = num2str (data[i].np9);
+                        data[i].np10 = num2str (data[i].np10);
+                        data[i].np11 = num2str (data[i].np11);
+                        data[i].np12 = num2str (data[i].np12);
+                        data[i].np13 = num2str (data[i].np13);
+                        data[i].np14 = num2str (data[i].np14);
+                        data[i].np15 = num2str (data[i].np15);
+                        data[i].np16 = num2str (data[i].np16);
+                        data[i].np17 = num2str (data[i].np17);
+                        data[i].np18 = num2str (data[i].np18);
+                        data[i].np19 = num2str (data[i].np19);
+                        data[i].np20 = num2str (data[i].np20);
+                        data[i].np21 = num2str (data[i].np21);
+                        data[i].np22 = num2str (data[i].np22);
+                        data[i].np23 = num2str (data[i].np23);
+                        data[i].np24 = num2str (data[i].np24);
+                        data[i].np25 = num2str (data[i].np25);
+                        data[i].np26 = num2str (data[i].np26);
+                        data[i].np27 = num2str (data[i].np27);
+                        data[i].np28 = num2str (data[i].np28);
+                        data[i].np29 = num2str (data[i].np29);
+                        data[i].np30 = num2str (data[i].np30);
+                        data[i].np31 = num2str (data[i].np31);
+
+                    }
+
+                    data.spr_name = spr_name;
+                    res.render('plan2/plan_plan_dk_s', {data: data}); // Показ формы
+                })
+                .catch(function (error) {
+                    res.send('ОШИБКА plan_plan_dk_s: '+error);
+                });
+});
+
 
 
 //====== ПЛАН ======= таблица plan_plan ======== вариант 2 (по дням) =====
 // То, что запланировано сделать. На месяц и по дням
 
-
-//
-// Показать список ПЛАН с кол-вом по дням месяца
-//
-router.get('/plan_plan_d_s/:spr_name', function(req, res, next) {
-  var spr_name = req.params.spr_name;
-  var where_clause = '';
-  var num_days = '';
-
-  db.any(
-    "SELECT item_id " +
-    "  FROM item_list " +
-    "  WHERE  item_name = $1 ", [spr_name])
-    .then(function (data) {
-
-      if (data.length == 1) {
-        where_clause = " WHERE item.spr_rf = " + data[0].item_id;
-      }
-      else
-        where_clause = " WHERE item.spr_rf = 0 ";
-
-//      res.render('plan2/sklad_s', {data: data}); // Показ формы
-
-    })
-    .then(function () {
-      num_days = '';
-      for(var j = 1; j <=30; j++) {
-        num_days = num_days + ' nums_plan['+j+'] AS np'+j+', ';
-      }
-      num_days = num_days + ' nums_plan[31] AS np31 ';
-//      res.send(num_days); // Показ формы
-
-      db.any(
-        "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
-        "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, num_plan, num_day, " + num_days +
-        " FROM (((plan_plan pp " +
-        "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
-        "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
-        "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
-        where_clause +
-        " ORDER BY plan.item_name, sd.item_name, item.item_name ")
-        .then(function (data) {
-
-          for (var i = 0; i < data.length; i++) {
-            data[i].num_plan = Math.round(data[i].num_plan * 1000) / 1000
-            data[i].num_day = Math.round(data[i].num_day * 1000) / 1000
-
-            data[i].np1 = num2str (data[i].np1);
-            data[i].np2 = num2str (data[i].np2);
-            data[i].np3 = num2str (data[i].np3);
-            data[i].np4 = num2str (data[i].np4);
-            data[i].np5 = num2str (data[i].np5);
-            data[i].np6 = num2str (data[i].np6);
-            data[i].np7 = num2str (data[i].np7);
-            data[i].np8 = num2str (data[i].np8);
-            data[i].np9 = num2str (data[i].np9);
-            data[i].np10 = num2str (data[i].np10);
-            data[i].np11 = num2str (data[i].np11);
-            data[i].np12 = num2str (data[i].np12);
-            data[i].np13 = num2str (data[i].np13);
-            data[i].np14 = num2str (data[i].np14);
-            data[i].np15 = num2str (data[i].np15);
-            data[i].np16 = num2str (data[i].np16);
-            data[i].np17 = num2str (data[i].np17);
-            data[i].np18 = num2str (data[i].np18);
-            data[i].np19 = num2str (data[i].np19);
-            data[i].np20 = num2str (data[i].np20);
-            data[i].np21 = num2str (data[i].np21);
-            data[i].np22 = num2str (data[i].np22);
-            data[i].np23 = num2str (data[i].np23);
-            data[i].np24 = num2str (data[i].np24);
-            data[i].np25 = num2str (data[i].np25);
-            data[i].np26 = num2str (data[i].np26);
-            data[i].np27 = num2str (data[i].np27);
-            data[i].np28 = num2str (data[i].np28);
-            data[i].np29 = num2str (data[i].np29);
-            data[i].np30 = num2str (data[i].np30);
-            data[i].np31 = num2str (data[i].np31);
-
-          }
-
-          data.spr_name = spr_name;
-          res.render('plan2/plan_plan_d_s', {data: data}); // Показ формы
-        })
-        .catch(function (error) {
-          res.send('ОШИБКА: '+error);
-        });
-    });
-});
 
 // Возвращает ЧИСЛО последнего дня План-месяца, где План-месяц начинается с ГГГГ-ММ, например 2019-02
 function PlanLastDay(plan_name)
@@ -206,6 +251,95 @@ router.get('/plan_plan_d2_s/:spr_name/:plan_name/:sd_name', function(req, res, n
         .catch(function (error) {
           res.send('ОШИБКА: '+error);
         });
+});
+router.post('/plan_plan_d2_s', function(req, res, next) {
+    var spr_name = req.body.spr_name;
+    var plan_name = req.body.plan_name;
+    var sd_name = req.body.sd_name;
+    var where_clause = '';
+    var num_days = '';
+    var month_days = 31;
+
+//  month_days =  PlanLastDay(plan_name);
+
+    num_days = '';
+    for(var j = 1; j <= 30; j++) {
+        num_days = num_days + ' nums_plan['+j+'] AS np'+j+', ';
+    }
+    num_days = num_days + ' nums_plan[31] AS np31 ';
+
+    db.any(
+        "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
+        "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, num_plan, num_day, " + num_days +
+        " FROM ((((plan_plan pp " +
+        "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
+        "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
+        "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+        "   LEFT JOIN item_list spr ON item.spr_rf = spr.item_id) " +
+        " WHERE  spr.item_name = $1 " +
+        "   AND  plan.item_name = $2 " +
+        "   AND  sd.item_name = $3 " +
+        " ORDER BY plan.item_name, sd.item_name, item.item_name ", [spr_name, plan_name, sd_name])
+        .then(function (data) {
+            data.plan_name = plan_name;
+            data.sd_name = sd_name;
+//          res.send('xxx: '+sd_name +','+plan_name+data.sd_name);
+
+            for (var i = 0; i < data.length; i++) {
+                data[i].num_plan = Math.round(data[i].num_plan * 1000) / 1000
+                data[i].num_day = Math.round(data[i].num_day * 1000) / 1000
+
+                data[i].np1 = num2str (data[i].np1);
+                data[i].np2 = num2str (data[i].np2);
+                data[i].np3 = num2str (data[i].np3);
+                data[i].np4 = num2str (data[i].np4);
+                data[i].np5 = num2str (data[i].np5);
+                data[i].np6 = num2str (data[i].np6);
+                data[i].np7 = num2str (data[i].np7);
+                data[i].np8 = num2str (data[i].np8);
+                data[i].np9 = num2str (data[i].np9);
+                data[i].np10 = num2str (data[i].np10);
+                data[i].np11 = num2str (data[i].np11);
+                data[i].np12 = num2str (data[i].np12);
+                data[i].np13 = num2str (data[i].np13);
+                data[i].np14 = num2str (data[i].np14);
+                data[i].np15 = num2str (data[i].np15);
+                data[i].np16 = num2str (data[i].np16);
+                data[i].np17 = num2str (data[i].np17);
+                data[i].np18 = num2str (data[i].np18);
+                data[i].np19 = num2str (data[i].np19);
+                data[i].np20 = num2str (data[i].np20);
+                data[i].np21 = num2str (data[i].np21);
+                data[i].np22 = num2str (data[i].np22);
+                data[i].np23 = num2str (data[i].np23);
+                data[i].np24 = num2str (data[i].np24);
+                data[i].np25 = num2str (data[i].np25);
+                data[i].np26 = num2str (data[i].np26);
+                data[i].np27 = num2str (data[i].np27);
+                data[i].np28 = num2str (data[i].np28);
+
+//            if (month_days > 28)
+                data[i].np29 = num2str (data[i].np29);
+                data[i].np30 = num2str (data[i].np30);
+                data[i].np31 = num2str (data[i].np31);
+
+            }
+
+            data.spr_name = spr_name;
+            res.render('plan2/plan_plan_d2_s', {data: data}); // Показ формы
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА: '+error);
+        });
+});
+
+router.get('/plan_plan_d2_s', function(req, res, next) {
+    var spr_name = req.params.spr_name;
+    var plan_name = req.params.plan_name;
+    var sd_name = req.params.sd_name;
+
+    res.send('plan_plan_d2_s: ');
+
 });
 
 //
@@ -420,7 +554,6 @@ router.post('/plan_plan_d/update', function(req, res, next) {
           [plan_name, sd_name, item_name, num_plan, 0, old_plan_rf, old_sd_rf, old_item_rf, nps])
           .then (function () {
             res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
-//            res.redirect('/plan2/plan_plan_d_s/'+spr_name);
           })
           .catch(function (error) {
             res.send('ОШИБКА: UPDATE: '+error);
@@ -436,7 +569,6 @@ router.post('/plan_plan_d/update', function(req, res, next) {
           [plan_name, sd_name, item_name, num_plan, 0, nps])
           .then (function (data) {
             res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
-//            res.redirect('/plan2/plan_plan_d_s/'+spr_name);
           })
           .catch(function (error) {
             res.send('ОШИБКА: INSERT ('+plan_name+','+ sd_name+','+item_name+','+ num_plan+','+ num_day+'): '+error);
@@ -459,7 +591,6 @@ router.get('/plan_plan_delete/:spr_name/:plan_rf/:sd_rf/:item_rf/:plan_name/:sd_
   db.none("DELETE FROM plan_plan WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
     .then(function () {
       res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
-//      res.redirect('/plan2/plan_plan_d_s/'+spr_name); // Обновление списка
     })
     .catch(function (error) {
       res.send('ОШИБКА: '+error);

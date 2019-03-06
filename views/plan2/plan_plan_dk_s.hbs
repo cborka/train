@@ -1,0 +1,111 @@
+<script>
+    document.write('hello w');
+
+</script>
+<h1>Календари</h1>
+<div><p>Рабочие часы по дням месяца.<br>
+</p></div>
+
+
+
+<div id="table_form"></div>
+<br>
+<div id="days_form"></div>
+
+<br>xxx<br>
+<table class="list">
+    <tr>
+        <td class="list"><b>План</b></td>
+        <td class="list"><b>Пролет</b></td>
+        <td class="list"><b>Предмет</b></td>
+        <td class="list"><b>План</b></td>
+        <script>
+            var ret = '';
+            for(var j = 1; j <=31; j++) {
+                document.write('<td class="list"><b>'+j+'</b></td>');
+            }
+            document.write(ret);
+        </script>
+        <td class="list">Кнопки</td>
+    </tr>
+    {{#each data}}
+        <tr>
+            <td class="list">{{plan_name}}</td>
+            <td class="list">{{sd_name}}</td>
+            <td class="list">{{item_name}}</td>
+            <td class="list">{{num_plan}}</td>
+            <script>
+                var ret = '';
+                for(var j = 1; j <=31; j++) {
+                    document.write('<td class="list">{{np1}}</td>');
+                }
+                document.write(ret);
+            </script>
+
+            <td class="list">
+                <button type="button" onclick="edit_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}} )">Изменить</button>
+                <button type="button" onclick="delete_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}},'{{plan_name}}','{{sd_name}}','{{item_name}}')">Удалить</button>
+            </td>
+        </tr>
+    {{/each}}
+</table>
+
+
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+    // Изготовить таблицу-форму выбор из списков
+    var set_table_form = function (reply)
+    {
+        document.getElementById("table_form").innerHTML = reply;
+    }
+    function get_table_form()
+    {
+        doQuery ("/plan2/get_table_form_kalendar", set_table_form);
+    }
+    get_table_form();
+
+    // Изготовить таблицу дней месяца
+    var set_days_form = function (reply)
+    {
+        document.getElementById("days_form").innerHTML = reply;
+    }
+    function get_days_form()
+    {
+        doQuery ("/plan2/get_days_form_kalendar", set_days_form);
+    }
+    get_days_form();
+
+
+    // Изготовить список планов для выбора
+    var set_plan_names = function (reply)
+    {
+        document.getElementById("plan_name").innerHTML = reply;
+//        document.getElementById("plan_name").value = '{{data.plan_name}}';
+
+    }
+    function get_plan_names()
+    {
+        doQuery ("/common/get_spr_names/Планы", set_plan_names);
+    }
+
+    // Изготовить список пролетов для выбора
+    var set_sd_names = function (reply)
+    {
+        document.getElementById("sd_name").innerHTML = reply;
+//        document.getElementById("sd_name").value = '{{data.sd_name}}';
+    }
+    function get_sd_names()
+    {
+        doQuery ("/pro/get_prolet_names", set_sd_names);
+    }
+
+    get_plan_names();
+    get_sd_names();
+
+
+
+</script>

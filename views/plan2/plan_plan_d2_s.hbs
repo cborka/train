@@ -5,7 +5,14 @@
 <div><p>То, что запланировано сделать в данном месяце и сколько нужно делать каждый день.<br>
 </p></div>
 
-<table class="form">
+<form name="params" action="/plan2/plan_plan_d2_s" method="POST">
+<table class="form" >
+    <tr>
+        <td><label>Вид плана:</label></td>
+        <td>
+            <select width="100%" size="1" name='spr_name' id='spr_name' value=" " onchange="show_plan()"></select>
+        </td>
+    </tr>
     <tr>
         <td><label>План-месяц:</label></td>
         <td>
@@ -25,6 +32,8 @@
     <tr>
         <td></td>
         <td><button type="button" onclick="show_plan()">Показать</button></td>
+        <td><button type="button" onclick="show_plan2()">Показать2</button></td>
+        <td><button name="button_submit" type="submit" >Вход</button></td>
     </tr>
     <tr>
         <td></td>
@@ -36,7 +45,7 @@
     </tr>
     <br>
 </table>
-
+</form>
 
 <div>
     <a href="/plan2/plan_plan_d_addnew/{{data.spr_name}}" title="Добавить" > Добавить </a>
@@ -158,7 +167,21 @@
 
 
     function show_plan() {
+        params.submit();
+        return;
 
+        var spr_name = document.getElementById("spr_name").value;
+        var plan_name = document.getElementById("plan_name").value;
+        var sd_name = document.getElementById("sd_name").value;
+
+        location.href = '/plan2/plan_plan_d2_s/{{data.spr_name}}/'+plan_name+'/'+sd_name;
+    }
+
+    function show_plan2() {
+        params.submit();
+        return;
+
+        var spr_name = document.getElementById("spr_name").value;
         var plan_name = document.getElementById("plan_name").value;
         var sd_name = document.getElementById("sd_name").value;
 
@@ -168,6 +191,17 @@
 
 
 
+    // Изготовить список справочников для выбора
+    var set_spr_names = function (reply)
+    {
+        document.getElementById("spr_name").innerHTML = reply;
+        document.getElementById("spr_name").value = '{{data.spr_name}}';
+
+    }
+    function get_spr_names()
+    {
+        doQuery ("/common/get_spr_names/xСправочники", set_spr_names);
+    }
 
     // Изготовить список планов для выбора
     var set_plan_names = function (reply)
@@ -192,6 +226,7 @@
         doQuery ("/pro/get_prolet_names", set_sd_names);
     }
 
+    get_spr_names();
     get_plan_names();
     get_sd_names();
 
