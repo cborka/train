@@ -172,6 +172,32 @@ function PlanLastDay(plan_name)
 //
 // Показать список ПЛАН ЖБИ с кол-вом по дням месяца на выбранный План и Пролет
 //
+/*
+router.get('/plan_plan_d2_sx/:spr_name/:plan_name/:sd_name', function(req, res, next) {
+    var spr_name = req.params.spr_name;
+    var plan_name = req.params.plan_name;
+    var sd_name = req.params.sd_name;
+
+//    request.post({url:'/plan2/plan_plan_d2_s', form: {key:'value'}}, function(err,httpResponse,body){ /* ... * / })
+
+
+    var xhr = new XMLHttpRequest();
+
+    var params =
+        'spr_name=' + encodeURIComponent(spr_name) +
+        '&plan_name=' + encodeURIComponent(plan_name)+
+        '&sd_name=' + encodeURIComponent(sd_name);
+
+ //   request.post({url:'/plan2/plan_plan_d2_s', form: {key:'value'}}, function(err,httpResponse,body){ /* ... * / })
+
+    xhr.open("POST", '/plan_plan_d2_s', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.send(params);
+
+});
+*/
+
+
 router.get('/plan_plan_d2_s/:spr_name/:plan_name/:sd_name', function(req, res, next) {
   var spr_name = req.params.spr_name;
   var plan_name = req.params.plan_name;
@@ -252,13 +278,19 @@ router.get('/plan_plan_d2_s/:spr_name/:plan_name/:sd_name', function(req, res, n
           res.send('ОШИБКА: '+error);
         });
 });
-router.post('/plan_plan_d2_s', function(req, res, next) {
+
+router.all('/plan_plan_d2_s', function(req, res, next) {
     var spr_name = req.body.spr_name;
     var plan_name = req.body.plan_name;
     var sd_name = req.body.sd_name;
     var where_clause = '';
     var num_days = '';
     var month_days = 31;
+
+    // Если не определены, то есть был GET запрос
+//    if (!spr_name)   spr_name = 'ЖБИ';
+//    if (!plan_name)  plan_name = '2019-02';
+//    if (!sd_name)    sd_name = 'Пролет 33';
 
 //  month_days =  PlanLastDay(plan_name);
 
@@ -333,7 +365,7 @@ router.post('/plan_plan_d2_s', function(req, res, next) {
         });
 });
 
-router.get('/plan_plan_d2_s', function(req, res, next) {
+router.get('/plan_plan_d2_sxxx', function(req, res, next) {
     var spr_name = req.params.spr_name;
     var plan_name = req.params.plan_name;
     var sd_name = req.params.sd_name;

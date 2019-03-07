@@ -1,6 +1,4 @@
-План-План: <a href="/plan2/plan_plan_s/ЖБИ" > ЖБИ </a> | <a href="/plan2/plan_plan_d_s/ЖБИ" > ЖБИ по дням </a> |
-<a href="/plan2/plan_plan_s/Арматура" > Арматура </a> |
-<a href="/plan2/plan_plan_s/Бетон" > Бетон </a>
+
 <h1>План - План {{data.spr_name}}</h1>
 <div><p>То, что запланировано сделать в данном месяце и сколько нужно делать каждый день.<br>
 </p></div>
@@ -10,19 +8,19 @@
     <tr>
         <td><label>Вид плана:</label></td>
         <td>
-            <select width="100%" size="1" name='spr_name' id='spr_name' value=" " onchange="show_plan()"></select>
+            <select width="100%" size="1" name='spr_name' id='spr_name' value=" " onchange="show_plan2()"></select>
         </td>
     </tr>
     <tr>
         <td><label>План-месяц:</label></td>
         <td>
-            <select width="100%" size="1" name='plan_name' id='plan_name' value=" " onchange="show_plan()"></select>
+            <select width="100%" size="1" name='plan_name' id='plan_name' value=" " onchange="show_plan2()"></select>
         </td>
     </tr>
     <tr>
         <td><label>Пролет:</label></td>
         <td>
-            <select width="100%" size="1" name='sd_name' id='sd_name' value=" " onchange="show_plan()"></select>
+            <select width="100%" size="1" name='sd_name' id='sd_name' value=" " onchange="show_plan2()"></select>
         </td>
     </tr>
     <tr>
@@ -31,8 +29,7 @@
     </tr>
     <tr>
         <td></td>
-        <td><button type="button" onclick="show_plan()">Показать</button></td>
-        <td><button type="button" onclick="show_plan2()">Показать2</button></td>
+        <td><button type="button" onclick="show_plan2()">Показать</button></td>
         <td><button name="button_submit" type="submit" >Вход</button></td>
     </tr>
     <tr>
@@ -136,8 +133,8 @@
                 <td class="list">{{np30}}</td>
                 <td class="list">{{np31}}</td>
                 <td class="list">
-                    <button type="button" onclick="edit_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}} )">Изменить</button>
-                    <button type="button" onclick="delete_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}},'{{plan_name}}','{{sd_name}}','{{item_name}}')">Удалить</button>
+                    <button type="button" id="edit_btn" onclick="edit_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}} )">Изменить</button>
+                    <button type="button" id="delete_btn" onclick="delete_plan_sd({{plan_rf}},{{sd_rf}},{{item_rf}},'{{plan_name}}','{{sd_name}}','{{item_name}}')">Удалить</button>
                 </td>
             </tr>
         {{/each}}
@@ -152,6 +149,9 @@
 
     function delete_plan_sd(plan_rf, sd_rf, item_rf, plan_name, sd_name, item_name) {
 
+        if (spr != 'ЖБИ' && spr != 'Календари' )
+            return;
+
         var result = confirm("Удалить "+plan_name+'/'+sd_name+'/'+item_name+ " ?");
         if (result) {
             location.href = '/plan2/plan_plan_delete/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf+'/'+plan_name+'/'+sd_name;
@@ -161,34 +161,21 @@
     }
 
     function edit_plan_sd(plan_rf,sd_rf,item_rf) {
-        location.href = '/plan2/plan_plan_d/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+
+        var spr = document.getElementById("spr_name").value;
+
+        if (spr == 'ЖБИ')
+          location.href = '/plan2/plan_plan_d/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+
+       if (spr == 'Календари')
+           location.href = '/plan2/plan_plan_d/{{data.spr_name}}/'+plan_rf+'/'+sd_rf+'/'+item_rf;
+
     }
 
-
-
-    function show_plan() {
-        params.submit();
-        return;
-
-        var spr_name = document.getElementById("spr_name").value;
-        var plan_name = document.getElementById("plan_name").value;
-        var sd_name = document.getElementById("sd_name").value;
-
-        location.href = '/plan2/plan_plan_d2_s/{{data.spr_name}}/'+plan_name+'/'+sd_name;
-    }
 
     function show_plan2() {
         params.submit();
-        return;
-
-        var spr_name = document.getElementById("spr_name").value;
-        var plan_name = document.getElementById("plan_name").value;
-        var sd_name = document.getElementById("sd_name").value;
-
-        location.href = '/plan2/plan_plan_d2_s/{{data.spr_name}}/'+plan_name+'/'+sd_name;
     }
-
-
 
 
     // Изготовить список справочников для выбора
@@ -200,7 +187,7 @@
     }
     function get_spr_names()
     {
-        doQuery ("/common/get_spr_names/xСправочники", set_spr_names);
+        doQuery ("/common/get_plan_sprs", set_spr_names);
     }
 
     // Изготовить список планов для выбора
@@ -226,8 +213,23 @@
         doQuery ("/pro/get_prolet_names", set_sd_names);
     }
 
+    function init()
+    {
+//        if (spr == 'ЖБИ' || spr == 'Календари' ) {
+//            document.getElementById("edit_btn").disabled = (spr == 'ЖБИ' || spr == 'Календари' );
+//            document.getElementById("edit_btn").disabled = false;
+ //       }
+    }
+
     get_spr_names();
     get_plan_names();
     get_sd_names();
+
+    init();
+
+//    var x = window.location.toString().slice(-5);
+ //   alert(x);
+ //   if (x != '_d2_s') show_plan2(); //params.submit();
+//      show_plan2();
 
 </script>

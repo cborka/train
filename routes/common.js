@@ -194,6 +194,28 @@ router.get('/get_spr_names/:spr', function(req, res, next) {
     });
 });
 
+
+// Сформировать и возвратить список справочников для Плана
+//
+router.get('/get_plan_sprs', function(req, res, next) {
+    var spr = req.params.spr;
+    db.any(
+        "SELECT item_name " +
+        "  FROM item_list " +
+        "  WHERE item_id IN (4, 9, 18, 532) " + //Бетон, ЖБИ, Араматура, Календари
+        "  ORDER BY 1 ", [spr])
+        .then (function (data) {
+            var result = ''; // <option value=""></option>'; // Пустое значение не надо однако
+            for (var i = 0; i < data.length; i++) {
+                result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
+            }
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send('get_spr_names: ОШИБКА: ' +error);
+        });
+});
+
 //
 // Сформировать и возвратить весь список для выбора (кроме названий справочников)
 //
