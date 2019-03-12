@@ -237,6 +237,21 @@ router.get('/get_all_items', function(req, res, next) {
     });
 });
 
+//
+// Сформировать и возвратить список ДНЕЙ НЕДЕЛИ для выбора
+//
+router.get('/get_week_days', function(req, res, next) {
+    var result = '';
+    result = result + '<option value="Понедельник">Понедельник</option>';
+    result = result + '<option value="Вторник">Вторник</option>';
+    result = result + '<option value="Среда">Среда</option>';
+    result = result + '<option value="Четверг">Четверг</option>';
+    result = result + '<option value="Пятница">Пятница</option>';
+    result = result + '<option value="Суббота">Суббота</option>';
+    result = result + '<option value="Воскресенье">Воскресенье</option>';
+    res.send(result);
+});
+
 
 //========================================================================
 

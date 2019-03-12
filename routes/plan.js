@@ -257,10 +257,12 @@ router.get('/plan_pro_calc/:plan_rf/:sd_rf', function(req, res, next) {
 router.get('/plan_sd_s', function(req, res, next) {
   db.any(
     "SELECT m.plan_rf, plan.item_name AS plan_name, m.sd_rf, sd.item_name AS sd_name, m.days_num, m.workers_num, " +
-    "  CAST(m.date_begin AS VARCHAR) AS dtb, CAST(m.date_end AS VARCHAR) AS dte " +
-    " FROM ((plan_sd m " +
+    "  CAST(m.date_begin AS VARCHAR) AS dtb, CAST(m.date_end AS VARCHAR) AS dte," +
+    "  m.rem_day_rf, wd.item_name AS rem_day_name, rem_time_proc" +
+    " FROM (((plan_sd m " +
     "   LEFT JOIN item_list plan ON m.plan_rf = plan.item_id) " +
     "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list wd ON m.rem_day_rf = wd.item_id) " +
     " ORDER BY 2, 4 ")
     .then(function (data) {
       res.render('plan/plan_sd_s', {data: data}); // Показ формы
@@ -274,7 +276,9 @@ router.get('/plan_sd_s', function(req, res, next) {
 // Добавить новый ПЛАН-ПРОЛЁТ
 //
 router.get('/plan_sd_addnew', function(req, res, next) {
-  db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name, CAST(CURRENT_DATE AS varchar) AS dtb, CAST(CURRENT_DATE+30 AS varchar) AS dte  ")
+  db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name, " +
+         "CAST(CURRENT_DATE AS varchar) AS dtb, CAST(CURRENT_DATE+30 AS varchar) AS dte, " +
+         "565 AS rem_day_rf, 25 S rem_time_proc ")
     .then(function (data) {
       res.render('plan/plan_sd', data);
     })
@@ -291,16 +295,18 @@ router.get('/plan_sd/:plan_rf/:sd_rf', function(req, res, next) {
   var sd_rf = req.params.sd_rf;
   db.one(
     "SELECT m.plan_rf, plan.item_name AS plan_name, m.sd_rf, sd.item_name AS sd_name, m.days_num, m.workers_num, " +
-    "  CAST(m.date_begin AS VARCHAR) AS dtb, CAST(m.date_end AS VARCHAR) AS dte " +
-    " FROM ((plan_sd m " +
+    "  CAST(m.date_begin AS VARCHAR) AS dtb, CAST(m.date_end AS VARCHAR) AS dte, " +
+      "  m.rem_day_rf, wd.item_name AS rem_day_name, rem_time_proc" +
+    " FROM (((plan_sd m " +
     "   LEFT JOIN item_list plan ON m.plan_rf = plan.item_id) " +
     "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
+    "   LEFT JOIN item_list wd ON m.rem_day_rf = wd.item_id) " +
     " WHERE plan_rf = $1 AND sd_rf = $2", [plan_rf, sd_rf])
     .then(function (data) {
       res.render('plan/plan_sd', data);
     })
     .catch(function (error) {
-      res.send(error);
+      res.send('ОШИБКА (/plan_sd/:plan_rf/:sd_rf): '+error);
     });
 });
 
@@ -318,6 +324,8 @@ router.post('/plan_sd/update', function(req, res, next) {
   var dte = req.body.dte;
   var old_plan_rf = req.body.old_plan_rf;
   var old_sd_rf = req.body.old_sd_rf;
+  var rem_day_name = req.body.rem_day_name;
+  var rem_time_proc = req.body.rem_time_proc;
   if (plan_rf > 0 ) {
 //  Обновление
     db.none(
@@ -327,9 +335,11 @@ router.post('/plan_sd/update', function(req, res, next) {
       "  days_num=$3, " +
       "  workers_num=$4, " +
       "  date_begin=$5, " +
-      "  date_end=$6 " +
+      "  date_end=$6, " +
+      "  rem_day_rf=(SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$9), " +
+      "  rem_time_proc=$10 " +
       "WHERE plan_rf=$7 AND sd_rf=$8",
-      [plan_name, sd_name, days_num, workers_num, dtb, dte, old_plan_rf, old_sd_rf])
+      [plan_name, sd_name, days_num, workers_num, dtb, dte, old_plan_rf, old_sd_rf, rem_day_name, rem_time_proc])
       .then (function () {
         res.redirect('/plan/plan_sd_s');
       })
@@ -340,13 +350,15 @@ router.post('/plan_sd/update', function(req, res, next) {
   else {
 //  Добавление
     db.none(
-      "INSERT INTO  plan_sd (plan_rf, sd_rf, days_num, workers_num, date_begin, date_end ) " +
+      "INSERT INTO  plan_sd (plan_rf, sd_rf, days_num, workers_num, date_begin, date_end, rem_day_rf, rem_time_proc ) " +
       "VALUES (" +
       "  (SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
-      "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2),  " +
-      "  $3, $4, $5, $6" +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2), " +
+      "  $3, $4, $5, $6, " +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$7)" +
+      "  $8 " +
       ")",
-      [plan_name, sd_name, days_num, workers_num, dtb, dte])
+      [plan_name, sd_name, days_num, workers_num, dtb, dte, rem_day_name, rem_time_proc])
       .then (function (data) {
         res.redirect('/plan/plan_sd_s');
       })
@@ -736,10 +748,6 @@ router.post('/save_sd34_form_num', function(req, res, next) {
     });
 
 });
-
-
-
-
 
 
 

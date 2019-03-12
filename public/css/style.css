@@ -26,6 +26,18 @@
 
 /* РАЗМЕТКА */
 
+DIV.left {
+  float: left;
+  margin-right: 10px;
+}
+DIV.right {
+  float: right;
+  margin-left: 10px;
+}
+
+
+
+
 DIV.header {
   text-align: left;
   padding: 0;

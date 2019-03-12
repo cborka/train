@@ -1760,5 +1760,48 @@ router.get('/plan_s_delete/:plan_rf', function(req, res, next) {
 });
 
 
+//=================== ПОЛУЧЕНИЕ ПАРАМЕТРОВ РАСЧЕТА ПЛАНА ЖБИ =====================
+
+// Параметры пролёта
+router.post('/get_plan_plan_d_sd_params', function(req, res, next) {
+    var plan_name = req.body.plan_name;
+    var sd_name = req.body.sd_name;
+    db.one(
+        "SELECT m.plan_rf, plan.item_name AS plan_name, m.sd_rf, sd.item_name AS sd_name, m.days_num, m.workers_num, " +
+        "  CAST(m.date_begin AS VARCHAR) AS dtb, CAST(m.date_end AS VARCHAR) AS dte, " +
+        "  m.rem_day_rf, wd.item_name AS rem_day_name, rem_time_proc" +
+        " FROM (((plan_sd m " +
+        "   LEFT JOIN item_list plan ON m.plan_rf = plan.item_id) " +
+        "   LEFT JOIN item_list sd ON m.sd_rf = sd.item_id) " +
+        "   LEFT JOIN item_list wd ON m.rem_day_rf = wd.item_id) " +
+        " WHERE plan.item_name = $1 AND sd.item_name = $2", [plan_name, sd_name])
+        .then(function (data) {
+            res.send(data.plan_name+'|'+data.sd_name+'|'+data.days_num+'|'+data.workers_num+'|'+data.rem_day_name+'|'+data.rem_time_proc+'|'+data.plan_rf+'|'+data.sd_rf );
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА (get_plan_plan_d_params): '+error);
+        });
+});
+
+// Параметры ЖБИ
+router.post('/get_plan_plan_d_fc_params', function(req, res, next) {
+    var fc_rf = req.body.fc_rf;
+    var sd_rf = req.body.sd_rf;
+    db.one(
+        "SELECT ff.form_rf, frm.item_name AS form_name, ff.fc_num AS form_fc_num, ff.forming_time, sf.form_num AS sd_form_num," +
+        " sf.form_num_max AS sd_form_num_max " +
+        " FROM ((form_fc ff " +
+        "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf AND sf.sd_rf = $1) " +
+        "   LEFT JOIN item_list frm ON ff.form_rf = frm.item_id) " +
+        " WHERE ff.fc_rf = $2", [sd_rf, fc_rf])
+        .then(function (data) {
+            res.send(data.form_rf+'|'+data.form_name+'|'+data.form_fc_num+'|'+data.forming_time+'|'+data.sd_form_num+'|'+data.sd_form_num_max);
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА (get_plan_plan_d_fc_params): '+error);
+        });
+});
+
+
 
 module.exports = router;
