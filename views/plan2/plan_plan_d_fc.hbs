@@ -1,3 +1,6 @@
+<H2>План производства ЖБИ</H2>
+План производства ЖБИ согласно календарю рабочего времени.<br>
+<br>
 <form action="/plan2/plan_plan_d/update" method="POST" >
     <table class="form">
         <tr>
@@ -27,7 +30,7 @@
             <td><label>Количество на план:</label></td>
             <td><input id="num_plan" type="number" name="num_plan" step="0.001" value={{num_plan}} ></td>
         </tr>
-<!--
+        <!--
         <tr>
             <td><label>Количество на день:</label></td>
             <td><input id="num_day" type="number" name="num_day" step="0.001" value={{num_day}} ></td>
@@ -131,31 +134,31 @@
 </form>
 <br>
 <div class="left" id="sd_params" >
-<br><button type="button" onclick="get_params()"> >> </button>
-  Параметры пролёта: <br>
-<table class="form">
-    <tr>
-        <td><label>Рабочих дней:</label></td>
-        <td><b><span id="days_num">11</span></b></td>
-    </tr>
-    <tr>
-        <td><label>Работников:</label></td>
-        <td><b><span id="workers_num">12</span></b></td>
-    </tr>
-    <tr>
-        <td><label>Рем.день:</label></td>
-        <td><b><span id="rem_day_name">Пятница</span></b></td>
-    </tr>
-    <tr>
-        <td><label>% раб.времени</label></td>
-        <td><b><span id="rem_time_proc" title="% рабочего времени в рем.день">13</span>%</b></td>
-    </tr>
-    <tr>
-        <td><label>Часов раб.времени в день</label></td>
-        <td><b><span id="work_day_length" title="Рабочих часов в сутки">22</span> часов</b></td>
-    </tr>
-</table>
-<span id="plan_sd_params"></span>
+    <br><button type="button" onclick="get_params()"> >> </button>
+    Параметры пролёта: <br>
+    <table class="form">
+        <tr>
+            <td><label>Рабочих дней:</label></td>
+            <td><b><span id="days_num">11</span></b></td>
+        </tr>
+        <tr>
+            <td><label>Работников:</label></td>
+            <td><b><span id="workers_num">12</span></b></td>
+        </tr>
+        <tr>
+            <td><label>Рем.день:</label></td>
+            <td><b><span id="rem_day_name">Пятница</span></b></td>
+        </tr>
+        <tr>
+            <td><label>% раб.времени</label></td>
+            <td><b><span id="rem_time_proc" title="% рабочего времени в рем.день">13</span>%</b></td>
+        </tr>
+        <tr>
+            <td><label>Часов раб.времени в день</label></td>
+            <td><b><span id="work_day_length" title="Рабочих часов в сутки">22</span> часов</b></td>
+        </tr>
+    </table>
+    <span id="plan_sd_params"></span>
 </div>
 
 <div class="left" id="fc_params" >
@@ -207,7 +210,7 @@
     // Раскрасить календарь
     function paint_num_days ()
     {
-      // dtc = new Date();
+        // dtc = new Date();
         dtb = PlanFirstDate(plan_name);
         dtc = dtb;
 
@@ -216,13 +219,13 @@
         for (i=1; i<=month_days; i++){
             dtc.setDate(dtc.getDate() + 1);
             k = dtc.getDay(); // (dtb.getDate()+i).getDay;
-  //              alert(k);
+            //              alert(k);
             document.getElementById("np"+i).value = k; //dtc.getDay(); // (dtb.getDate()+i).getDay;
             if (k > 1)
                 document.getElementById("np"+i).style.backgroundColor = 'white';
-           if (k == 0)
-               document.getElementById("np"+i).style.backgroundColor = 'khaki'; //  Суббота
-           if (k == 1)
+            if (k == 0)
+                document.getElementById("np"+i).style.backgroundColor = 'khaki'; //  Суббота
+            if (k == 1)
                 document.getElementById("np"+i).style.backgroundColor = 'lightpink'; //  Воскресенье
         }
         //  Несуществующие дни
@@ -278,7 +281,7 @@
     function make_table_days()
     {
         for (i=1; i<=31; i++){
-             document.getElementById("np"+i).onchange = sum_days;
+            document.getElementById("np"+i).onchange = sum_days;
         }
     }
     make_table_days();
@@ -287,7 +290,7 @@
     {
         nps = 0;
         for (j=1; j<=31; j++) {
-           nps = nps + +document.getElementById("np" + j).value;
+            nps = nps + +document.getElementById("np" + j).value;
         }
 //        document.getElementById("hint").innerHTML = "Сумма по дням: " + nps;
         document.getElementById("num_plan").value = nps;

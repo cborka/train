@@ -358,6 +358,7 @@ router.all('/plan_plan_d2_s', function(req, res, next) {
             }
 
             data.spr_name = spr_name;
+
             res.render('plan2/plan_plan_d2_s', {data: data}); // Показ формы
         })
         .catch(function (error) {
@@ -389,7 +390,12 @@ router.get('/plan_plan_d_addnew/:spr_name', function(req, res, next) {
 
       data.spr_name = spr_name;
 
-      res.render('plan2/plan_plan_d', data);
+        if (spr_name == 'ЖБИ')
+            res.render('plan2/plan_plan_d_fc', data); // Показ формы
+        if (spr_name == 'Календари')
+            res.render('plan2/plan_plan_d_kal', data); // Показ формы
+
+//        res.render('plan2/plan_plan_d', data);
     })
     .catch(function (error) {
       res.send('ОШИБКА: '+error);
@@ -484,15 +490,19 @@ router.get('/plan_plan_d/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res,
 
       data.spr_name = spr_name;
 
-      res.render('plan2/plan_plan_d', data);
+
+        if (spr_name == 'ЖБИ')
+            res.render('plan2/plan_plan_d_fc', data); // Показ формы
+        if (spr_name == 'Календари')
+            res.render('plan2/plan_plan_d_kal', data); // Показ формы
+
+
+//        res.render('plan2/plan_plan_d_fc', data);
     })
     .catch(function (error) {
       res.send(error);
     });
 });
-
-
-
 
 
 //

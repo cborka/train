@@ -164,7 +164,6 @@ function month_days(dtb, dte)
 
   for (var dt=dtb; dt <=dte; dt+=days_ms)
   {
-
     result = result + ("0"+dt.getDate()).slice(-2) + ',';
   }
   return result;
