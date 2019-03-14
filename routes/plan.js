@@ -355,7 +355,7 @@ router.post('/plan_sd/update', function(req, res, next) {
       "  (SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
       "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2), " +
       "  $3, $4, $5, $6, " +
-      "  (SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$7)" +
+      "  (SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$7)," +
       "  $8 " +
       ")",
       [plan_name, sd_name, days_num, workers_num, dtb, dte, rem_day_name, rem_time_proc])
@@ -686,7 +686,7 @@ router.get('/sd34_form_part', function(req, res, next) {
       // Убираю конечные нули в дробной части и ищу наименьшее
       data.form_num_min = 100000;
       for (var i = 0; i < data.length; i++) {
-        data[i].form_num = Math.round(data[i].form_num * 1000) / 1000
+        data[i].form_num = Math.round(data[i].form_num * 1000) / 1000;
 
         if (data.form_num_min > data[i].form_num) data.form_num_min = data[i].form_num;
 

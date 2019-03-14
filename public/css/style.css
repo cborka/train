@@ -229,6 +229,7 @@ td.left {
 }
 td.input, td.day {
     border: 1px solid lightgrey;
+
 }
 
 select.td {
@@ -240,6 +241,10 @@ select.td {
 
 td.day, input.day {
     width: 45px;
+}
+
+label {
+    color: dimgrey ;
 }
 
 

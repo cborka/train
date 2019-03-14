@@ -142,8 +142,18 @@ function PlanLastDateAsSting(plan_name)
   return plan_name + '-' + PlanLastDay(plan_name);
 }
 
-
-
+// Вернуть номер дня недели по русскому названию
+function WeekDayNum(wd_name)
+{
+    if (wd_name == 'Суббота' ) return 0
+    else if (wd_name == 'Воскресенье' ) return 1
+    else if (wd_name == 'Понедельник' ) return 2
+    else if (wd_name == 'Вторник' ) return 3
+    else if (wd_name == 'Среда' ) return 4
+    else if (wd_name == 'Четверг' ) return 5
+    else if (wd_name == 'Пятница' ) return 6
+    else  return 1; // Воскресенье :)
+}
 
 
 

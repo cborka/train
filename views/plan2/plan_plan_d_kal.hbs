@@ -19,14 +19,14 @@
         <tr>
             <td><label>Предмет:</label></td>
             <td>
-                <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}"></select>
+                <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}" onchange="on_change_item_name()"></select>
                 <input id="item_rf" type="text" name="item_rf" readonly value={{item_rf}} hidden >
                 <input id="old_item_rf" type="text" name="old_item_rf" readonly value={{item_rf}} hidden >
                 <input id="spr_name" type="text" name="spr_name" readonly value={{spr_name}} hidden >
             </td>
         </tr>
         <tr>
-            <td><label>Количество на план:</label></td>
+            <td><label>Количество рабочих часов:</label></td>
             <td><input id="num_plan" type="number" name="num_plan" step="0.001" value={{num_plan}} ></td>
         </tr>
         <!--
@@ -38,17 +38,16 @@
     </table>
     <br>
     Количество рабочих часов в сутки по дням месяца
-    <button type="button" onclick="calc_num_days()">Рассчитать</button>
     <br>
     <table id="table_days" class="form">
         <tr>
-            <td><b>1</b></td>
-            <td><b>2</b></td>
-            <td><b>3</b></td>
-            <td><b>4</b></td>
-            <td><b>5</b></td>
-            <td><b>6</b></td>
-            <td><b>7</b></td>
+            <td><label>1</label></td>
+            <td><label>2</label></td>
+            <td><label>3</label></td>
+            <td><label>4</label></td>
+            <td><label>5</label></td>
+            <td><label>6</label></td>
+            <td><label>7</label></td>
         </tr>
         <tr>
             <td><input class="day" id="np1" type="number" name="np1" step="0.001" value={{np1}} ></td>
@@ -60,13 +59,13 @@
             <td><input class="day" id="np7" type="number" name="np7" step="0.001" value={{np7}} ></td>
         </tr>
         <tr>
-            <td><b>8</b></td>
-            <td><b>9</b></td>
-            <td><b>10</b></td>
-            <td><b>11</b></td>
-            <td><b>12</b></td>
-            <td><b>13</b></td>
-            <td><b>14</b></td>
+            <td><label>8</label></td>
+            <td><label>9</label></td>
+            <td><label>10</label></td>
+            <td><label>11</label></td>
+            <td><label>12</label></td>
+            <td><label>13</label></td>
+            <td><label>14</label></td>
         </tr>
         <tr>
             <td><input class="day" id="np8" type="number" name="np8" step="0.001" value={{np8}} ></td>
@@ -78,13 +77,13 @@
             <td><input class="day" id="np14" type="number" name="np14" step="0.001" value={{np14}} ></td>
         </tr>
         <tr>
-            <td><b>15</b></td>
-            <td><b>16</b></td>
-            <td><b>17</b></td>
-            <td><b>18</b></td>
-            <td><b>19</b></td>
-            <td><b>20</b></td>
-            <td><b>21</b></td>
+            <td><label>15</label></td>
+            <td><label>16</label></td>
+            <td><label>17</label></td>
+            <td><label>18</label></td>
+            <td><label>19</label></td>
+            <td><label>20</label></td>
+            <td><label>21</label></td>
         </tr>
         <tr>
             <td><input class="day" id="np15" type="number" name="np15" step="0.001" value={{np15}} ></td>
@@ -96,13 +95,13 @@
             <td><input class="day" id="np21" type="number" name="np21" step="0.001" value={{np21}} ></td>
         </tr>
         <tr>
-            <td><b>22</b></td>
-            <td><b>23</b></td>
-            <td><b>24</b></td>
-            <td><b>25</b></td>
-            <td><b>26</b></td>
-            <td><b>27</b></td>
-            <td><b>28</b></td>
+            <td><label>22</label></td>
+            <td><label>23</label></td>
+            <td><label>24</label></td>
+            <td><label>25</label></td>
+            <td><label>26</label></td>
+            <td><label>27</label></td>
+            <td><label>28</label></td>
         </tr>
         <tr>
             <td><input class="day" id="np22" type="number" name="np22" step="0.001" value={{np22}} ></td>
@@ -114,9 +113,9 @@
             <td><input class="day" id="np28" type="number" name="np28" step="0.001" value={{np28}} ></td>
         </tr>
         <tr>
-            <td><b>29</b></td>
-            <td><b>30</b></td>
-            <td><b>31</b></td>
+            <td><label>29</label></td>
+            <td><label>30</label></td>
+            <td><label>31</label></td>
         </tr>
         <tr>
             <td><input class="day" id="np29" type="number" name="np29" step="0.001" value={{np29}} ></td>
@@ -124,9 +123,9 @@
             <td><input class="day" id="np31" type="number" name="np31" step="0.001" value={{np31}} ></td>
         </tr>
     </table>
-
+    <button type="button" onclick="fill_calendar()">Заполнить календарь</button>
     <button type="submit" >Сохранить</button>
-    <button type="button" onclick="paint_num_days()">Дни недели</button>
+<!--    <button type="button" onclick="paint_num_days()">Дни недели</button> -->
     <br>
     <div id="hint" ></div>
     <div id="erro" ></div>
@@ -138,26 +137,28 @@
     <table class="form">
         <tr>
             <td><label>Рабочих дней:</label></td>
-            <td><b><span id="days_num">11</span></b></td>
+            <td><input  class="day" id="days_num" type="number" name="days_num" onchange="on_change_sd_params()"></td>
         </tr>
         <tr>
             <td><label>Работников:</label></td>
-            <td><b><span id="workers_num">12</span></b></td>
+            <td><input  class="day" id="workers_num" type="number" name="workers_num" onchange="on_change_sd_params()"></td>
         </tr>
         <tr>
             <td><label>Рем.день:</label></td>
-            <td><b><span id="rem_day_name">Пятница</span></b></td>
+            <td><select width="100%" size="1" name='rem_day_name' id='rem_day_name' value="Пятница" onchange="on_change_sd_params()"></select></td>
         </tr>
         <tr>
             <td><label>% раб.времени</label></td>
-            <td><b><span id="rem_time_proc" title="% рабочего времени в рем.день">13</span>%</b></td>
+            <td><input  class="day" id="rem_time_proc" type="number" name="rem_time_proc" title="% рабочего времени в рем.день" step="0.001" value="25" onchange="on_change_sd_params()">%</td>
         </tr>
         <tr>
             <td><label>Часов раб.времени в день</label></td>
-            <td><b><span id="work_day_length" title="Рабочих часов в сутки">22</span> часов</b></td>
+            <td><input  class="day" id="work_day_length" type="number" name="work_day_length" title="Рабочих часов в сутки" step="0.001" value="22" onchange="on_change_sd_params()"></td>
         </tr>
     </table>
     <span id="plan_sd_params"></span>
+    <br><button type="button" id="btn_save_sd_params" disabled="true" onclick="save_sd_params()" >Сохранить</button>
+    <div id="save_sd_params_error" ></div>
 </div>
 
 
@@ -171,18 +172,25 @@
     var j = 0;
     var k = 0;
     var month_days = PlanLastDay(plan_name);
+    var old_plan_rf = '{{old_plan_rf}}';
+
+    var sd_params_exists = false;
 
 
     function on_change_plan_name() {
         plan_name = document.getElementById("plan_name").value;
 //        alert(plan_name);
         paint_num_days ();
+        get_sd_params();
     }
 
     function on_change_sd_name() {
         sd_name = document.getElementById("sd_name").value;
-//        alert(plan_name);
-//        paint_num_days ();
+        get_sd_params();
+    }
+
+    function on_change_item_name() {
+        item_name = document.getElementById("item_name").value;
     }
 
     // Раскрасить календарь
@@ -198,7 +206,7 @@
             dtc.setDate(dtc.getDate() + 1);
             k = dtc.getDay(); // (dtb.getDate()+i).getDay;
             //              alert(k);
-            document.getElementById("np"+i).value = k; //dtc.getDay(); // (dtb.getDate()+i).getDay;
+ //           document.getElementById("np"+i).value = k; //dtc.getDay(); // (dtb.getDate()+i).getDay;
             if (k > 1)
                 document.getElementById("np"+i).style.backgroundColor = 'white';
             if (k == 0)
@@ -216,41 +224,47 @@
     }
 
 
-    // Расчитать кол-во ЖБИ по дням месяца
-    function calc_num_days ()
+    // Заполнить календарь
+    function fill_calendar ()
     {
+        if(!confirm("Заполнить календарь? Уверены?")) return;
 
-        if(!confirm("Пересчитать кол-во по дням? Уверены?")) return;
+        var wdl = document.getElementById("work_day_length").value;
+        var rwdl = wdl * document.getElementById("rem_time_proc").value / 100;
 
-        var nps = document.getElementById("num_plan").value;
-        var npd = nps / 31;
-        var npds = npd;
-        var npr = Math.round(npds);
+        var rem_day_num = WeekDayNum(document.getElementById("rem_day_name").value);
 
-        for (i=30; i>=1; i--){
+        dtb = PlanFirstDate(plan_name);
+        dtc = dtb;
+        month_days = PlanLastDay(plan_name);
+        for (i=1; i<=month_days; i++)
+        {
+            dtc.setDate(dtc.getDate() + 1);
+            k = dtc.getDay(); // (dtb.getDate()+i).getDay;
 
-//            npd = Math.round(npd);
-//            document.getElementById("np"+i).value = npd; //Math.round(npd);
-//            npd = Math.round(npd);
+            if (k == rem_day_num)
+              document.getElementById("np"+i).value = rwdl
+            else
+                document.getElementById("np"+i).value = wdl;
 
-            document.getElementById("np"+i).value = npr;
-            nps = nps - npr;
-            npds = npds + npd - npr;
-            npr = Math.round(npds);
-
-//            npd = nps / i;
-//            npd = nps / (31-i);
+            if (k > 1)
+                document.getElementById("np"+i).style.backgroundColor = 'white';
+            if (k == 0)
+                document.getElementById("np"+i).style.backgroundColor = 'khaki'; //  Суббота
+            if (k == 1)
+                document.getElementById("np"+i).style.backgroundColor = 'lightpink'; //  Воскресенье
         }
-        document.getElementById("np31").value = nps; //Math.round(npd);
 
-        nps = 0;
-        for (i=1; i<=31; i++){
-            nps = nps + +document.getElementById("np"+i).value;
+        //  Несуществующие дни
+        for (i=month_days+1; i<=31; i++){
+            dtc.setDate(dtc.getDate() + 1);
+            k = dtc.getDay(); // (dtb.getDate()+i).getDay;
+
+            document.getElementById("np"+i).value = 0; //dtc.getDay(); // (dtb.getDate()+i).getDay;
+            document.getElementById("np"+i).style.backgroundColor = 'lightgrey';
         }
 
-//        document.getElementById("hint").innerHTML = "Сумма по дням: " + nps;
-
-//        document.getElementById("np5").value = 12;
+        sum_days();
     }
 
     //
@@ -266,12 +280,23 @@
 
     function sum_days()
     {
-        nps = 0;
+        var nps = 0;
+        var npj = 0;
+        var npd = 0;
+
         for (j=1; j<=31; j++) {
-            nps = nps + +document.getElementById("np" + j).value;
+            npj = document.getElementById("np" + j).value;
+            nps = nps + +npj; // Второй плюс преобразует npj в числовой формат
+            if (npj > 0) npd = npd + 1;
         }
 //        document.getElementById("hint").innerHTML = "Сумма по дням: " + nps;
+  //      alert(nps);
         document.getElementById("num_plan").value = nps;
+
+        if(document.getElementById("days_num").value != npd) {
+            document.getElementById("days_num").value = npd;
+            on_change_sd_params()
+        }
     }
 
     //
@@ -281,23 +306,60 @@
     {
         // 2018-07|Пролет 33|22.00|35.00|Четверг|25.000
 //        document.getElementById("plan_sd_params").innerHTML = reply;
+
+        sd_params_exists = (reply.substr(0, 6) != 'ОШИБКА');
+
         var arr_sd = reply.split('|');
-        document.getElementById("days_num").innerHTML = arr_sd[2];
-        document.getElementById("workers_num").innerHTML = arr_sd[3];
-        document.getElementById("rem_day_name").innerHTML = arr_sd[4];
-        document.getElementById("rem_time_proc").innerHTML = arr_sd[5];
+        document.getElementById("days_num").value = arr_sd[2];
+        document.getElementById("workers_num").value = arr_sd[3];
+        document.getElementById("rem_day_name").value = arr_sd[4];
+        document.getElementById("rem_time_proc").value = arr_sd[5];
         document.getElementById("plan_rf").innerHTML = arr_sd[6];
         document.getElementById("sd_rf").innerHTML = arr_sd[7];
     };
     function get_sd_params()
     {
- //       alert( encodeURIComponent(document.getElementById("plan_name").value)+"&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value));
-
         doQuery ("/plan2/get_plan_plan_d_sd_params", set_sd_params,
                 "&plan_name=" + encodeURIComponent(document.getElementById("plan_name").value)+
                 "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value)
         );
     }
+
+    //
+    // При изменении параметров пролета
+    //
+    function on_change_sd_params() {
+
+        document.getElementById("btn_save_sd_params").disabled = false;
+    }
+
+    //
+    // При изменении параметров пролета
+    //
+    function save_sd_params_reply(reply) {
+        if (reply == 'OK')
+            document.getElementById("btn_save_sd_params").disabled = true;
+
+        document.getElementById("save_sd_params_error").innerHTML = reply;
+    }
+    function save_sd_params()
+    {
+        doQuery ("/plan2/save_sd_params", save_sd_params_reply,
+                "&sd_params_exists=" + encodeURIComponent(sd_params_exists)+
+                "&plan_name=" + encodeURIComponent(document.getElementById("plan_name").value)+
+                "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value) +
+                "&days_num=" + encodeURIComponent(document.getElementById("days_num").value) +
+                "&workers_num=" + encodeURIComponent(document.getElementById("workers_num").value) +
+                "&rem_day_name=" + encodeURIComponent(document.getElementById("rem_day_name").value) +
+                "&rem_time_proc=" + encodeURIComponent(document.getElementById("rem_time_proc").value)+
+                // Если параметров ещё нет и надо вставлять новые, то передаю даты начала и конца плана,
+                // если обновление, то они там не понадобятся
+                "&dtb=" + encodeURIComponent(plan_name+'-01')+
+                "&dte=" + encodeURIComponent(plan_name+'-'+month_days)
+        );
+
+    }
+
 
     //
     //  ИЗГОТОВЛЕНИЕ СПИСКОВ ДЛЯ ВЫБОРА
@@ -338,16 +400,39 @@
         doQuery ("/common/get_spr_names/{{spr_name}}", set_item_names);
     }
 
+    // Изготовить список дней недели для выбора
+    var set_wd_names = function (reply)
+    {
+        document.getElementById("rem_day_name").innerHTML = reply;
+//        document.getElementById("rem_day_name").value = item_name;
+    };
+    function get_wd_names()
+    {
+        doQuery ("/common/get_week_days", set_wd_names);
+    }
+
+
     // Инициализация значений при добавлении НОВОГО календаря
     function init()
     {
-        if (plan_name == '')
+        if (plan_name == '') {
             plan_name = toYYYYMM(dtc);
+        }
+        else {
+            document.getElementById("plan_name").disabled = true;
+            document.getElementById("sd_name").disabled = true;
+        }
+
 
         if (item_name == '')
             item_name = 'Рабочие часы';
 
+
+
     }
+
+
+    get_wd_names();
     init();
 
 //    alert('++{{plan_name}}++');
@@ -356,7 +441,9 @@
     get_sd_names();
     get_item_names();
 
+    paint_num_days ();
     setTimeout(get_sd_params, 2000);
+ //   document.getElementById("plan_name").disabled = true;
 //    setTimeout(get_fc_params, 3000);
 
 </script>

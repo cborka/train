@@ -1786,6 +1786,12 @@ router.post('/get_plan_plan_d_sd_params', function(req, res, next) {
         "   LEFT JOIN item_list wd ON m.rem_day_rf = wd.item_id) " +
         " WHERE plan.item_name = $1 AND sd.item_name = $2", [plan_name, sd_name])
         .then(function (data) {
+
+            data.days_num = Math.round(data.days_num * 1000) / 1000;
+            data.workers_num = Math.round(data.workers_num * 1000) / 1000;
+            data.rem_time_proc = Math.round(data.rem_time_proc * 1000) / 1000;
+            data.days_num = Math.round(data.days_num * 1000) / 1000;
+
             res.send(data.plan_name+'|'+data.sd_name+'|'+data.days_num+'|'+data.workers_num+'|'+data.rem_day_name+'|'+data.rem_time_proc+'|'+data.plan_rf+'|'+data.sd_rf );
         })
         .catch(function (error) {
@@ -1810,6 +1816,58 @@ router.post('/get_plan_plan_d_fc_params', function(req, res, next) {
         .catch(function (error) {
             res.send('ОШИБКА (get_plan_plan_d_fc_params): '+error);
         });
+});
+
+// Параметры пролёта
+router.post('/save_sd_params', function(req, res, next) {
+    var sd_params_exists = req.body.sd_params_exists;
+
+    var plan_name = req.body.plan_name;
+    var sd_name = req.body.sd_name;
+    var days_num = req.body.days_num;
+    var workers_num = req.body.workers_num;
+    var dtb = req.body.dtb;
+    var dte = req.body.dte;
+    var rem_day_name = req.body.rem_day_name;
+    var rem_time_proc = req.body.rem_time_proc;
+
+    if (sd_params_exists == 'true') {
+//  Обновление
+        db.none(
+            "UPDATE plan_sd " +
+            "SET days_num=$3, " +
+            "  workers_num=$4, " +
+            "  rem_day_rf=(SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$5), " +
+            "  rem_time_proc=$6 " +
+            " WHERE plan_rf=(SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1)  " +
+            "   AND sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2) ",
+            [plan_name, sd_name, days_num, workers_num, rem_day_name, rem_time_proc])
+            .then (function () {
+                res.send('OK');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА UPDATE (save_sd_params): '+error);
+            });
+    }
+    else {
+//  Добавление
+        db.none(
+            "INSERT INTO  plan_sd (plan_rf, sd_rf, days_num, workers_num, date_begin, date_end, rem_day_rf, rem_time_proc ) " +
+            "VALUES (" +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2), " +
+            "  $3, $4, $5, $6, " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$7)," +
+            "  $8 " +
+            ")",
+            [plan_name, sd_name, days_num, workers_num, dtb, dte, rem_day_name, rem_time_proc])
+            .then (function (data) {
+                res.send('OK');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА INSERT (save_sd_params): '+error);
+            });
+    }
 });
 
 
