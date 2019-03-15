@@ -6,13 +6,17 @@
         <tr>
             <td><label>План-месяц:</label></td>
             <td><select width="100%" size="1" name='plan_name' id='plan_name' value="{{plan_name}}" onchange="change_plan_name()"></select>
+                <input id="plan_name2" type="text" name="plan_name2" readonly value="{{plan_name}}" hidden >
                 <input id="plan_rf" type="text" name="plan_rf" readonly value={{plan_rf}} hidden >
                 <input id="old_plan_rf" type="text" name="old_plan_rf" readonly value={{plan_rf}} hidden >
+
+                <input id="doc_list_form" type="text" name="doc_list_form" readonly value="plan_plan_d2_s" hidden >
             </td>
         </tr>
         <tr>
             <td><label>Подразделение:</label></td>
-            <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}"></select>
+            <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}" onchange="on_change_sd_name()"></select>
+                <input id="sd_name2" type="text" name="sd_name2" readonly value="{{sd_name}}" hidden >
                 <input id="sd_rf" type="text" name="sd_rf" readonly value={{sd_rf}} hidden >
                 <input id="old_sd_rf" type="text" name="old_sd_rf" readonly value={{sd_rf}} hidden >
             </td>
@@ -193,6 +197,8 @@
 
 <script>
     var plan_name = '{{plan_name}}';
+    var sd_name = '{{sd_name}}';
+    var item_name = '{{item_name}}';
     var dtc = new Date();
     var dtb = PlanFirstDate(plan_name);
     var i = 0;
@@ -203,8 +209,18 @@
 
     function change_plan_name() {
         plan_name = document.getElementById("plan_name").value;
+        document.getElementById("plan_name2").value = document.getElementById("plan_name").value;
 //        alert(plan_name);
         paint_num_days ();
+    }
+    function on_change_sd_name() {
+        sd_name = document.getElementById("sd_name").value;
+        document.getElementById("sd_name2").value = document.getElementById("sd_name").value;
+        get_sd_params();
+    }
+
+    function on_change_item_name() {
+        item_name = document.getElementById("item_name").value;
     }
 
     // Раскрасить календарь

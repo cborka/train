@@ -25,74 +25,29 @@ function str2num(str) {
 
 //
 // Показать список КАЛЕНДАРЕЙ по дням месяца
-// динамическое создание экранной формы
 //
-router.get('/get_table_form_kalendar', function(req, res, next) {
-    var ret = '';
-
-    ret +=
-      '<table class="form">'+
-        '<tr>' +
-          '<td><label>План-месяц:</label></td>'+
-          '<td> <select width="100%" size="1" name="plan_name" id="plan_name" value=" " onchange="show_plan()"></select></td>'+
-        '</tr>'+
-        '<tr>'+
-          '<td><label>Пролет:</label></td>'+
-          '<td><select width="100%" size="1" name="sd_name" id="sd_name" value=" " onchange="show_plan()"></select></td>'+
-        '</tr>'+
-    '</table>';
-
-    res.send(ret);
-});
-
-router.get('/get_days_form_kalendar', function(req, res, next) {
-    var ret = '';
-    var j = 0;
-
-    ret += '<a href="/plan2/plan_plan_dk_addnew" title="Добавить" > Добавить </a>';
-    ret +=
-        '<table class="list">' +
-        '<tr>' +
-          '<td class="list"><b>Предмет</b></td>'+
-          '<td class="list"><b>План</b></td>';
-
-    // Заголовок таблицы
-    for(var j = 1; j <=31; j++) {
-        ret += '<td class="list"><b>'+j+'</b></td>';
-    }
-    ret +='</tr>';
-
-    ret +='\{\{#each data\}\}';
-
-    ret += '<tr>'+
-      '<td class="list">\{\{item_name\}\}</td>'+
-      '<td class="list">\{\{num_plan\}\}</td>';
-
-    // Строки таблицы
-    for(var j = 1; j <=31; j++) {
-        ret += '<td class="list">\{\{np'+j+'\}\}</td>';
-    }
-
-    ret +=   '</tr>';
-
-    ret +=  '\{\{/each\}\}';
-
-    ret += '</table>';
-
-    ret += '<a href="/plan2/plan_plan_dk_addnew" title="Добавить" > Добавить </a>';
-
-    res.send(ret);
-});
-
-
-//
-// Показать список КАЛЕНДАРЕЙ по дням месяца
-//
-router.get('/plan_plan_dk_s', function(req, res, next) {
+router.all('/plan_plan_dk_s', function(req, res, next) {
     var spr_name = 'Календари';
-    var where_clause = '';
+    var plan_name = req.body.plan_name;
+    var sd_name = req.body.sd_name;
+
+    var and_where_clause = '';
     var num_days = '';
 
+    if (plan_name == undefined)  plan_name = '';
+    if (sd_name == undefined)  sd_name = '';
+
+
+//    if (plan_name == '') {
+//        var dtc = new Date();
+//        plan_name = dtc.getFullYear() + '-' + ("0" + (1 + dtc.getMonth())).slice(-2);
+//    }
+    if (plan_name != '') {
+        and_where_clause = ' AND plan.item_name = $1 ';
+    }
+    if (sd_name != '') {
+        and_where_clause = and_where_clause + ' AND sd.item_name = $2 ';
+    }
 
             num_days = '';
             for(var j = 1; j <=30; j++) {
@@ -108,7 +63,10 @@ router.get('/plan_plan_dk_s', function(req, res, next) {
                 "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
                 "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
                 "  WHERE  item.spr_rf = 532 " +
-                " ORDER BY plan.item_name, sd.item_name, item.item_name ")
+                and_where_clause +
+//              "    AND  plan.item_name = $1 " +
+//              "    AND  sd.item_name = $2 " +
+                " ORDER BY plan.item_name, sd.item_name, item.item_name ", [plan_name, sd_name])
                 .then(function (data) {
 
                     for (var i = 0; i < data.length; i++) {
@@ -150,6 +108,8 @@ router.get('/plan_plan_dk_s', function(req, res, next) {
                     }
 
                     data.spr_name = spr_name;
+                    data.plan_name = plan_name;
+                    data.sd_name = sd_name;
                     res.render('plan2/plan_plan_dk_s', {data: data}); // Показ формы
                 })
                 .catch(function (error) {
@@ -318,8 +278,8 @@ router.all('/plan_plan_d2_s', function(req, res, next) {
 //          res.send('xxx: '+sd_name +','+plan_name+data.sd_name);
 
             for (var i = 0; i < data.length; i++) {
-                data[i].num_plan = Math.round(data[i].num_plan * 1000) / 1000
-                data[i].num_day = Math.round(data[i].num_day * 1000) / 1000
+                data[i].num_plan = Math.round(data[i].num_plan * 1000) / 1000;
+                data[i].num_day = Math.round(data[i].num_day * 1000) / 1000;
 
                 data[i].np1 = num2str (data[i].np1);
                 data[i].np2 = num2str (data[i].np2);
@@ -358,6 +318,8 @@ router.all('/plan_plan_d2_s', function(req, res, next) {
             }
 
             data.spr_name = spr_name;
+            data.plan_name = plan_name;
+            data.sd_name = sd_name;
 
             res.render('plan2/plan_plan_d2_s', {data: data}); // Показ формы
         })
@@ -513,8 +475,8 @@ router.post('/plan_plan_d/update', function(req, res, next) {
   var plan_rf = req.body.plan_rf;
   var sd_rf = req.body.sd_rf;
   var item_rf = req.body.item_rf;
-  var plan_name = req.body.plan_name;
-  var sd_name = req.body.sd_name;
+  var plan_name = req.body.plan_name2;
+  var sd_name = req.body.sd_name2;
   var item_name = req.body.item_name;
   var num_plan = req.body.num_plan;
   var num_day = req.body.num_day;
@@ -523,6 +485,7 @@ router.post('/plan_plan_d/update', function(req, res, next) {
   var old_plan_rf = req.body.old_plan_rf;
   var old_sd_rf = req.body.old_sd_rf;
   var old_item_rf = req.body.old_item_rf;
+  var doc_list_form = req.body.doc_list_form;
   var spr_rf = 0;
   var where_spr_clause = 'spr_rf > 0';
 
@@ -573,11 +536,15 @@ router.post('/plan_plan_d/update', function(req, res, next) {
         req.body.np31
       ];
 
-      nps = '{'
+      nps = '{';
       for(var j = 0; j <=29; j++) {
         nps = nps + str2num(np[j]) +',';
       }
       nps = nps + str2num(np[30]) +'}';
+
+
+//      res.send('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name+'?'+doc_list_form);
+//      return;
 
 //      res.render('plan2/sklad_s', {data: data}); // Показ формы
 
@@ -595,10 +562,18 @@ router.post('/plan_plan_d/update', function(req, res, next) {
           "WHERE plan_rf=$6 AND sd_rf=$7 AND item_rf=$8",
           [plan_name, sd_name, item_name, num_plan, 0, old_plan_rf, old_sd_rf, old_item_rf, nps])
           .then (function () {
-            res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
+              if (doc_list_form != 'plan_plan_d2_s')
+                  res.redirect('/plan2/'+doc_list_form);
+              else
+                  res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
+//              res.redirect('/plan2/'+doc_list_form);
+//              res.redirect('/plan2/'+doc_list_form+'/'+spr_name+'/'+plan_name+'/'+sd_name);
+//              res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
+//              res.send('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
+//              http://127.0.0.1/plan2/plan_plan_dk_s/Календари/2018-07/Пролет%2033
           })
           .catch(function (error) {
-            res.send('ОШИБКА: UPDATE: '+error);
+            res.send('ОШИБКА: /plan_plan_d/update UPDATE: '+spr_name+'/'+plan_name+'/'+sd_name+'/'+error);
           });
       }
       else {
@@ -610,10 +585,13 @@ router.post('/plan_plan_d/update', function(req, res, next) {
           "  (SELECT item_id FROM item_list WHERE "+ where_spr_clause + " AND  item_name=$3), $4, $5, $6)",
           [plan_name, sd_name, item_name, num_plan, 0, nps])
           .then (function (data) {
-            res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
+              if (doc_list_form != 'plan_plan_d2_s')
+                  res.redirect('/plan2/'+doc_list_form)
+              else
+                 res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
           })
           .catch(function (error) {
-            res.send('ОШИБКА: INSERT ('+plan_name+','+ sd_name+','+item_name+','+ num_plan+','+ num_day+'): '+error);
+            res.send('ОШИБКА: /plan_plan_d/update INSERT ('+plan_name+','+ sd_name+','+item_name+','+ num_plan+','+ num_day+'): '+error);
           });
       }
 

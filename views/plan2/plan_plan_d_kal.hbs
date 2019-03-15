@@ -5,13 +5,19 @@
         <tr>
             <td><label>План-месяц:</label></td>
             <td><select width="100%" size="1" name='plan_name' id='plan_name' value="{{plan_name}}" onchange="on_change_plan_name()"></select>
+                <input id="plan_name2" type="text" name="plan_name2" readonly value="{{plan_name}}" hidden >
                 <input id="plan_rf" type="text" name="plan_rf" readonly value={{plan_rf}} hidden >
                 <input id="old_plan_rf" type="text" name="old_plan_rf" readonly value={{plan_rf}} hidden >
+<!--
+                <span id="doc_list_form" name="doc_list_form" hidden>plan_plan_dk_s</span>
+-->
+                <input id="doc_list_form" type="text" name="doc_list_form" readonly value="plan_plan_dk_s" hidden >
             </td>
         </tr>
         <tr>
             <td><label>Подразделение:</label></td>
             <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}" onchange="on_change_sd_name()"></select>
+                <input id="sd_name2" type="text" name="sd_name2" readonly value="{{sd_name}}" hidden >
                 <input id="sd_rf" type="text" name="sd_rf" readonly value={{sd_rf}} hidden >
                 <input id="old_sd_rf" type="text" name="old_sd_rf" readonly value={{sd_rf}} hidden >
             </td>
@@ -22,7 +28,8 @@
                 <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}" onchange="on_change_item_name()"></select>
                 <input id="item_rf" type="text" name="item_rf" readonly value={{item_rf}} hidden >
                 <input id="old_item_rf" type="text" name="old_item_rf" readonly value={{item_rf}} hidden >
-                <input id="spr_name" type="text" name="spr_name" readonly value={{spr_name}} hidden >
+
+                <input id="spr_name" type="text" name="spr_name" readonly value="{{spr_name}}" hidden >
             </td>
         </tr>
         <tr>
@@ -153,7 +160,7 @@
         </tr>
         <tr>
             <td><label>Часов раб.времени в день</label></td>
-            <td><input  class="day" id="work_day_length" type="number" name="work_day_length" title="Рабочих часов в сутки" step="0.001" value="22" onchange="on_change_sd_params()"></td>
+            <td><input  class="day" id="working_hours" type="number" name="working_hours" title="Рабочих часов в сутки" step="0.001" value="22" onchange="on_change_sd_params()"></td>
         </tr>
     </table>
     <span id="plan_sd_params"></span>
@@ -179,6 +186,7 @@
 
     function on_change_plan_name() {
         plan_name = document.getElementById("plan_name").value;
+        document.getElementById("plan_name2").value = document.getElementById("plan_name").value;
 //        alert(plan_name);
         paint_num_days ();
         get_sd_params();
@@ -186,6 +194,7 @@
 
     function on_change_sd_name() {
         sd_name = document.getElementById("sd_name").value;
+        document.getElementById("sd_name2").value = document.getElementById("sd_name").value;
         get_sd_params();
     }
 
@@ -229,8 +238,8 @@
     {
         if(!confirm("Заполнить календарь? Уверены?")) return;
 
-        var wdl = document.getElementById("work_day_length").value;
-        var rwdl = wdl * document.getElementById("rem_time_proc").value / 100;
+        var wh = document.getElementById("working_hours").value;
+        var rwh = wh * document.getElementById("rem_time_proc").value / 100;
 
         var rem_day_num = WeekDayNum(document.getElementById("rem_day_name").value);
 
@@ -243,9 +252,9 @@
             k = dtc.getDay(); // (dtb.getDate()+i).getDay;
 
             if (k == rem_day_num)
-              document.getElementById("np"+i).value = rwdl
+              document.getElementById("np"+i).value = rwh
             else
-                document.getElementById("np"+i).value = wdl;
+                document.getElementById("np"+i).value = wh;
 
             if (k > 1)
                 document.getElementById("np"+i).style.backgroundColor = 'white';
@@ -370,6 +379,7 @@
     {
         document.getElementById("plan_name").innerHTML = reply;
         document.getElementById("plan_name").value = plan_name;
+        document.getElementById("plan_name2").value = plan_name;
 //        document.getElementById("plan_name").value = '{{plan_name}}';
     };
     function get_plan_names()
@@ -382,6 +392,7 @@
     {
         document.getElementById("sd_name").innerHTML = reply;
         document.getElementById("sd_name").value = sd_name;
+        document.getElementById("sd_name2").value = sd_name;
     };
     function get_sd_names()
     {

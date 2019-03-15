@@ -6,35 +6,35 @@
 <form name="params" action="/plan2/plan_plan_d2_s" method="POST">
 <table class="form" >
     <tr>
-        <td><label>Вид плана:</label></td>
-        <td>
+        <td class="form"><label>Вид плана:</label></td>
+        <td class="form">
             <select width="100%" size="1" name='spr_name' id='spr_name' value=" " onchange="show_plan2()"></select>
         </td>
     </tr>
     <tr>
-        <td><label>План-месяц:</label></td>
-        <td>
+        <td class="form"><label>План-месяц:</label></td>
+        <td class="form">
             <select width="100%" size="1" name='plan_name' id='plan_name' value=" " onchange="show_plan2()"></select>
         </td>
     </tr>
     <tr>
-        <td><label>Пролет:</label></td>
-        <td>
+        <td class="form"><label>Пролет:</label></td>
+        <td class="form">
             <select width="100%" size="1" name='sd_name' id='sd_name' value=" " onchange="show_plan2()"></select>
         </td>
     </tr>
     <tr>
-        <td><label>Часть названия ЖБИ:</label></td>
-        <td><input id="fcb_name" type="text" name="fcb_name" value="" onchange="show_plan()" ></td>
+        <td class="form"><label>Часть названия ЖБИ:</label></td>
+        <td class="form"><input id="fcb_name" type="text" name="fcb_name" value="" onchange="show_plan()" ></td>
     </tr>
     <tr>
-        <td></td>
-        <td><button type="button" onclick="show_plan2()">Показать</button></td>
-        <td><button name="button_submit" type="submit" >Вход</button></td>
+        <td class="form"></td>
+        <td class="form"><button type="button" onclick="show_plan2()">Показать</button></td>
+<!--        <td class="form"><button name="button_submit" type="submit" >Вход</button></td> -->
     </tr>
     <tr>
-        <td></td>
-        <td>
+        <td class="form"></td>
+        <td class="form">
             <div id="hint" ></div>
             <div id="erro"></div>
 
@@ -49,46 +49,46 @@
     <table class="list">
         <tr>
             <!--
-         <td class="list"><b>План</b></td>
-         <td class="list"><b>Пролет</b></td>
+         <td class="list"><label>План</label></td>
+         <td class="list"><label>Пролет</label></td>
          -->
-            <td class="list"><b>Предмет</b></td>
-            <td class="list"><b>План</b></td>
+            <td class="list"><label>Предмет</label></td>
+            <td class="list"><label>План</label></td>
             <!--
-                        <td class="list"><b>День</b></td>
+                        <td class="list"><label>День</label></td>
             -->
-            <td class="list"><b>1</b></td>
-            <td class="list"><b>2</b></td>
-            <td class="list"><b>3</b></td>
-            <td class="list"><b>4</b></td>
-            <td class="list"><b>5</b></td>
-            <td class="list"><b>6</b></td>
-            <td class="list"><b>7</b></td>
-            <td class="list"><b>8</b></td>
-            <td class="list"><b>9</b></td>
-            <td class="list"><b>10</b></td>
-            <td class="list"><b>11</b></td>
-            <td class="list"><b>12</b></td>
-            <td class="list"><b>13</b></td>
-            <td class="list"><b>14</b></td>
-            <td class="list"><b>15</b></td>
-            <td class="list"><b>16</b></td>
-            <td class="list"><b>17</b></td>
-            <td class="list"><b>18</b></td>
-            <td class="list"><b>19</b></td>
-            <td class="list"><b>20</b></td>
-            <td class="list"><b>21</b></td>
-            <td class="list"><b>22</b></td>
-            <td class="list"><b>23</b></td>
-            <td class="list"><b>24</b></td>
-            <td class="list"><b>25</b></td>
-            <td class="list"><b>26</b></td>
-            <td class="list"><b>27</b></td>
-            <td class="list"><b>28</b></td>
-            <td class="list"><b>29</b></td>
-            <td class="list"><b>30</b></td>
-            <td class="list"><b>31</b></td>
-            <td class="list">Кнопки</td>
+            <td class="list"><label>1</label></td>
+            <td class="list"><label>2</label></td>
+            <td class="list"><label>3</label></td>
+            <td class="list"><label>4</label></td>
+            <td class="list"><label>5</label></td>
+            <td class="list"><label>6</label></td>
+            <td class="list"><label>7</label></td>
+            <td class="list"><label>8</label></td>
+            <td class="list"><label>9</label></td>
+            <td class="list"><label>10</label></td>
+            <td class="list"><label>11</label></td>
+            <td class="list"><label>12</label></td>
+            <td class="list"><label>13</label></td>
+            <td class="list"><label>14</label></td>
+            <td class="list"><label>15</label></td>
+            <td class="list"><label>16</label></td>
+            <td class="list"><label>17</label></td>
+            <td class="list"><label>18</label></td>
+            <td class="list"><label>19</label></td>
+            <td class="list"><label>20</label></td>
+            <td class="list"><label>21</label></td>
+            <td class="list"><label>22</label></td>
+            <td class="list"><label>23</label></td>
+            <td class="list"><label>24</label></td>
+            <td class="list"><label>25</label></td>
+            <td class="list"><label>26</label></td>
+            <td class="list"><label>27</label></td>
+            <td class="list"><label>28</label></td>
+            <td class="list"><label>29</label></td>
+            <td class="list"><label>30</label></td>
+            <td class="list"><label>31</label></td>
+            <td class="list"><label>Кнопки</label></td>
         </tr>
         {{#each data}}
             <tr>
@@ -184,7 +184,7 @@
         document.getElementById("spr_name").innerHTML = reply;
         document.getElementById("spr_name").value = '{{data.spr_name}}';
 
-    }
+    };
     function get_spr_names()
     {
         doQuery ("/common/get_plan_sprs", set_spr_names);
@@ -196,7 +196,7 @@
         document.getElementById("plan_name").innerHTML = reply;
         document.getElementById("plan_name").value = '{{data.plan_name}}';
 
-    }
+    };
     function get_plan_names()
     {
         doQuery ("/common/get_spr_names/Планы", set_plan_names);
@@ -207,7 +207,7 @@
     {
         document.getElementById("sd_name").innerHTML = reply;
         document.getElementById("sd_name").value = '{{data.sd_name}}';
-    }
+    };
     function get_sd_names()
     {
         doQuery ("/pro/get_prolet_names", set_sd_names);
