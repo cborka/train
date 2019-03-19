@@ -171,16 +171,16 @@ div.headerz {
 /* ССЫЛКИ */
 a {
   color: #00B7FF;
-  color: dimgrey;
   color: indigo;
+  color: dimgrey;
   text-decoration: none;
 }
 a:hover {
   text-decoration: underline;
 }
 ax:visited {
-  color: grey;
   color: midnightblue;
+  color: grey;
 }
 
 label {

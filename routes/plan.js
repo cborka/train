@@ -438,11 +438,17 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
     "   LEFT JOIN item_list fc ON fc.spr_rf = 9 AND pp.item_rf = fc.item_id) " +
     "   LEFT JOIN sd_fc sdf ON pp.item_rf = sdf.fc_rf) " +
     " WHERE pp.plan_rf = $1 AND pp.sd_rf = $2 " +
+    "   AND item_rf IN (13, 112, 279) " +
     " ORDER BY fc.item_name " +
     " LIMIT 1 ",
     [plan_rf, sd_rf])
     .then(function (data) {
       ret = '';
+
+      if (data.length == 0) {
+          res.send(":"+data.length+":Отсутствуют ЖБИ в плане производства для указанных пролёта и месяца.");
+          return;
+      }
 
       // Считаю кол-во четвергов (рем. дней) за период
 
@@ -543,7 +549,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
     })
     .catch(function (error) {
 //      res.send(error);
-      res.send(":"+error);
+      res.send("ОШИБКА (скорее всего не занесены ЖБИ на указанные месяц-пролет): <br>"+error);
     });
 });
 

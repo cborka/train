@@ -34,14 +34,15 @@ router.all('/plan_plan_dk_s', function(req, res, next) {
     var and_where_clause = '';
     var num_days = '';
 
-    if (plan_name == undefined)  plan_name = '';
+//    if (plan_name == undefined)  plan_name = '';
     if (sd_name == undefined)  sd_name = '';
 
 
-//    if (plan_name == '') {
-//        var dtc = new Date();
-//        plan_name = dtc.getFullYear() + '-' + ("0" + (1 + dtc.getMonth())).slice(-2);
-//    }
+    if (plan_name == undefined) {
+        var dtc = new Date();
+        plan_name = dtc.getFullYear() + '-' + ("0" + (1 + dtc.getMonth())).slice(-2);
+    }
+
     if (plan_name != '') {
         and_where_clause = ' AND plan.item_name = $1 ';
     }

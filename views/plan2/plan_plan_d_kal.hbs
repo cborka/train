@@ -131,7 +131,7 @@
         </tr>
     </table>
     <button type="button" onclick="fill_calendar()">Заполнить календарь</button>
-    <button type="submit" >Сохранить</button>
+    <button id="btn_submit" title="Если кнопка не активна, то нужно сохранить параметры" type="submit" ><b>Сохранить календарь</b></button>
 <!--    <button type="button" onclick="paint_num_days()">Дни недели</button> -->
     <br>
     <div id="hint" ></div>
@@ -164,7 +164,7 @@
         </tr>
     </table>
     <span id="plan_sd_params"></span>
-    <br><button type="button" id="btn_save_sd_params" disabled="true" onclick="save_sd_params()" >Сохранить</button>
+    <br><button type="button" id="btn_save_sd_params" disabled="true" onclick="save_sd_params()" >Сохранить параметры</button>
     <div id="save_sd_params_error" ></div>
 </div>
 
@@ -337,17 +337,20 @@
     //
     // При изменении параметров пролета
     //
-    function on_change_sd_params() {
-
+    function on_change_sd_params()
+    {
         document.getElementById("btn_save_sd_params").disabled = false;
+        document.getElementById("btn_submit").disabled = true;
     }
 
     //
     // При изменении параметров пролета
     //
     function save_sd_params_reply(reply) {
-        if (reply == 'OK')
+        if (reply == 'OK') {
             document.getElementById("btn_save_sd_params").disabled = true;
+            document.getElementById("btn_submit").disabled = false;
+        }
 
         document.getElementById("save_sd_params_error").innerHTML = reply;
     }
