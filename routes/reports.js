@@ -427,6 +427,53 @@ router.post('/get_sklad_arm', function(req, res, next) {
 });
 
 
+//
+// Остатки АРМАТУРЫ по дням начиная от сегодня (на сколько дней хватит металла)
+//
+router.post('/get_arm_ost_daily', function(req, res, next) {
+    var array_length = 0;
+
+    db.any(
+        "select arm_name, arm_num from rep_arm_ost_daily2()")
+    .then (function (data) {
+
+    var result = '';
+    result = result + 'Остатки АРМАТУРЫ по дням начиная от сегодня (на сколько дней хватит металла)<br>';
+    result = result + '<br><table class="report" align="left">';
+
+    array_length = data[0].arm_num.length;
+
+    // Первая строка - шапка
+    result = result + '<thead><td  class="report left">' + data[0].arm_name + '</td>';
+    for(var j = 0; j < array_length; j++)
+        result = result + '<td  class="report ">' + data[0].arm_num[j] + '</td>';
+    result = result + '</thead>';
+
+    // Строки данных
+    for (var i = 1; i < data.length; i++) {
+
+//        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+
+        result = result + '<tr><td  class="report left">' + data[i].arm_name + '</td>';
+
+        for(j = 0; j < array_length; j++) {
+            if (data[i].arm_num[j] == 0)  data[i].arm_num[j] = '';
+
+            result = result + '<td  class="report ">' + data[i].arm_num[j] + '</td>';
+        }
+
+        result = result + '</tr>';
+    }
+    result = result +'</table>';
+    res.send(result);
+})
+    .catch(function (error) {
+        res.send(error);
+    });
+
+//  res.send('Здесь формовка за ' + dt+10000);
+
+});
 
 
 

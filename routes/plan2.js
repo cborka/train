@@ -1751,6 +1751,30 @@ router.get('/plan_s_delete/:plan_rf', function(req, res, next) {
 
 //=================== ПОЛУЧЕНИЕ ПАРАМЕТРОВ РАСЧЕТА ПЛАНА ЖБИ =====================
 
+
+// Рабочие часы по дням месяца
+router.post('/get_working_hours', function(req, res, next) {
+    var plan_name = req.body.plan_name;
+    var sd_name = req.body.sd_name;
+    db.any(
+        "SELECT nums_plan " +
+        " FROM (plan_plan pp " +
+        "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+        " WHERE plan_rf=(SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1)  " +
+        "   AND sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2) "+
+        "   AND item.item_name = $3", [plan_name, sd_name, "Рабочие часы"])
+        .then(function (data) {
+
+            if (data.length > 0)
+                res.send(data[0].nums_plan+','+plan_name+','+sd_name);
+            else
+                res.send('0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0');
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА (get_working_hours): '+error);
+        });
+});
+
 // Параметры пролёта
 router.post('/get_plan_plan_d_sd_params', function(req, res, next) {
     var plan_name = req.body.plan_name;
@@ -1790,6 +1814,12 @@ router.post('/get_plan_plan_d_fc_params', function(req, res, next) {
         "   LEFT JOIN item_list frm ON ff.form_rf = frm.item_id) " +
         " WHERE ff.fc_rf = $2", [sd_rf, fc_rf])
         .then(function (data) {
+
+            data.form_fc_num = Math.round(data.form_fc_num * 1000) / 1000;
+            data.forming_time = Math.round(data.forming_time * 1000) / 1000;
+//            data.sd_form_num = Math.round(data.sd_form_num * 1000) / 1000;
+//            data.sd_form_num_max = Math.round(data.sd_form_num_max * 1000) / 1000;
+
             res.send(data.form_rf+'|'+data.form_name+'|'+data.form_fc_num+'|'+data.forming_time+'|'+data.sd_form_num+'|'+data.sd_form_num_max);
         })
         .catch(function (error) {
@@ -1797,7 +1827,8 @@ router.post('/get_plan_plan_d_fc_params', function(req, res, next) {
         });
 });
 
-// Параметры пролёта
+
+// Сохранение параметров пролёта
 router.post('/save_sd_params', function(req, res, next) {
     var sd_params_exists = req.body.sd_params_exists;
 

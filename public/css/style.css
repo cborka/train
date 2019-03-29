@@ -248,6 +248,10 @@ td.day, input.day {
 label {
     color: dimgrey ;
 }
+.comment {
+    color: darkgrey;
+    color: lightgray;
+}
 
 
 /* Таблицы-списки */
