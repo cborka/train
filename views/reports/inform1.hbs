@@ -298,7 +298,14 @@
     //
     function arm_ost_daily_on()
     {
-        get_arm_ost_daily();
+        if (document.getElementById("arm_ost_daily").innerHTML == '') {
+            get_arm_ost_daily();
+            document.getElementById("btnArmOstDaily").innerHTML = 'Очистить';
+        }
+        else {
+            document.getElementById("arm_ost_daily").innerHTML = '';
+            document.getElementById("btnArmOstDaily").innerHTML = 'Посмотреть';
+        }
     }
     var set_arm_ost_daily = function (reply)
     {

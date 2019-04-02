@@ -432,6 +432,7 @@ router.post('/get_sklad_arm', function(req, res, next) {
 //
 router.post('/get_arm_ost_daily', function(req, res, next) {
     var array_length = 0;
+    var an = 0;
 
     db.any(
         "select arm_name, arm_num from rep_arm_ost_daily2()")
@@ -457,9 +458,13 @@ router.post('/get_arm_ost_daily', function(req, res, next) {
         result = result + '<tr><td  class="report left">' + data[i].arm_name + '</td>';
 
         for(j = 0; j < array_length; j++) {
-            if (data[i].arm_num[j] == 0)  data[i].arm_num[j] = '';
+            an = +data[i].arm_num[j];
+            if (an == 0)  an= '';
+            if (an < 0) an = '<span class="silver">' + an + '</span>';
+            result = result + '<td  class="report ">' + an + '</td>';
 
-            result = result + '<td  class="report ">' + data[i].arm_num[j] + '</td>';
+//            if (data[i].arm_num[j] == 0)  data[i].arm_num[j] = '';
+//            result = result + '<td  class="report ">' + data[i].arm_num[j] + '</td>';
         }
 
         result = result + '</tr>';

@@ -131,7 +131,8 @@
         </tr>
     </table>
 
-    <button id="btn_calc_num_days" type="button" onclick="calc_num_days()">Рассчитать план по дням</button>
+    <button id="btn_calc_num_days" type="button" onclick="calc_num_days()">Рассчитать план по дням равномерно</button><br>
+    <button id="btn_calc_num_days" type="button" onclick="calc_num_days2()">Рассчитать план по дням по кол-ву форм и времени пропарки</button><br>
     <button type="button" onclick="paint_num_days()">Дни недели</button>
     <button id="btn_submit" title="" type="submit" ><b>Сохранить</b></button>
 
@@ -275,7 +276,6 @@
 
 
     // Расчитать кол-во ЖБИ по дням месяца
-//    function fill_calendar ()
     function calc_num_days ()
     {
 
@@ -311,6 +311,62 @@
 
 //        document.getElementById("np5").value = 12;
     }
+
+    // Расчитать кол-во ЖБИ по дням месяца
+    // в ссответствии с кол-вом форм и временем пропарки
+    /*
+       обнуляем дни
+
+       1. прибавляем к началу времени плана время пропарки, запоминаем датувремя
+       2. получаем дату
+       3. в полученной дате прибавляем кол-во = кол-во форм * кол-во изделий в одной форме
+       4. вычитаем данное кол-во из кол-ва на план, запоминаем сколько осталось сделать
+
+       если изделия или дни не закончились, то  идем к шагу 1
+
+
+     */
+    function calc_num_days2 ()
+    {
+
+        if(!confirm("Пересчитать кол-во по дням в ссответствии с кол-вом форм и временем пропарки? Уверены?")) return;
+
+        return;
+
+        var nps = document.getElementById("num_plan").value;
+        var npd = nps / 31;
+        var npds = npd;
+        var npr = Math.round(npds);
+
+        for (i=30; i>=1; i--){
+
+//            npd = Math.round(npd);
+//            document.getElementById("np"+i).value = npd; //Math.round(npd);
+//            npd = Math.round(npd);
+
+            document.getElementById("np"+i).value = npr;
+            nps = nps - npr;
+            npds = npds + npd - npr;
+            npr = Math.round(npds);
+
+//            npd = nps / i;
+//            npd = nps / (31-i);
+        }
+        document.getElementById("np31").value = nps; //Math.round(npd);
+
+        nps = 0;
+        for (i=1; i<=31; i++){
+            nps = nps + +document.getElementById("np"+i).value;
+        }
+
+        document.getElementById("hint").innerHTML = "Сумма по дням: " + nps;
+
+//        document.getElementById("np5").value = 12;
+    }
+
+
+
+
 
     //
     // При корректировке дней пересчитывать план на месяц.
@@ -512,8 +568,9 @@
             plan_name = toYYYYMM(dtc);
         }
         else {
-            document.getElementById("plan_name").disabled = true;
-            document.getElementById("sd_name").disabled = true;
+            // Запрет кооректировки, убрал, вдруг перекинуть надо в другой пролет
+//            document.getElementById("plan_name").disabled = true;
+//            document.getElementById("sd_name").disabled = true;
         }
 
 
