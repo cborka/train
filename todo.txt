@@ -291,12 +291,17 @@ cd c:\cborka\Train
 ...
 
 ============================================================================
+Начало нового сервера
 
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/vda1       30828452 1178496  28060916   5% /
+devtmpfs          496928       0    496928   0% /dev
+tmpfs             507644       0    507644   0% /dev/shm
+tmpfs             507644    6752    500892   2% /run
+tmpfs             507644       0    507644   0% /sys/fs/cgroup
+tmpfs             101532       0    101532   0% /run/user/0
 
-
-
-
-
+export NVM_DIR="$HOME/.nvm" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 
 
