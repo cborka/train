@@ -979,9 +979,7 @@ router.get('/plan_fact_delete/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req,
 // Показать список СКЛАД
 //
 router.get('/sklad_s', function(req, res, next) {
-
   res.redirect('/plan2/sklad_s/all');
-
 });
 
 router.get('/sklad_s/:spr_name', function(req, res, next) {
@@ -1775,7 +1773,7 @@ router.post('/get_working_hours', function(req, res, next) {
         });
 });
 
-// Параметры пролёта
+// Получение параметров ПЛАН-ПРОЛЕТ
 router.post('/get_plan_plan_d_sd_params', function(req, res, next) {
     var plan_name = req.body.plan_name;
     var sd_name = req.body.sd_name;
@@ -1802,28 +1800,45 @@ router.post('/get_plan_plan_d_sd_params', function(req, res, next) {
         });
 });
 
-// Параметры ЖБИ
-router.post('/get_plan_plan_d_fc_params', function(req, res, next) {
+// Получение параметров ФОРМА-ЖБИ
+router.post('/get_plan_plan_d_form_fc_params', function(req, res, next) {
     var fc_rf = req.body.fc_rf;
-    var sd_rf = req.body.sd_rf;
     db.one(
-        "SELECT ff.form_rf, frm.item_name AS form_name, ff.fc_num AS form_fc_num, ff.forming_time, sf.form_num AS sd_form_num," +
-        " sf.form_num_max AS sd_form_num_max " +
-        " FROM ((form_fc ff " +
-        "   LEFT JOIN sd_form sf ON ff.form_rf = sf.form_rf AND sf.sd_rf = $1) " +
+        "SELECT ff.form_rf, frm.item_name AS form_name, ff.fc_num AS form_fc_num, ff.forming_time " +
+        " FROM (form_fc ff " +
         "   LEFT JOIN item_list frm ON ff.form_rf = frm.item_id) " +
-        " WHERE ff.fc_rf = $2", [sd_rf, fc_rf])
+        " WHERE ff.fc_rf = $1", [fc_rf])
         .then(function (data) {
 
             data.form_fc_num = Math.round(data.form_fc_num * 1000) / 1000;
             data.forming_time = Math.round(data.forming_time * 1000) / 1000;
+
+            res.send(data.form_rf+'|'+data.form_name+'|'+data.form_fc_num+'|'+data.forming_time);
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА (get_plan_plan_d_form_fc_params): '+error);
+        });
+});
+
+// Получение параметров ПРОЛЕТ-ФОРМА
+router.post('/get_plan_plan_d_sd_form_params', function(req, res, next) {
+    var form_name = req.body.form_name;
+    var sd_rf = req.body.sd_rf;
+    db.one(
+        "SELECT form_num AS sd_form_num, form_num_max AS sd_form_num_max " +
+        " FROM sd_form  " +
+        " WHERE sd_rf = $2" +
+        "   AND form_rf = (SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name=$1)",
+        [form_name, sd_rf])
+        .then(function (data) {
+
 //            data.sd_form_num = Math.round(data.sd_form_num * 1000) / 1000;
 //            data.sd_form_num_max = Math.round(data.sd_form_num_max * 1000) / 1000;
 
-            res.send(data.form_rf+'|'+data.form_name+'|'+data.form_fc_num+'|'+data.forming_time+'|'+data.sd_form_num+'|'+data.sd_form_num_max);
+            res.send(data.sd_form_num+'|'+data.sd_form_num_max);
         })
         .catch(function (error) {
-            res.send('ОШИБКА (get_plan_plan_d_fc_params): '+error);
+            res.send('ОШИБКА (get_plan_plan_d_sd_form_params): '+error);
         });
 });
 
@@ -1881,5 +1896,50 @@ router.post('/save_sd_params', function(req, res, next) {
 });
 
 
+// Сохранение параметров ФОРМА-ЖБИ
+router.post('/save_form_fc_params', function(req, res, next) {
+    var form_fc_params_exists = req.body.form_fc_params_exists;
+
+    var form_name = req.body.form_name;
+    var fc_name = req.body.fc_name;
+    var fc_num = req.body.fc_num;
+    var forming_time = req.body.forming_time;
+
+    if (form_fc_params_exists == 'true') {
+//  Обновление
+        db.none(
+            "UPDATE form_fc " +
+            "SET form_rf=(SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$1), " +
+            "  fc_num=$2, " +
+            "  forming_time=$3 " +
+            " WHERE fc_rf=(SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$4)  ",
+            [form_name, fc_num, forming_time, fc_name])
+            .then (function () {
+                res.send('OK');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА UPDATE (save_form_fc_params): '+error);
+            });
+    }
+    else {
+//  Добавление
+        db.none(
+            "INSERT INTO  form_fc (plan_rf, sd_rf, days_num, workers_num, date_begin, date_end, rem_day_rf, rem_time_proc ) " +
+            "VALUES (" +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2), " +
+            "  $3, $4, $5, $6, " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$7)," +
+            "  $8 " +
+            ")",
+            [plan_name, sd_name, days_num, workers_num, dtb, dte, rem_day_name, rem_time_proc])
+            .then (function (data) {
+                res.send('OK');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА INSERT (save_sd_params): '+error);
+            });
+    }
+});
 
 module.exports = router;

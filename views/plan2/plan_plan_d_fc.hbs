@@ -178,25 +178,25 @@
         <tr>
             <td><label>Форма (оснастка):</label></td>
 <!--            <td><b><span id="xform_name">xxx</span></b></td> -->
-            <td><select width="100%" size="1" name='form_name' id='form_name' value="" onchange="on_change_sd_params()"></select></td>
+            <td><select width="100%" size="1" name='form_name' id='form_name' value="" onchange="on_change_form_fc_params()"></select></td>
         </tr>
         <tr>
             <td><label>Кол-во ЖБИ в 1 форме:</label></td>
-            <td><input  class="day" id="form_fc_num" type="number" name="form_fc_num" onchange="on_change_sd_params()"></td>
+            <td><input  class="day" id="form_fc_num" type="number" name="form_fc_num" onchange="on_change_form_fc_params()"></td>
         </tr>
         <tr>
             <td><label>Время формовки:</label></td>
-            <td><input  class="day" id="forming_time" type="number" name="forming_time" onchange="on_change_sd_params()"></td>
-            <td><button type="button" id="btn_save_form_params1" disabled="true" onclick="save_form_fc_params()" >Сохранить</button></td>
+            <td><input  class="day" id="forming_time" type="number" name="forming_time" onchange="on_change_form_fc_params()"></td>
+            <td><button type="button" id="btn_save_form_fc_params" disabled="true" onclick="save_form_fc_params()" >Сохранить</button></td>
         </tr>
         <tr> <td><hr></td><td><hr></td></tr>
         <tr>
             <td><label>Кол-во форм в пролёте</label></td>
-            <td><input  class="day" id="sd_form_num" type="number" name="sd_form_num" onchange="on_change_sd_params()"></td>
+            <td><input  class="day" id="sd_form_num" type="number" name="sd_form_num" onchange="on_change_sd_form_params()"></td>
         </tr>
         <tr>
             <td><label>Макс. кол-во форм в пролёте</label></td>
-            <td><input  class="day" id="sd_form_num_max" type="number" name="sd_form_num_max" onchange="on_change_sd_params()"></td>
+            <td><input  class="day" id="sd_form_num_max" type="number" name="sd_form_num_max" onchange="on_change_sd_form_params()"></td>
             <td><button type="button" id="btn_save_form_params1" disabled="true" onclick="save_sd_form_params()" >Сохранить</button></td>
         </tr>
         <tr> <td><hr></td><td><hr></td></tr>
@@ -221,6 +221,8 @@
     var hours = [1,2,3];
 
     var sd_params_exists = false;
+    var form_fc_params_exists = false;
+    var sd_form_params_exists = false;
 
     //
     // При изменении ключевых полей
@@ -365,9 +367,6 @@
     }
 
 
-
-
-
     //
     // При корректировке дней пересчитывать план на месяц.
     //
@@ -421,7 +420,7 @@
         document.getElementById("btn_save_sd_params").disabled = false;
         document.getElementById("btn_submit").disabled = true;
     }
-
+    // Сохранение параметров пролёта
     function save_sd_params_reply(reply) {
         if (reply == 'OK') {
             document.getElementById("btn_save_sd_params").disabled = true;
@@ -448,29 +447,81 @@
     }
 
 
+    //
+    // При изменении параметров ФОРМА-ЖБИ
+    //
+    function on_change_form_fc_params()
+    {
+        document.getElementById("btn_save_form_fc_params").disabled = false;
+        document.getElementById("btn_submit").disabled = true;
+    }
+    // Сохранение параметров ФОРМА-ЖБИ
+    function save_form_fc_params_reply(reply) {
+        if (reply == 'OK') {
+            document.getElementById("btn_save_form_fc_params").disabled = true;
+            document.getElementById("btn_submit").disabled = false;
+        }
+
+        document.getElementById("save_form_fc_params_error").innerHTML = reply;
+    }
+    function save_form_fc_params()
+    {
+        doQuery ("/plan2/save_form_fc_params", save_form_fc_params_reply,
+                "&form_fc_params_exists=" + encodeURIComponent(form_fc_params_exists)+
+                "&form_name=" + encodeURIComponent(document.getElementById("form_name").value)+
+                "&fc_name=" + encodeURIComponent(document.getElementById("fc_name").value) +
+                "&fc_num=" + encodeURIComponent(document.getElementById("fc_num").value) +
+                "&forming_time=" + encodeURIComponent(document.getElementById("forming_time").value)
+        );
+    }
+
 
     //
-    // Получение параметров ЖБИ
+    // Получение параметров ФОРМА-ЖБИ
     //
-    var set_fc_params = function (reply)
+    var set_form_fc_params = function (reply)
     {
-        // 467|ПДН-14|1.0|12.00|48|56
-        // (data.form_rf+'|'+data.form_name+'|'+data.form_fc_num+'|'+data.forming_time+'|'+data.sd_form_num+'|'+data.sd_form_num_max);
-//        document.getElementById("plan_fc_params").innerHTML = reply;
+        // 467|ПДН-14|1.0|12.00|
+        // (data.form_rf+'|'+data.form_name+'|'+data.form_fc_num+'|'+data.forming_time);
+
+        form_fc_params_exists = (reply.substr(0, 6) != 'ОШИБКА');
+
         var arr_fc = reply.split('|');
         document.getElementById("form_name").value = arr_fc[1];
         document.getElementById("form_fc_num").value = arr_fc[2];
         document.getElementById("forming_time").value = arr_fc[3];
-        document.getElementById("sd_form_num").value = arr_fc[4];
-        document.getElementById("sd_form_num_max").value = arr_fc[5];
     };
-    function get_fc_params()
+    function get_form_fc_params()
     {
-        doQuery ("/plan2/get_plan_plan_d_fc_params", set_fc_params,
-                "&fc_rf=" + encodeURIComponent(document.getElementById("item_rf").value)+
+        doQuery ("/plan2/get_plan_plan_d_form_fc_params", set_form_fc_params,
+                "&fc_rf=" + encodeURIComponent(document.getElementById("item_rf").value)
+        );
+    }
+
+    //
+    // Получение параметров ПРОЛЕТ-ФОРМА
+    //
+    var set_sd_form_params = function (reply)
+    {
+        // 48|56
+        // (data.form_rf+'|'+data.sd_form_num+'|'+data.sd_form_num_max);
+//        alert(reply);
+
+        sd_form_params_exists = (reply.substr(0, 6) != 'ОШИБКА')
+
+        var arr_fc = reply.split('|');
+        document.getElementById("sd_form_num").value = arr_fc[0];
+        document.getElementById("sd_form_num_max").value = arr_fc[1];
+    };
+    function get_sd_form_params()
+    {
+//        alert(document.getElementById("form_name").value + ','+document.getElementById("sd_rf").value);
+        doQuery ("/plan2/get_plan_plan_d_sd_form_params", set_sd_form_params,
+                "&form_name=" + encodeURIComponent(document.getElementById("form_name").value)+
                 "&sd_rf=" + encodeURIComponent(document.getElementById("sd_rf").value)
         );
     }
+
 
     //
     // Получение кол-ва рабочих часов по дням месяца
@@ -487,8 +538,6 @@
         for (i=1; i<=31; i++){
             document.getElementById("h"+i).innerHTML = hours[i-1];
         }
-
-
     };
     function get_hours()
     {
@@ -572,9 +621,6 @@
 //            document.getElementById("plan_name").disabled = true;
 //            document.getElementById("sd_name").disabled = true;
         }
-
-
-
     }
 
     get_form_names();
@@ -587,8 +633,9 @@
     get_item_names();
 
     setTimeout(get_sd_params, 1000);
-    setTimeout(get_fc_params, 1100);
-    setTimeout(get_hours, 1200);
+    setTimeout(get_form_fc_params, 1100);
+    setTimeout(get_sd_form_params, 1300);
+    setTimeout(get_hours, 1400);
 
 
 
