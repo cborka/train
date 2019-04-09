@@ -197,10 +197,11 @@
         <tr>
             <td><label>Макс. кол-во форм в пролёте</label></td>
             <td><input  class="day" id="sd_form_num_max" type="number" name="sd_form_num_max" onchange="on_change_sd_form_params()"></td>
-            <td><button type="button" id="btn_save_form_params1" disabled="true" onclick="save_sd_form_params()" >Сохранить</button></td>
+            <td><button type="button" id="btn_save_sd_form_params" disabled="true" onclick="save_sd_form_params()" >Сохранить</button></td>
         </tr>
         <tr> <td><hr></td><td><hr></td></tr>
     </table>
+    <div id="save_form_fc_params_error" ></div>
     <span id="plan_fc_params"></span>
 </div>
 
@@ -469,9 +470,38 @@
         doQuery ("/plan2/save_form_fc_params", save_form_fc_params_reply,
                 "&form_fc_params_exists=" + encodeURIComponent(form_fc_params_exists)+
                 "&form_name=" + encodeURIComponent(document.getElementById("form_name").value)+
-                "&fc_name=" + encodeURIComponent(document.getElementById("fc_name").value) +
-                "&fc_num=" + encodeURIComponent(document.getElementById("fc_num").value) +
+                "&fc_name=" + (document.getElementById("item_name").value) +
+                "&fc_num=" + (document.getElementById("form_fc_num").value) +
                 "&forming_time=" + encodeURIComponent(document.getElementById("forming_time").value)
+        );
+    }
+
+    //
+    // При изменении параметров ПРОЛЕТ-ФОРМА
+    //
+    function on_change_sd_form_params()
+    {
+        document.getElementById("btn_save_sd_form_params").disabled = false;
+        document.getElementById("btn_submit").disabled = true;
+    }
+    // Сохранение параметров ФОРМА-ЖБИ
+    function save_sd_form_params_reply(reply) {
+        alert('save_sd_form_params_reply');
+
+        if (reply == 'OK') {
+            document.getElementById("btn_save_sd_form_params").disabled = true;
+            document.getElementById("btn_submit").disabled = false;
+        }
+        document.getElementById("save_form_fc_params_error").innerHTML = reply;
+    }
+    function save_sd_form_params()
+    {
+        doQuery ("/plan2/save_sd_form_params", save_sd_form_params_reply,
+                "&sd_form_params_exists=" + encodeURIComponent(sd_form_params_exists)+
+                "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value) +
+                "&form_name=" + encodeURIComponent(document.getElementById("form_name").value)+
+                "&sd_form_num=" + (document.getElementById("sd_form_num").value) +
+                "&sd_form_num_max=" + (document.getElementById("sd_form_num_max").value)
         );
     }
 

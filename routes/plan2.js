@@ -1909,7 +1909,7 @@ router.post('/save_form_fc_params', function(req, res, next) {
 //  Обновление
         db.none(
             "UPDATE form_fc " +
-            "SET form_rf=(SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$1), " +
+            "SET form_rf=(SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name=$1), " +
             "  fc_num=$2, " +
             "  forming_time=$3 " +
             " WHERE fc_rf=(SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$4)  ",
@@ -1924,22 +1924,66 @@ router.post('/save_form_fc_params', function(req, res, next) {
     else {
 //  Добавление
         db.none(
-            "INSERT INTO  form_fc (plan_rf, sd_rf, days_num, workers_num, date_begin, date_end, rem_day_rf, rem_time_proc ) " +
+            "INSERT INTO  form_fc (form_rf, fc_rf, fc_num, forming_time) " +
             "VALUES (" +
-            "  (SELECT item_id FROM item_list WHERE spr_rf = 6 AND item_name=$1), " +
-            "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2), " +
-            "  $3, $4, $5, $6, " +
-            "  (SELECT item_id FROM item_list WHERE spr_rf = 561 AND item_name=$7)," +
-            "  $8 " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name=$1), " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$2), " +
+            "  $3, $4 " +
             ")",
-            [plan_name, sd_name, days_num, workers_num, dtb, dte, rem_day_name, rem_time_proc])
+            [form_name, fc_name, fc_num, forming_time])
             .then (function (data) {
                 res.send('OK');
             })
             .catch(function (error) {
-                res.send('ОШИБКА INSERT (save_sd_params): '+error);
+                res.send('ОШИБКА INSERT (save_form_fc_params): '+error);
             });
     }
 });
+
+// Сохранение параметров ПРОЛЕТ-ФОРМА
+router.post('/save_sd_form_params', function(req, res, next) {
+    var sd_form_params_exists = req.body.sd_form_params_exists;
+
+    var form_name = req.body.form_name;
+    var sd_name = req.body.sd_name;
+    var form_num = req.body.sd_form_num;
+    var form_num_max = req.body.sd_form_num_max;
+
+    if (sd_form_params_exists == 'true') {
+//  Обновление
+        db.none(
+            "UPDATE sd_form " +
+            "SET " +
+            "  form_num=$1, " +
+            "  form_num_max=$2 " +
+            " WHERE sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$3) " +
+            "   AND form_rf=(SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name=$4) ",
+            [form_num, form_num_max, sd_name, form_name])
+            .then (function () {
+                res.send('OK');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА UPDATE (save_sd_form_params): '+error);
+            });
+    }
+    else {
+//  Добавление
+        db.none(
+            "INSERT INTO  sd_form (sd_rf, form_rf, form_num, form_num_max) " +
+            "VALUES (" +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$1), " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name=$2), " +
+            "  $3, $4 " +
+            ")",
+            [sd_name, form_name, form_num, form_num_max])
+            .then (function (data) {
+                res.send('OK');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА INSERT (save_sd_form_params): '+error);
+            });
+    }
+});
+
 
 module.exports = router;
