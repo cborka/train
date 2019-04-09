@@ -155,6 +155,19 @@ function WeekDayNum(wd_name)
     else  return 1; // Воскресенье :)
 }
 
+// Здесь 0 - воскресенье
+function WeekDayNum2(wd_name)
+{
+  if (wd_name == 'Суббота' ) return 7
+  else if (wd_name == 'Воскресенье' ) return 0
+  else if (wd_name == 'Понедельник' ) return 1
+  else if (wd_name == 'Вторник' ) return 2
+  else if (wd_name == 'Среда' ) return 3
+  else if (wd_name == 'Четверг' ) return 4
+  else if (wd_name == 'Пятница' ) return 5
+  else  return 0; // Воскресенье :)
+}
+
 
 
 

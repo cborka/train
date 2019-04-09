@@ -1750,7 +1750,7 @@ router.get('/plan_s_delete/:plan_rf', function(req, res, next) {
 //=================== ПОЛУЧЕНИЕ ПАРАМЕТРОВ РАСЧЕТА ПЛАНА ЖБИ =====================
 
 
-// Рабочие часы по дням месяца
+// Получить рабочие часы по дням месяца
 router.post('/get_working_hours', function(req, res, next) {
     var plan_name = req.body.plan_name;
     var sd_name = req.body.sd_name;

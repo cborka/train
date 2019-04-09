@@ -189,6 +189,7 @@
             <td><input  class="day" id="forming_time" type="number" name="forming_time" onchange="on_change_form_fc_params()"></td>
             <td><button type="button" id="btn_save_form_fc_params" disabled="true" onclick="save_form_fc_params()" >Сохранить</button></td>
         </tr>
+
         <tr> <td><hr></td><td><hr></td></tr>
         <tr>
             <td><label>Кол-во форм в пролёте</label></td>
@@ -278,7 +279,7 @@
     }
 
 
-    // Расчитать кол-во ЖБИ по дням месяца
+    // Расчитать кол-во ЖБИ по дням месяца равномерно
     function calc_num_days ()
     {
 
@@ -332,7 +333,86 @@
     function calc_num_days2 ()
     {
 
-        if(!confirm("Пересчитать кол-во по дням в ссответствии с кол-вом форм и временем пропарки? Уверены?")) return;
+ //       if(!confirm("Пересчитать кол-во по дням в ссответствии с кол-вом форм и временем пропарки? Уверены?")) return;
+
+        dtb = PlanFirstDate(plan_name); // Начало месяца
+        var dte = PlanLastDate(plan_name);  // Конец месяца
+        dtc = dtb;                      // Текущее датавремя
+
+        month_days = PlanLastDay(plan_name);
+
+
+        var fc_num = document.getElementById("num_plan").value;
+        var form_num = document.getElementById("sd_form_num").value;
+        var form_fc_num = document.getElementById("form_fc_num").value;
+        var form_time = document.getElementById("forming_time").value*60*60;
+        var rem_time_proc = document.getElementById("rem_time_proc").value;
+        var rem_day = WeekDayNum2(document.getElementById("rem_day_name").value);
+
+//        var form_time = new Date(0);
+
+        dte.setDate(dte.getDate() + 1);
+
+        // тут сделать все проверки
+        if (form_num == '')
+            alert('Не указано количество форм');
+
+//        alert('fc_num='+fc_num+',form_num='+form_num+',form_fc_num='+form_fc_num+',form_time='+form_time);
+
+//        dtc.setSeconds(dtc.getSeconds() + 0.33);
+//        alert(dtc);
+
+ //       return;
+
+        for (i=1; i<=31; i++){
+            document.getElementById("np"+i).value = 0;
+        }
+
+
+        i = 1;
+        s = '';
+
+        fc_one = form_num * form_fc_num;
+
+        while (dtc < dte && i < 1000000)
+        {
+            k = dtc.getDate();
+
+            kk = 100;
+            if (rem_day == dtc.getDay()) kk = rem_time_proc;
+
+//            document.getElementById("h"+k).innerHTML = dtc.getDay();
+
+            // Если рем.день, то fc_one *= rem_time_proc
+
+//            alert(k+','+fc_one+','+fc_num);
+            j = Math.min( Math.round(fc_one*kk/100), fc_num);
+
+ //           alert(rem_day+','+kk+','+Math.round(fc_one*kk));
+
+            document.getElementById("np"+k).value = +document.getElementById("np"+k).value +j;
+
+            fc_num = Math.max(fc_num - Math.round(fc_one*kk/100), 0);
+
+            s = s + k + ',';
+            i++;
+
+            dtc.setSeconds(dtc.getSeconds() + form_time);
+        }
+
+
+// alert(fc_one+','+s+','+i+','+fc_num);
+
+
+        sum_days();
+
+
+
+
+
+
+
+
 
         return;
 
@@ -447,7 +527,6 @@
         );
     }
 
-
     //
     // При изменении параметров ФОРМА-ЖБИ
     //
@@ -484,7 +563,7 @@
         document.getElementById("btn_save_sd_form_params").disabled = false;
         document.getElementById("btn_submit").disabled = true;
     }
-    // Сохранение параметров ФОРМА-ЖБИ
+    // Сохранение параметров ПРОЛЕТ-ФОРМА
     function save_sd_form_params_reply(reply) {
         alert('save_sd_form_params_reply');
 
