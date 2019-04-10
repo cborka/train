@@ -244,6 +244,8 @@ router.all('/plan_plan_d2_s', function(req, res, next) {
     var spr_name = req.body.spr_name;
     var plan_name = req.body.plan_name;
     var sd_name = req.body.sd_name;
+    var fcb_num = req.body.fcb_num;
+
     var where_clause = '';
     var num_days = '';
     var month_days = 31;
@@ -321,6 +323,8 @@ router.all('/plan_plan_d2_s', function(req, res, next) {
             data.spr_name = spr_name;
             data.plan_name = plan_name;
             data.sd_name = sd_name;
+
+            data.fcb_num = fcb_num;
 
             res.render('plan2/plan_plan_d2_s', {data: data}); // Показ формы
         })
