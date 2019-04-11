@@ -475,7 +475,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
       data.days_num = Math.round(data.days_num) ;
       data.days_num_cal = 31;
 
-      data.workers_num = Math.round(data.workers_num*10)/10 ;0
+      data.workers_num = Math.round(data.workers_num*10)/10 ;
 
       data.trk0 = data.trk;
       data.trk = data.trk * data.trkk;

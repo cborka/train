@@ -1,6 +1,8 @@
 <H2>План производства ЖБИ</H2>
 План производства ЖБИ согласно календарю рабочего времени.<br>
 <br>
+<div class="wrapper_1" >
+<div class="left" id="form1" >
 <form action="/plan2/plan_plan_d/update" method="POST" >
     <table class="form">
         <tr>
@@ -140,6 +142,150 @@
     <div id="hint" ></div>
     <div id="erro" ></div>
 </form>
+</div>
+
+<div class="left" id="report33" >
+    <button type="button" id="btn_save_sd_form_params" onclick="clc_report33()" >Пересчитать</button><br>
+        <table class="list">
+            <tr>
+                <td class="list"><b>ЖБИ</b></td>
+                <td class="list" colspan="3"><b>{{data.fc_name}}</b></td>
+            </tr>
+            <tr>
+                <td class="list">Количество ЖБИ:<span class="comment1"> Плановое | Можем сделать | Максимальное</span></td>
+                <td class="list right indigo" title="Плановое кол-во ЖБИ">
+                    <span id="r_fc_num_plan"></span>
+                </td>
+                <td class="list right green" title="Можем сделать">
+                    <span id="r_month_power"></span>
+                </td>
+                <td class="list right maroon" title="Максимальное кол-во ЖБИ, которое сможем изготовить при максимальном кол-ве форм и дней">
+                    <span id="r_month_power_max"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="list">Кол-во дней: <span class="comment1">Расчётное (без учёта рем.дней) | Плановое | Календарных дней</span></td>
+                <td class="list right indigo" title="Кол-во рабочих дней необходимых для выполнения плана">
+                    <span id="r_days_num_clc"></span>
+                </td>
+                <td class="list right green" title="Плановое кол-во рабочих дней">
+                    <span id="r_days_num"></span>
+                </td>
+                <td class="list right maroon" title="Календарных дней">
+                    <span id="r_days_num_cal"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="list">Кол-во человек в смене: <span class="comment1">Расчётное | Фактическое | Максимальное <br> =
+                    Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)</span></td>
+                <td class="list right indigo" title="Кол-во рабочих в смене необходимых для выполнения плана">
+                    <span id="r_fact_workers_num"></span>(<span id="r_need_workers_num"></span>)
+                </td>
+                <td class="list right green" title="Фактическое кол-во рабочих в смене">
+                    <span id="r_workers_num"></span>
+                </td>
+                <td class="list right maroon" title="Максимальное кол-во рабочих в смене">
+                    <span id="r_max_workers_num"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="list">Количество форм: <span class="comment1">Требуемое | Фактическое | Максимальное </span></td>
+                <td class="list right indigo" title="Расчетное кол-во форм необходимых для выполения плана за плановое кол-во дней">
+                    <span id="r_need_form_num"></span>(<span id="r_need_form_num_clc"></span>)
+                </td>
+                <td class="list right green" title="Фактическое, имеющееся кол-во форм">
+                    <span id="r_form_num"></span>
+                </td>
+                <td class="list right maroon" title="Максимально возможное кол-во форм">
+                    <span id="r_form_num_max"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="list"><b></b></td>
+            </tr>
+            <tr>
+                <td class="list">Мощность за сутки: <span class="comment1">Текущая | Максимальная  <br> = Кол-во форм * КОб
+                    (сколько можем изготовить на данном оборудовании)</span></td>
+                <td class="list"> </td>
+                <td class="list right green" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
+                    <span id="r_day_power"></span>
+                </td>
+                <td class="list right maroon" title="Сколько ЖБИ сможем изготовить при максимально возможном кол-ве форм с заданным КОб">
+                    <span id="r_day_power_max"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="list">Мощность за месяц: <span class="comment1">Текущая | Максимальная (с учётом <b>{{data.days_rem}}</b> рем. дней {{data.dw}})</span></td>
+                <td class="list"> </td>
+                <td class="list right green" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
+                    <span id="r_month_power"></span>
+                </td>
+                <td class="list right maroon" title="Сколько ЖБИ сможем изготовить при максимально возможном кол-ве форм с заданным КОб">
+                    <span id="r_month_power_max"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="list"><b></b></td>
+            </tr>
+            <tr>
+                <td class="list">Эффективность <span class="comment1">= (Плановое кол-во / Максимальная мощность за месяц) * 100%</span></td>
+                <td class="list right red" title="Эффективность производства в процентах от максимально возможной эффективности">
+                    <span id="r_efficiency"></span>%
+                </td>
+                <td class="list"> </td>
+                <td class="list"> </td>
+            </tr>
+            <tr>
+                <td class="list"><b></b></td>
+            </tr>
+            <tr>
+                <td class="list">Трудоёмкость изготовления 1 шт.: <span class="comment1">Коэф-т | С учётом коэф-та |  Без учёта коэф-та</span></td>
+                <td class="list right" title="Коэф-т корректирующий нормативную трудоёмкость">
+                    <span id="r_trkk"></span>
+                </td>
+                <td class="list right green" title="Трудоёмкость изготоволения 1 ЖБИ с учётом коэф-та">
+                    <span id="r_trk"></span>
+                </td>
+                <td class="list right" title="Нормативная трудоёмкость">
+                    <span id="r_trk0"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="list">Итого трудоёмкость на план(человеко-часов) || Без учёта коэф-та</td>
+                <td class="list right indigo" title="Трудоёмкость изготовления планового кол-ва ЖБИ (человеко-часов)">
+                    <span id="r_sum_trk"></span>
+                </td>
+                <td class="list"> </td>
+                <td class="list right" title="НОРМАТИВНАЯ трудоёмкость изготовления планового кол-ва ЖБИ (человеко-часов)">
+                    <span id="r_sum_trk0"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="list">Количество ЖБИ в одной форме</td>
+                <td class="list right" title="Сколько ЖБИ можно формовать в одной форме">
+                    <span id="r_ffc_num"></span>
+                </td>
+                <td class="list"> </td>
+                <td class="list"> </td>
+            </tr>
+            <tr>
+                <td class="list">Коэф-т оборачиваемости</td>
+                <td class="list right" title="Сколько раз в сутки можем формовать ЖБИ в одной и той же форме">
+                    <span id="r_kob"></span>
+                </td>
+                <td class="list"> </td>
+                <td class="list"> </td>
+            </tr>
+            <tr>
+
+            </tr>
+        </table>
+
+
+</div>
+<br>
+
+</div>
 <br>
 <div class="left" id="sd_params" >
     <br><button type="button" onclick="get_sd_params()"> >> </button>
@@ -246,7 +392,108 @@
         item_name = document.getElementById("item_name").value;
     }
 
-    //
+
+
+
+    function clc_report33() {
+
+        var day_length = 1000*60*60*24; // Миллисекунд в сутках
+
+        var r_fc_num_plan = document.getElementById("num_plan").value;
+
+        var r_workers_num = Math.round(document.getElementById("workers_num").value*10)/10;
+        var r_fact_workers_num = 0;
+        var r_need_workers_num = 0;
+        var r_max_workers_num = 0;
+
+        var days_rem = calc_rem_days_num();
+        var r_days_num = Math.round(document.getElementById("days_num").value) ;
+
+        var r_days_num_cal = PlanLastDay(plan_name);
+
+
+        // получить параметры из таблицы Пролет-ЖБИ
+        var r_trk = document.getElementById("trk").value;
+        var r_trkk = document.getElementById("trkk").value;
+        var r_trk0 = r_trk;
+        r_trk = r_trk * r_trkk;
+        r_trk = Math.round(r_trk * 100) / 100 ;
+
+//        data.trk0 = data.trk;
+//        data.trk = data.trk * data.trkk;
+//        data.trk = Math.round(data.trk * 100) / 100 ;
+
+
+
+
+        document.getElementById("r_fc_num_plan").innerHTML = r_fc_num_plan;
+        document.getElementById("r_workers_num").innerHTML = r_workers_num;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+    // Возвращает кол-во рем.дней
+    function calc_rem_days_num () {
+
+
+        dtb = PlanFirstDate(plan_name); // Начало месяца
+        dte = PlanLastDate(plan_name);  // Конец месяца
+        dtc = dtb;                      // Текущее датавремя
+
+        var rem_day = WeekDayNum(document.getElementById("rem_day_name").value);
+
+        dtb = PlanFirstDate(plan_name);
+        dtc = dtb;
+
+        month_days = PlanLastDay(plan_name);
+        j = 0;
+        for (i=1; i<=month_days; i++){
+            dtc.setDate(dtc.getDate() + 1);
+            k = dtc.getDay(); // (dtb.getDate()+i).getDay;
+            if (k == rem_day) {
+//                document.getElementById("np" + i).style.backgroundColor = 'lavender'; //  Рем.день.
+                j++;
+            }
+        }
+
+        return j;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //
     // Раскрасить календарь
     //
     function paint_num_days ()

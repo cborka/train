@@ -50,7 +50,7 @@ DIV.footer {
   position: relative; /* Нужно для задания абсолютной позиции внутренних блоков */
 }
 
-DIV.header, DIV.footer, DIV.wrapper_1 {
+DIV.header, DIV.footer, DIV.wrapper_1, DIV.wrapper {
   margin-left: 3px;
   margin-right: 3px;
   width: 100%;
@@ -251,6 +251,10 @@ label {
 .comment {
     color: darkgrey;
     color: lightgray;
+}
+.comment1 {
+  color: lavender;
+  color: darkgrey;
 }
 
 
