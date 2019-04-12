@@ -145,7 +145,7 @@
 </div>
 
 <div class="left" id="report33" >
-    <button type="button" id="btn_save_sd_form_params" onclick="clc_report33()" >Пересчитать</button><br>
+    <button type="button" id="calc_report33" onclick="clc_report33()" >Пересчитать</button><br>
         <table class="list">
             <tr>
                 <td class="list"><b>ЖБИ</b></td>
@@ -154,7 +154,7 @@
             <tr>
                 <td class="list">Количество ЖБИ:<span class="comment1"> Плановое | Можем сделать | Максимальное</span></td>
                 <td class="list right indigo" title="Плановое кол-во ЖБИ">
-                    <span id="r_fc_num_plan"></span>
+                    <span id="r_fc_num"></span>
                 </td>
                 <td class="list right green" title="Можем сделать">
                     <span id="r_month_power"></span>
@@ -288,9 +288,12 @@
 </div>
 <br>
 <div class="left" id="sd_params" >
-    <br><button type="button" onclick="get_sd_params()"> >> </button>
-    Параметры пролёта: <br>
     <table class="form">
+        <tr>
+            <td>Параметры ПЛАН-ПРОЛЕТ:</td>
+            <td><button type="button" title="Перечитать праметры из Базы Данных" onclick="get_sd_params()"> << </button>
+                <button type="button" id="btn_save_sd_params" disabled="true" title="Сохранить праметры" onclick="save_sd_params()"> >> </button></td>
+        </tr>
         <tr>
             <td><label>Рабочих дней:</label></td>
             <td><input  class="day" id="days_num" type="number" name="days_num" onchange="on_change_sd_params()"></td>
@@ -311,16 +314,18 @@
             <td><label>Часов раб.времени в день</label></td>
             <td><input  class="day" id="working_hours" type="number" name="working_hours" title="Рабочих часов в сутки" step="0.001" value="22" onchange="on_change_sd_params()"></td>
         </tr>
+        <tr> <td><span id="save_sd_params_error" ></span></td><td>&nbsp;</td></tr>
     </table>
-    <span id="plan_sd_params"></span>
-    <br><button type="button" id="btn_save_sd_params" disabled="true" onclick="save_sd_params()" >Сохранить параметры</button>
-    <div id="save_sd_params_error" ></div>
+    <div id="xxsave_sd_params_error" ></div>
 </div>
 
-<div class="left" id="fc_params" >
-    <br><button type="button" onclick="get_params()"> >> </button>
-    Параметры ЖБИ: <br>
+<div class="left" id="form_fc_params" >
     <table class="form">
+        <tr>
+            <td>Параметры ФОРМА-ЖБИ:</td>
+            <td><button type="button" title="Перечитать праметры из Базы Данных" onclick="get_form_fc_params()"> << </button>
+            <button type="button" id="btn_save_form_fc_params" disabled="true" title="Сохранить праметры" onclick="save_form_fc_params()" > >> </button></td>
+        </tr>
         <tr>
             <td><label>Форма (оснастка):</label></td>
 <!--            <td><b><span id="xform_name">xxx</span></b></td> -->
@@ -333,10 +338,19 @@
         <tr>
             <td><label>Время формовки:</label></td>
             <td><input  class="day" id="forming_time" type="number" name="forming_time" onchange="on_change_form_fc_params()"></td>
-            <td><button type="button" id="btn_save_form_fc_params" disabled="true" onclick="save_form_fc_params()" >Сохранить</button></td>
         </tr>
 
-        <tr> <td><hr></td><td><hr></td></tr>
+        <tr> <td><span id="save_form_fc_params_error"></span></td><td>&nbsp; </td></tr>
+    </table>
+</div>
+
+<div class="left" id="sd_form_params" >
+            <table class="form">
+            <tr>
+            <td>Параметры ПРОЛЕТ-ФОРМА:</td>
+            <td><button type="button" title="Перечитать праметры из Базы Данных" onclick="get_sd_form_params()"> << </button>
+                <button type="button" id="btn_save_sd_form_params" disabled="true" title="Сохранить праметры" onclick="save_sd_form_params()" > >> </button></td>
+        </tr>
         <tr>
             <td><label>Кол-во форм в пролёте</label></td>
             <td><input  class="day" id="sd_form_num" type="number" name="sd_form_num" onchange="on_change_sd_form_params()"></td>
@@ -344,12 +358,38 @@
         <tr>
             <td><label>Макс. кол-во форм в пролёте</label></td>
             <td><input  class="day" id="sd_form_num_max" type="number" name="sd_form_num_max" onchange="on_change_sd_form_params()"></td>
-            <td><button type="button" id="btn_save_sd_form_params" disabled="true" onclick="save_sd_form_params()" >Сохранить</button></td>
         </tr>
-        <tr> <td><hr></td><td><hr></td></tr>
+        <tr> <td><span id="save_sd_form_params_error"></span></td><td>&nbsp; </td></tr>
     </table>
-    <div id="save_form_fc_params_error" ></div>
-    <span id="plan_fc_params"></span>
+</div>
+
+<div class="left" id="sd_fc_params" >
+    <table class="form">
+        <tr>
+            <td>Параметры ПРОЛЕТ-ЖБИ:</td>
+            <td><button type="button" title="Перечитать праметры из Базы Данных" onclick="get_sd_fc_params()"> << </button>
+                <button type="button" id="btn_save_sd_fc_params" disabled="true" title="Сохранить праметры" onclick="save_sd_fc_params()" > >> </button></td>
+        </tr>
+        <tr>
+            <td><label>Трудоёмкость изготовления ЖБИ: </label></td>
+            <td><input  class="day" id="trk" type="number" step="0.01" name="trk" onchange="on_change_sd_fc_params()"></td>
+        </tr>
+        <tr>
+            <td><label>Коэф-т к трудоёмкости изготовления ЖБИ: </label></td>
+            <td><input  class="day" id="trkk" type="number" step="0.01" name="trkk" onchange="on_change_sd_fc_params()"></td>
+        </tr>
+<!--
+        <tr>
+            <td><label>Время формовки ЖБИ: </label></td>
+            <td><input  class="day" id="forming_time" type="number" name="forming_time" onchange="on_change_sd_fc_params()"></td>
+        </tr>
+-->
+        <tr>
+            <td><label>Коэф-т оборачиваемости: </label></td>
+            <td><input  class="day" id="kob" type="number" name="kob" onchange="on_change_sd_fc_params()"></td>
+        </tr>
+        <tr> <td><span id="save_sd_fc_params_error"></span></td><td>&nbsp; </td></tr>
+    </table>
 </div>
 
 
@@ -399,18 +439,14 @@
 
         var day_length = 1000*60*60*24; // Миллисекунд в сутках
 
-        var r_fc_num_plan = document.getElementById("num_plan").value;
+        var r_fc_num = document.getElementById("num_plan").value;
 
         var r_workers_num = Math.round(document.getElementById("workers_num").value*10)/10;
-        var r_fact_workers_num = 0;
-        var r_need_workers_num = 0;
-        var r_max_workers_num = 0;
 
-        var days_rem = calc_rem_days_num();
+        var r_days_rem = calc_rem_days_num();
         var r_days_num = Math.round(document.getElementById("days_num").value) ;
 
         var r_days_num_cal = PlanLastDay(plan_name);
-
 
         // получить параметры из таблицы Пролет-ЖБИ
         var r_trk = document.getElementById("trk").value;
@@ -419,28 +455,107 @@
         r_trk = r_trk * r_trkk;
         r_trk = Math.round(r_trk * 100) / 100 ;
 
-//        data.trk0 = data.trk;
-//        data.trk = data.trk * data.trkk;
-//        data.trk = Math.round(data.trk * 100) / 100 ;
+        // Итого трудоёмкость на план
+        var r_sum_trk0 = r_trk0 * r_fc_num;
+        var r_sum_trk = r_trk * r_fc_num;
+
+        // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
+        //data.need_workers_num = Math.round(data.sum_trk / (22 * data.days_num)*10) / 10;
+        var r_need_workers_num = Math.round(r_sum_trk / (22 * r_days_num)*10) / 10;
+
+        // Округляю до двух цифр после запятой для вывода на экран
+        r_sum_trk0 = Math.round(r_sum_trk0 * 100) / 100 ;
+        r_sum_trk = Math.round(r_sum_trk * 100) / 100 ;
+
+        var r_max_workers_num = 17;
+        // Округляю и проверяю на минимальное и максимальное кол-во рабочих
+        var r_fact_workers_num  = Math.round(r_need_workers_num);
+        if (r_need_workers_num < 3)  r_fact_workers_num = 3;
+        if (r_need_workers_num > r_max_workers_num) r_fact_workers_num = r_max_workers_num;
+
+        var r_form_num = document.getElementById("sd_form_num").value;
+        var r_form_num_max = document.getElementById("sd_form_num_max").value;
+        var r_ffc_num = document.getElementById("form_fc_num").value;
+        var r_kob = document.getElementById("kob").value;
+
+        // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
+        var r_day_power = r_form_num * r_ffc_num * r_kob;
+        var r_day_power_max = r_form_num_max * r_ffc_num * r_kob;
+
+        var r_rem_time_procent = document.getElementById("rem_time_proc").value / 100.00;
+        
+        // мощность за месяц с учётом рем.дней,
+        // рем.день - один раз в неделю, в дальнейшем надо будет поставить конкретно ЧЕТВЕРГ и считать кол-во четвергов
+//      data.days_rem = Math.floor(data.days_num/7); // Посчитали выше кол-во четвергов
+        var r_month_power =  r_day_power * (r_days_num - r_days_rem) +  (r_days_rem * r_day_power*r_rem_time_procent);
+        // Максимальная мощность, берём КАЛЕНДАРНЫЕ ДНИ
+        var r_days_rem_cal = r_days_rem; // Неважно, берём рабочие дни или календарные, кол-во четвергов от этого не меняется
+//      data.days_rem_cal = Math.floor(data.days_num_cal/7);
+        var r_month_power_max =  r_day_power_max * (r_days_num_cal - r_days_rem_cal) +  (r_days_rem_cal * r_day_power_max*r_rem_time_procent);
+
+        // Расчётное кол-во дней без учёта рем дней
+        var r_days_num_clc = r_fc_num / (r_form_num * r_ffc_num * r_kob);
+        r_days_num_clc = Math.round(r_days_num_clc*10)/10 ;
+
+        // Эффективность работы пролёта
+        var r_efficiency =  Math.round((r_fc_num / r_month_power_max) * 10000) / 100;
+
+        // Округляю до двух цифр после запятой для вывода на экран
+        r_day_power = Math.round(r_day_power * 100) / 100 ;
+        r_day_power_max = Math.round(r_day_power_max * 100) / 100 ;
+        r_month_power = Math.round(r_month_power * 100) / 100 ;
+        r_month_power_max = Math.round(r_month_power_max * 100) / 100 ;
+
+        // Требуется форм на план с учётом рем.дней
+        var r_need_form_num_clc = r_fc_num / (r_kob * ((r_days_num - r_rem_time_procent*r_days_rem))) ;
+        // Округляю в верхнюю сторону
+        var r_need_form_num = Math.ceil(r_need_form_num_clc) ;
+
+        // Форматирую для вывода, оставляю две цифры после запятой
+        r_need_form_num_clc = Math.round(r_need_form_num_clc*10) /10 ;
+        r_fc_num = Math.round(r_fc_num * 1000) / 1000 ;
+
+        // Если не можем сделать нужное по плану кол-во ЖБИ, то выводим красным цветом (пока ставлю !!!)
+        if (r_fc_num > r_month_power) r_fc_num = '(!!!)' + r_fc_num;
 
 
+        document.getElementById("r_fc_num").innerHTML = r_fc_num;
+        document.getElementById("r_month_power").innerHTML = r_month_power;
+        document.getElementById("r_month_power_max").innerHTML = r_month_power_max;
 
+        document.getElementById("r_days_num_clc").innerHTML = r_days_num_clc;
+        document.getElementById("r_days_num").innerHTML = r_days_num;
+        document.getElementById("r_days_num_cal").innerHTML = r_days_num_cal;
 
-        document.getElementById("r_fc_num_plan").innerHTML = r_fc_num_plan;
+        document.getElementById("r_fact_workers_num").innerHTML = r_fact_workers_num;
         document.getElementById("r_workers_num").innerHTML = r_workers_num;
+        document.getElementById("r_max_workers_num").innerHTML = r_max_workers_num;
 
 
 
+        document.getElementById("r_need_form_num").innerHTML = r_need_form_num;
+        document.getElementById("r_need_form_num_clc").innerHTML = r_need_form_num_clc;
+        document.getElementById("r_form_num").innerHTML = r_form_num;
+        document.getElementById("r_form_num_max").innerHTML = r_form_num_max;
 
+        document.getElementById("r_day_power").innerHTML = r_day_power;
+        document.getElementById("r_day_power_max").innerHTML = r_day_power_max;
 
+        document.getElementById("r_month_power").innerHTML = r_month_power;
+        document.getElementById("r_month_power_max").innerHTML = r_month_power_max;
+//            <td class="list">Мощность за месяц: <span class="comment1">Текущая | Максимальная (с учётом <b>{{data.days_rem}}</b> рем. дней {{data.dw}})</span></td>
 
+        document.getElementById("r_efficiency").innerHTML = r_efficiency;
 
+        document.getElementById("r_trkk").innerHTML = r_trkk;
+        document.getElementById("r_trk").innerHTML = r_trk;
+        document.getElementById("r_trk0").innerHTML = r_trk0;
 
+        document.getElementById("r_sum_trk").innerHTML = r_sum_trk;
+        document.getElementById("r_sum_trk0").innerHTML = r_sum_trk0;
 
-
-
-
-
+        document.getElementById("r_ffc_num").innerHTML = r_ffc_num;
+        document.getElementById("r_kob").innerHTML = r_kob;
 
 
 
@@ -453,9 +568,8 @@
 
 
     // Возвращает кол-во рем.дней
-    function calc_rem_days_num () {
-
-
+    function calc_rem_days_num ()
+    {
         dtb = PlanFirstDate(plan_name); // Начало месяца
         dte = PlanLastDate(plan_name);  // Конец месяца
         dtc = dtb;                      // Текущее датавремя
@@ -475,25 +589,13 @@
                 j++;
             }
         }
-
         return j;
     }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-        //
+    //
     // Раскрасить календарь
     //
     function paint_num_days ()
@@ -716,7 +818,7 @@
     }
 
     //
-    // Получение параметров пролёта
+    // Получение параметров пролёта ПЛАН-ПРОЛЕТ
     //
     var set_sd_params = function (reply)
     {
@@ -731,6 +833,9 @@
         document.getElementById("rem_time_proc").value = arr_sd[5];
         document.getElementById("plan_rf").innerHTML = arr_sd[6];
         document.getElementById("sd_rf").innerHTML = arr_sd[7];
+
+        get_form_fc_params(); // Следующие параметры
+
     };
     function get_sd_params()
     {
@@ -741,7 +846,7 @@
     }
 
     //
-    // При изменении параметров пролета
+    // При изменении параметров ПЛАН-ПРОЛЕТ
     //
     function on_change_sd_params()
     {
@@ -754,8 +859,8 @@
             document.getElementById("btn_save_sd_params").disabled = true;
             document.getElementById("btn_submit").disabled = false;
         }
-
-        document.getElementById("save_sd_params_error").innerHTML = reply;
+        else
+            document.getElementById("save_sd_params_error").innerHTML = reply;
     }
     function save_sd_params()
     {
@@ -774,6 +879,65 @@
         );
     }
 
+
+    //
+    // Получение параметров ПРОЛЕТ-ЖБИ
+    //
+    var set_sd_fc_params = function (reply)
+    {
+//        alert(reply);
+        sd_fc_params_exists = (reply.substr(0, 6) != 'ОШИБКА');
+
+        // trk, forming_time, kob, trkk
+        var arr_sd = reply.split('|');
+
+        document.getElementById("trk").value = arr_sd[0];
+//        document.getElementById("forming_time").value = arr_sd[1];
+        document.getElementById("kob").value = arr_sd[2];
+        document.getElementById("trkk").value = arr_sd[3];
+    };
+    function get_sd_fc_params()
+    {
+//        alert('get_sd_fc_params');
+        doQuery ("/plan2/get_plan_plan_d_sd_fc_params", set_sd_fc_params,
+                "&fc_name=" + encodeURIComponent(document.getElementById("item_name").value)+
+                "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value)
+        );
+    }
+
+    //
+    // При изменении параметров ПРОЛЕТ-ЖБИ
+    //
+    function on_change_sd_fc_params()
+    {
+        document.getElementById("btn_save_sd_fc_params").disabled = false;
+//        document.getElementById("btn_submit").disabled = true;
+    }
+    // Сохранение параметров
+    function save_sd_fc_params_reply(reply) {
+        if (reply == 'OK') {
+            document.getElementById("btn_save_sd_fc_params").disabled = true;
+//            document.getElementById("btn_submit").disabled = false;
+        }
+        else
+            document.getElementById("save_sd_fc_params_error").innerHTML = reply;
+    }
+    function save_sd_fc_params()
+    {
+        doQuery ("/plan2/save_sd_fc_params", save_sd_fc_params_reply,
+                "&sd_fc_params_exists=" + encodeURIComponent(sd_fc_params_exists)+
+                "&fc_name=" + encodeURIComponent(document.getElementById("item_name").value)+
+                "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value) +
+                "&trk=" + encodeURIComponent(document.getElementById("trk").value) +
+                "&trkk=" + encodeURIComponent(document.getElementById("trkk").value) +
+                "&forming_time=" + encodeURIComponent(document.getElementById("forming_time").value) +
+                "&kob=" + encodeURIComponent(document.getElementById("kob").value)
+        );
+    }
+
+
+
+
     //
     // При изменении параметров ФОРМА-ЖБИ
     //
@@ -788,8 +952,8 @@
             document.getElementById("btn_save_form_fc_params").disabled = true;
             document.getElementById("btn_submit").disabled = false;
         }
-
-        document.getElementById("save_form_fc_params_error").innerHTML = reply;
+        else
+            document.getElementById("save_form_fc_params_error").innerHTML = reply;
     }
     function save_form_fc_params()
     {
@@ -811,14 +975,14 @@
         document.getElementById("btn_submit").disabled = true;
     }
     // Сохранение параметров ПРОЛЕТ-ФОРМА
-    function save_sd_form_params_reply(reply) {
-        alert('save_sd_form_params_reply');
-
+    function save_sd_form_params_reply(reply)
+    {
         if (reply == 'OK') {
             document.getElementById("btn_save_sd_form_params").disabled = true;
             document.getElementById("btn_submit").disabled = false;
         }
-        document.getElementById("save_form_fc_params_error").innerHTML = reply;
+        else
+            document.getElementById("save_sd_form_params_error").innerHTML = reply;
     }
     function save_sd_form_params()
     {
@@ -846,6 +1010,8 @@
         document.getElementById("form_name").value = arr_fc[1];
         document.getElementById("form_fc_num").value = arr_fc[2];
         document.getElementById("forming_time").value = arr_fc[3];
+
+        get_sd_form_params(); // Следующие параметры
     };
     function get_form_fc_params()
     {
@@ -861,13 +1027,14 @@
     {
         // 48|56
         // (data.form_rf+'|'+data.sd_form_num+'|'+data.sd_form_num_max);
-//        alert(reply);
 
-        sd_form_params_exists = (reply.substr(0, 6) != 'ОШИБКА')
+        sd_form_params_exists = (reply.substr(0, 6) != 'ОШИБКА');
 
         var arr_fc = reply.split('|');
         document.getElementById("sd_form_num").value = arr_fc[0];
         document.getElementById("sd_form_num_max").value = arr_fc[1];
+
+        get_sd_fc_params(); // Следующие параметры
     };
     function get_sd_form_params()
     {
@@ -884,12 +1051,6 @@
     //
     var set_hours = function (reply)
     {
-        // 467|ПДН-14|1.0|12.00|48|56
-        // (data.form_rf+'|'+data.form_name+'|'+data.form_fc_num+'|'+data.forming_time+'|'+data.sd_form_num+'|'+data.sd_form_num_max);
-//        document.getElementById("plan_fc_params").innerHTML = reply;
-
-        // alert(reply);
-
         hours = reply.split(',');
         for (i=1; i<=31; i++){
             document.getElementById("h"+i).innerHTML = hours[i-1];
@@ -988,10 +1149,12 @@
     get_sd_names();
     get_item_names();
 
-    setTimeout(get_sd_params, 1000);
-    setTimeout(get_form_fc_params, 1200);
-    setTimeout(get_sd_form_params, 1500); // Не успевает, может не успеть, сделать кнопочки ручного обновления каждого параметра
-    setTimeout(get_hours, 1800);
+    setTimeout(get_sd_params, 1000); // Дальше сделал каскадный вызов, каждый вызывает следующего после окончания работы
+//    setTimeout(get_form_fc_params, 1200);
+//    setTimeout(get_sd_form_params, 1500); // Не успевает, может не успеть, сделать кнопочки ручного обновления каждого параметра
+//    setTimeout(get_sd_fc_params, 1800);
+
+//    setTimeout(get_hours, 200); // Может вообще без календаря обойдемся
 
 
 

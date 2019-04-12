@@ -1846,6 +1846,80 @@ router.post('/get_plan_plan_d_sd_form_params', function(req, res, next) {
         });
 });
 
+// Получение параметров ПРОЛЕТ-ЖБИ ================================================================
+router.post('/get_plan_plan_d_sd_fc_params', function(req, res, next) {
+    var fc_name = req.body.fc_name;
+    var sd_name = req.body.sd_name;
+    db.one(
+        "SELECT trk, forming_time, kob, trkk " +
+        " FROM sd_fc  " +
+        " WHERE sd_rf = (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2)" +
+        "   AND fc_rf = (SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$1)",
+        [fc_name, sd_name])
+        .then(function (data) {
+            res.send(data.trk+'|'+data.forming_time+'|'+data.kob+'|'+data.trkk);
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА (get_plan_plan_d_sd_fc_params): '+error);
+        });
+});
+
+// Сохранение параметров ПРОЛЕТ-ЖБИ
+router.post('/save_sd_fc_params', function(req, res, next) {
+    var sd_fc_params_exists = req.body.sd_fc_params_exists;
+
+    var fc_name = req.body.fc_name;
+    var sd_name = req.body.sd_name;
+    var forming_time = req.body.forming_time;
+    var trk = req.body.trk;
+    var trkk = req.body.trkk;
+    var kob = req.body.kob;
+
+    if (sd_fc_params_exists == 'true') {
+//  Обновление
+        db.none(
+            "UPDATE sd_fc " +
+            "SET " +
+            "  trk=$1, " +
+            "  forming_time=$2, " +
+            "  trkk=$3, " +
+            "  kob=$4 " +
+            " WHERE sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$5) " +
+            "   AND fc_rf=(SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$6) ",
+            [trk, forming_time, kob, trkk, sd_name, fc_name])
+            .then (function () {
+                res.send('OK');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА UPDATE (save_sd_fc_params): '+error);
+            });
+    }
+    else {
+//  Добавление
+        db.none(
+            "INSERT INTO  sd_fc (sd_rf, fc_rf, trk, forming_time, kob, trkk) " +
+            "VALUES (" +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$1), " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$2), " +
+            "  $3, $4, $5, $6 " +
+            ")",
+            [sd_name, fc_name, trk, forming_time, kob, trkk])
+            .then (function (data) {
+                res.send('OK');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА INSERT (save_sd_fc_params): '+error);
+            });
+    }
+});
+
+
+
+
+
+
+
+
 
 // Сохранение параметров пролёта
 router.post('/save_sd_params', function(req, res, next) {
