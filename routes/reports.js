@@ -479,6 +479,60 @@ router.post('/get_arm_ost_daily', function(req, res, next) {
 //  res.send('Здесь формовка за ' + dt+10000);
 
 });
+//
+// Остатки БЕТОНА по дням начиная от сегодня (на сколько дней хватит металла)
+//
+router.post('/get_bet_ost_daily', function(req, res, next) {
+    var array_length = 0;
+    var an = 0;
+
+    db.any(
+        "select bet_name, bet_num from rep_bet_ost_daily2()")
+        .then (function (data) {
+
+            var result = '';
+            result = result + 'Остатки БЕТОНА по дням начиная от сегодня (на сколько дней хватит бетона)<br>';
+            result = result + '<br><table class="report" align="left">';
+
+            array_length = data[0].bet_num.length;
+
+            // Первая строка - шапка
+            result = result + '<thead><td  class="report left">' + data[0].bet_name + '</td>';
+            for(var j = 0; j < array_length; j++)
+                result = result + '<td  class="report ">' + data[0].bet_num[j] + '</td>';
+            result = result + '</thead>';
+
+            // Строки данных
+            for (var i = 1; i < data.length; i++) {
+
+//        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+
+                result = result + '<tr><td  class="report left">' + data[i].bet_name + '</td>';
+
+                for(j = 0; j < array_length; j++) {
+                    an = +data[i].bet_num[j];
+                    if (an == 0)  an= '';
+                    if (an < 0) an = '<span class="silver">' + an + '</span>';
+                    result = result + '<td  class="report ">' + an + '</td>';
+
+//            if (data[i].bet_num[j] == 0)  data[i].bet_num[j] = '';
+//            result = result + '<td  class="report ">' + data[i].bet_num[j] + '</td>';
+                }
+
+                result = result + '</tr>';
+            }
+            result = result +'</table>';
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+
+//  res.send('Здесь формовка за ' + dt+10000);
+
+});
+
+
 
 
 

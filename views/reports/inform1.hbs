@@ -82,6 +82,14 @@
     <br>
     <div id="arm_ost_daily" align="left" style='float: left; overflow: auto;'></div>
 
+    </td></tr><tr class="reports"><td>
+
+    <div style='overflow: auto;'>
+        <h2>На сколько дней хватит бетона</h2>
+        <button id="btnBetOstDaily" type="button"  onclick="bet_ost_daily_on()">Посмотреть</button>
+    </div>
+    <br>
+    <div id="bet_ost_daily" align="left" style='float: left; overflow: auto;'></div>
 
 </td></tr>
 </table>
@@ -319,7 +327,36 @@
                 '&dtb=' + encodeURIComponent(PlanName)
         );
     }
+    //
+    // Остатки бетона по дням начиная от сегодня (на сколько дней хватит металла)
+    //
+    function bet_ost_daily_on()
+    {
+        if (document.getElementById("bet_ost_daily").innerHTML == '') {
+            get_bet_ost_daily();
+            document.getElementById("btnBetOstDaily").innerHTML = 'Очистить';
+        }
+        else {
+            document.getElementById("bet_ost_daily").innerHTML = '';
+            document.getElementById("btnBetOstDaily").innerHTML = 'Посмотреть';
+        }
+    }
+    var set_bet_ost_daily = function (reply)
+    {
+        document.getElementById("bet_ost_daily").innerHTML = reply;
+    }
+    function get_bet_ost_daily()
+    {
+//        document.getElementById("formovka").innerHTML = '';
 
+        doQuery ("/reports/get_bet_ost_daily", set_bet_ost_daily,
+                '&dtb=' + encodeURIComponent(PlanName)
+        );
+    }
+
+    
+    
+    
 
     // Изготовить список Планов для выбора
     var set_plan_names = function (reply)
