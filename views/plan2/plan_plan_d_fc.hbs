@@ -141,12 +141,14 @@
     <br>
     <div id="hint" ></div>
     <div id="erro" ></div>
+    <br>
 </form>
 </div>
 
-<div class="left" id="report33" >
-    <button type="button" id="calc_report33" onclick="clc_report33()" >Пересчитать</button><br>
-        <table class="list">
+<div class="left" id="report33" > Отчёт
+    <button type="button" id="btn_calc_report33" onclick="clc_report33(); document.getElementById('tbl33').style.display = 'block'" >Пересчитать</button>
+    <button type="button" id="btn_calc_report33" onclick="document.getElementById('tbl33').style.display = 'none';" >Скрыть</button><br>
+    <table class="list" id="tbl33">
             <tr>
                 <td class="list"><b>ЖБИ</b></td>
                 <td class="list" colspan="3"><b>{{data.fc_name}}</b></td>
@@ -215,13 +217,13 @@
                 </td>
             </tr>
             <tr>
-                <td class="list">Мощность за месяц: <span class="comment1">Текущая | Максимальная (с учётом <b>{{data.days_rem}}</b> рем. дней {{data.dw}})</span></td>
+                <td class="list">Мощность за месяц: <span class="comment1">Текущая | Максимальная (с учётом <b><span id="r_days_rem"></span></b>> рем. дней {{data.dw}})</span></td>
                 <td class="list"> </td>
                 <td class="list right green" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
-                    <span id="r_month_power"></span>
+                    <span id="r_month_power2"></span>
                 </td>
                 <td class="list right maroon" title="Сколько ЖБИ сможем изготовить при максимально возможном кол-ве форм с заданным КОб">
-                    <span id="r_month_power_max"></span>
+                    <span id="r_month_power_max2"></span>
                 </td>
             </tr>
             <tr>
@@ -280,7 +282,6 @@
 
             </tr>
         </table>
-
 
 </div>
 <br>
@@ -541,9 +542,10 @@
         document.getElementById("r_day_power").innerHTML = r_day_power;
         document.getElementById("r_day_power_max").innerHTML = r_day_power_max;
 
-        document.getElementById("r_month_power").innerHTML = r_month_power;
-        document.getElementById("r_month_power_max").innerHTML = r_month_power_max;
+        document.getElementById("r_month_power2").innerHTML = r_month_power;
+        document.getElementById("r_month_power_max2").innerHTML = r_month_power_max;
 //            <td class="list">Мощность за месяц: <span class="comment1">Текущая | Максимальная (с учётом <b>{{data.days_rem}}</b> рем. дней {{data.dw}})</span></td>
+        document.getElementById("r_days_rem").innerHTML = r_days_rem;
 
         document.getElementById("r_efficiency").innerHTML = r_efficiency;
 
@@ -895,6 +897,8 @@
 //        document.getElementById("forming_time").value = arr_sd[1];
         document.getElementById("kob").value = arr_sd[2];
         document.getElementById("trkk").value = arr_sd[3];
+
+        clc_report33(); // Это последний параметр, после него формируем сводный отчёт
     };
     function get_sd_fc_params()
     {
