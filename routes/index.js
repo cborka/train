@@ -21,6 +21,16 @@ router.get('/notes', function(req, res, next) {
 });
 
 
+//
+// О программе
+//
+router.get('/login.cgi', function(req, res, next) {
+  res.send('login.cgi');
+});
+
+
+
+
 
 /*
 ** Тестовые страницы
