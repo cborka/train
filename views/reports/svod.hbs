@@ -1,0 +1,181 @@
+<div class="wrapper_2" >
+<h1 class="svod"> 3 апреля 2019</h1>
+
+
+<div class="left" id="sc_col1" >
+    <table class="svod">
+        <tr>
+            <td class="svod_head1">Формовочный цех</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">План</td>
+            <td class="svod_digit"  id="sv_plan"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Формовка</td>
+            <td class="svod_digit" id="sv_form"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Сдано</td>
+            <td class="svod_digit" id="sv_sdano"></td>
+        </tr>
+        <tr>
+            <td class="svod_head">Детали КПД</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Формовка</td>
+            <td class="svod_digit" id="sv_form_kpd"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Сдано</td>
+            <td class="svod_digit" id="sv_sdano_kpd"></td>
+        </tr>
+        <tr>
+            <td class="svod_head">ПДН-14</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Сдано</td>
+            <td class="svod_digit" id="sv_sdano_pdn14"></td>
+        </tr>
+        <tr>
+            <td class="svod_head">ПДН-AV</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Сдано</td>
+            <td class="svod_digit" id="sv_sdano_pdnav"></td>
+        </tr>
+        <tr> <td id="sv_col1_error"></td> <td></td></tr>
+    </table>
+    <br><br>
+</div>
+
+
+
+<div class="left" id="sc_col2" > &nbsp; </div>
+
+<div class="left" id="sc_col2" >
+    <table class="svod">
+        <tr>
+            <td class="svod_head1">БСУ</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Цемент (остаток)</td>
+            <td class="svod_digit"  id="sv_cement_ost"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Цементовозы <br>(общее кол-во)</td>
+            <td class="svod_digit" id="sv_cementovoz"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">V (м.куб.)</td>
+            <td class="svod_digit" id="sv_vm3"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Расход цемента</td>
+            <td class="svod_digit" id="sv_cement_rashod"></td>
+        </tr>
+        <tr> <td id="sv_col2_error"></td> <td></td></tr>
+    </table>
+    <br><br>
+</div>
+
+<div class="left" id="sc_col2" > &nbsp; </div>
+
+<div class="left" id="sc_col2" >
+    <table class="svod">
+        <tr>
+            <td class="svod_head1">СГП</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Реализация</td>
+            <td class="svod_digit"  id="sv_realiz"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">КПД</td>
+            <td class="svod_digit" id="sv_kpd"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Платформы</td>
+            <td class="svod_digit" id="sv_platform"></td>
+        </tr>
+        <tr>
+            <td class="svod_head">ПДН</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Расход</td>
+            <td class="svod_digit" id="sv_pdn_rashod"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Остаток</td>
+            <td class="svod_digit" id="sv_pdn_ost"></td>
+        </tr>
+        <tr>
+            <td class="svod_head">ПДН-AV</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Расход</td>
+            <td class="svod_digit" id="sv_pdnav_rashod"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">Остаток</td>
+            <td class="svod_digit" id="sv_pdnav_ost"></td>
+        </tr>
+        <tr>
+            <td class="svod_head">Свободные места</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="svod_label">4 пролет</td>
+            <td class="svod_digit" id="sv_svob4"></td>
+        </tr>
+        <tr>
+            <td class="svod_label">5 пролет</td>
+            <td class="svod_digit" id="sv_svob5"></td>
+        </tr>
+        <tr> <td id="sv_col2_error"></td> <td></td></tr>
+    </table>
+    <br><br>
+</div>
+
+
+</div>
+
+<script>
+
+    document.getElementById("sv_plan").innerHTML = '356';
+    document.getElementById("sv_form").innerHTML = '497';
+    document.getElementById("sv_sdano").innerHTML = '463';
+
+    document.getElementById("sv_form_kpd").innerHTML = '313';
+    document.getElementById("sv_sdano_kpd").innerHTML = '303';
+
+    document.getElementById("sv_sdano_pdn14").innerHTML = '0';
+    document.getElementById("sv_sdano_pdnav").innerHTML = '76';
+
+    document.getElementById("sv_cement_ost").innerHTML = '2538';
+    document.getElementById("sv_cementovoz").innerHTML = '21';
+    document.getElementById("sv_vm3").innerHTML = '411';
+    document.getElementById("sv_cement_rashod").innerHTML = '177';
+
+    document.getElementById("sv_realiz").innerHTML = '410';
+    document.getElementById("sv_kpd").innerHTML = '272';
+    document.getElementById("sv_platform").innerHTML = '14/20';
+
+    document.getElementById("sv_pdn_rashod").innerHTML = '15';
+    document.getElementById("sv_pdn_ost").innerHTML = '0';
+
+    document.getElementById("sv_pdnav_rashod").innerHTML = '48';
+    document.getElementById("sv_pdnav_ost").innerHTML = '82';
+
+    document.getElementById("sv_svob4").innerHTML = '187';
+    document.getElementById("sv_svob5").innerHTML = '110';
+
+</script>

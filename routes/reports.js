@@ -89,7 +89,7 @@ router.post('/get_fcrashod_table', function(req, res, next) {
 });
 
 
-// ========== ИНФОРМАЦИОННАЯ ПАНЕЛЬ УПРАВЛЕНИЯ =============
+// ========== ИНФОРМАЦИОННАЯ ПАНЕЛЬ =============
 
 
 router.get('/inform1', function(req, res, next) {
@@ -533,10 +533,15 @@ router.post('/get_bet_ost_daily', function(req, res, next) {
 });
 
 
+// ========== СВОДНЫЙ ЛИСТОК =============
 
-
-
-
+//
+// Показать заметки
+//
+router.get('/svod', function(req, res, next) {
+    res.render('reports/svod', { });
+//    res.send('Users notes');
+});
 
 
 

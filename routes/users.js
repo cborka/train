@@ -946,7 +946,7 @@ router.get('/user_right_delete/:user_rf/:right_rf', function(req, res, next) {
 });
 
 
-//================ NOTES === ЗАМЕТКИ ПРАВ ПОЛЬЗОВАТЕЛЕЙ =====================
+//================ NOTES === ЗАМЕТКИ ПОЛЬЗОВАТЕЛЕЙ =====================
 
 
 
@@ -960,3 +960,4 @@ router.get('/notes', function(req, res, next) {
 
 
 module.exports = router;
+
