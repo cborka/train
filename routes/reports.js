@@ -227,7 +227,7 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
     "   LEFT JOIN item_list sd ON pp.sd_rf = sd.item_id) " +
     "   LEFT JOIN item_list item ON pp.item_rf = item.item_id) " +
     " WHERE item.spr_rf = 9 " + // ЖБИ
-    "   AND pp.item_rf IN (13, 112, 279) " + // Пока работаем только с двумя ЖБИ
+    "   AND pp.item_rf IN (13, 112, 279, 635) " + // Пока работаем только с двумя ЖБИ
     "   AND plan_rf = (SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1)" +
     " ORDER BY sd.item_name, item.item_name ", [plan])
     .then (function (data) {
