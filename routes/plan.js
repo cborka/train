@@ -278,12 +278,12 @@ router.get('/plan_sd_s', function(req, res, next) {
 router.get('/plan_sd_addnew', function(req, res, next) {
   db.one("SELECT 0 AS plan_rf, '' AS plan_name, 0 AS sd_rf, '' AS sd_name, " +
          "CAST(CURRENT_DATE AS varchar) AS dtb, CAST(CURRENT_DATE+30 AS varchar) AS dte, " +
-         "565 AS rem_day_rf, 25 S rem_time_proc ")
+         "565 AS rem_day_rf, 25 AS rem_time_proc ")
     .then(function (data) {
       res.render('plan/plan_sd', data);
     })
     .catch(function (error) {
-      res.send(error);
+      res.send('ОШИБКА plan_sd_addnew: '+error);
     });
 });
 
