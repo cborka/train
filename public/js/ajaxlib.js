@@ -93,6 +93,19 @@ function select_tc_text(table_cell)
   }
 }
 
+
+// Возвращает дату-время в виде ДД Месяц ГГГГ ЧЧ:ММ:СС
+function toRusDate(s)
+{
+  var mmm = ['Января','Февраля','Марта','Апреля','Мая','Июня','Июля','Августа','Сентября','Октября','Ноября','Декабря'];
+  return ("0"+s.getDate()).slice(-2)+" "+mmm[s.getMonth()] + " "+s.getFullYear();
+}
+// Возвращает дату-время в виде ДД Месяц ГГГГ ЧЧ:ММ:СС
+function toTime(s)
+{
+  return ("0"+s.getHours()).slice(-2)+":"+("0"+s.getMinutes()).slice(-2)+":"+("0"+s.getSeconds()).slice(-2);
+}
+
 // Возвращает дату-время в виде ГГГГ-ММ-ДД ЧЧ:ММ:СС.МС
 function toYYYYMMDDHHMMSS(s)
 {
@@ -167,6 +180,7 @@ function WeekDayNum2(wd_name)
   else if (wd_name == 'Пятница' ) return 5
   else  return 0; // Воскресенье :)
 }
+
 
 
 

@@ -465,37 +465,36 @@
         var r_sum_trk = r_trk * r_fc_num;
 
         // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
-        //data.need_workers_num = Math.round(data.sum_trk / (22 * data.days_num)*10) / 10;
         var r_need_workers_num = Math.round(r_sum_trk / (22 * r_days_num)*10) / 10;
 
         // Округляю до двух цифр после запятой для вывода на экран
         r_sum_trk0 = Math.round(r_sum_trk0 * 100) / 100 ;
         r_sum_trk = Math.round(r_sum_trk * 100) / 100 ;
 
+        // Макс. кол-во рабочих в смене
         var r_max_workers_num = 17;
         // Округляю и проверяю на минимальное и максимальное кол-во рабочих
         var r_fact_workers_num  = Math.round(r_need_workers_num);
         if (r_need_workers_num < 3)  r_fact_workers_num = 3;
         if (r_need_workers_num > r_max_workers_num) r_fact_workers_num = r_max_workers_num;
 
-        var r_form_num = document.getElementById("sd_form_num").value;
-        var r_form_num_max = document.getElementById("sd_form_num_max").value;
-        var r_ffc_num = document.getElementById("form_fc_num").value;
-        var r_kob = document.getElementById("kob").value;
+        var r_form_num = document.getElementById("sd_form_num").value;              // Кол-во форм в пролёте
+        var r_form_num_max = document.getElementById("sd_form_num_max").value;      // Макс. кол-во форм в пролёте
+        var r_ffc_num = document.getElementById("form_fc_num").value;               // Кол-во ЖБИ в форме
+        var r_kob = document.getElementById("kob").value;                           // Коэф-т оборачиваемости
 
         // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
         var r_day_power = r_form_num * r_ffc_num * r_kob;
+        // Макс. мощность за сутки = макс. кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
         var r_day_power_max = r_form_num_max * r_ffc_num * r_kob;
 
         var r_rem_time_procent = document.getElementById("rem_time_proc").value / 100.00;
         
         // мощность за месяц с учётом рем.дней,
-        // рем.день - один раз в неделю, в дальнейшем надо будет поставить конкретно ЧЕТВЕРГ и считать кол-во четвергов
-//      data.days_rem = Math.floor(data.days_num/7); // Посчитали выше кол-во четвергов
+        // = мощность за день * (кол-во дней - кол-во рем.дней) + (кол-во рем.дней * мощность за день * процент рабочего времени в рем.день)
         var r_month_power =  r_day_power * (r_days_num - r_days_rem) +  (r_days_rem * r_day_power*r_rem_time_procent);
         // Максимальная мощность, берём КАЛЕНДАРНЫЕ ДНИ
         var r_days_rem_cal = r_days_rem; // Неважно, берём рабочие дни или календарные, кол-во четвергов от этого не меняется
-//      data.days_rem_cal = Math.floor(data.days_num_cal/7);
         var r_month_power_max =  r_day_power_max * (r_days_num_cal - r_days_rem_cal) +  (r_days_rem_cal * r_day_power_max*r_rem_time_procent);
 
         // Расчётное кол-во дней без учёта рем дней
@@ -532,6 +531,7 @@
         document.getElementById("r_days_num").innerHTML = r_days_num;
         document.getElementById("r_days_num_cal").innerHTML = r_days_num_cal;
 
+        document.getElementById("r_need_workers_num").innerHTML = r_need_workers_num;
         document.getElementById("r_fact_workers_num").innerHTML = r_fact_workers_num;
         document.getElementById("r_workers_num").innerHTML = r_workers_num;
         document.getElementById("r_max_workers_num").innerHTML = r_max_workers_num;

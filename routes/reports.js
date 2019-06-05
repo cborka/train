@@ -543,11 +543,198 @@ router.get('/svod', function(req, res, next) {
 //    res.send('Users notes');
 });
 
+router.get('/get_sv_plan', function(req, res, next) {
+    db.one(
+        "SELECT SUM(fc.fc_v * pp.num_plan) AS sumv " +
+        " FROM plan_plan pp " +
+        " LEFT JOIN fc_s fc ON pp.item_rf = fc.fc_rf " +
+        "   AND plan_rf = 749")
+        .then (function (data) {
+            var result = '';
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(2);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_sv_form', function(req, res, next) {
+    db.one(
+        "SELECT SUM(fc.fc_v * pp.num_fact) AS sumv " +
+        " FROM plan_plan pp " +
+        " LEFT JOIN fc_s fc ON pp.item_rf = fc.fc_rf " +
+        "   AND plan_rf = 749")
+        .then (function (data) {
+            var result = '';
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(2);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_sv_prihod', function(req, res, next) {
+    db.one(
+        "SELECT SUM(p.fc_num * fc.fc_v ) AS sumv" +
+        " FROM ((fcprihod_h ph " +
+        "   LEFT JOIN fcprihod p ON ph.doc_id = p.doc_rf ) " +
+        "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
+        "   WHERE dt >= '2019-06-01' " +
+        "   AND fc_v IS NOT NULL ")
+        .then (function (data) {
+            var result = '';
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(2);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_sv_prihod_pdn14', function(req, res, next) {
+    db.one(
+        "SELECT SUM(p.fc_num) AS sumv" +
+        " FROM ((fcprihod_h ph " +
+        "   LEFT JOIN fcprihod p ON ph.doc_id = p.doc_rf ) " +
+        "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
+        "   WHERE dt >= '2019-06-01' " +
+        "   AND p.fc_rf = 13 ")
+        .then (function (data) {
+            var result = '';
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_sv_prihod_pdnav', function(req, res, next) {
+    db.one(
+        "SELECT SUM(p.fc_num) AS sumv" +
+        " FROM ((fcprihod_h ph " +
+        "   LEFT JOIN fcprihod p ON ph.doc_id = p.doc_rf ) " +
+        "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
+        "   WHERE dt >= '2019-06-01' " +
+        "   AND p.fc_rf = 279 ")
+        .then (function (data) {
+            var result = '';
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
 
 
 
+router.get('/get_sv_rashod', function(req, res, next) {
+    db.one(
+        "SELECT SUM(p.fc_num * fc.fc_v ) AS sumv" +
+        " FROM ((fcrashod_h ph " +
+        "   LEFT JOIN fcrashod p ON ph.doc_id = p.doc_rf ) " +
+        "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
+        "   WHERE dt >= '2019-06-01' " +
+        "   AND fc_v IS NOT NULL ")
+        .then (function (data) {
+            var result = '';
 
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(2);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
 
+router.get('/get_sv_rashod_pdn14', function(req, res, next) {
+    db.one(
+        "SELECT SUM(p.fc_num) AS sumv" +
+        " FROM ((fcrashod_h ph " +
+        "   LEFT JOIN fcrashod p ON ph.doc_id = p.doc_rf ) " +
+        "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
+        "   WHERE dt >= '2019-06-01' " +
+        "   AND p.fc_rf = 13 ")
+        .then (function (data) {
+            var result = '';
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_sv_rashod_pdnav', function(req, res, next) {
+    db.one(
+        "SELECT SUM(p.fc_num) AS sumv" +
+        " FROM ((fcrashod_h ph " +
+        "   LEFT JOIN fcrashod p ON ph.doc_id = p.doc_rf ) " +
+        "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
+        "   WHERE dt >= '2019-06-01' " +
+        "   AND p.fc_rf = 279 ")
+        .then (function (data) {
+            var result = '';
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_sv_ost_pdn14', function(req, res, next) {
+    db.one(
+        "SELECT num_fact AS sumv" +
+        " FROM sklad s " +
+        "   WHERE sklad_rf = 25 " +
+        "     AND item_rf = 13 ")
+        .then (function (data) {
+            var result = '';
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_sv_ost_pdnav', function(req, res, next) {
+    db.one(
+        "SELECT num_fact AS sumv" +
+        " FROM sklad s " +
+        "   WHERE sklad_rf = 25 " +
+        "     AND item_rf = 279 ")
+        .then (function (data) {
+            var result = '';
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+            result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
 
 
 

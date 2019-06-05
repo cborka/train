@@ -1,5 +1,6 @@
 <div class="wrapper_2" >
-<h1 class="svod"> 3 апреля 2019</h1>
+<h1 class="svod" id="sv_date"> 3 апреля 2019</h1>
+<h2 class="svod_head1" id="sv_time"> 08:00:00</h2>
 
 
 <div class="left" id="sc_col1" >
@@ -18,7 +19,7 @@
         </tr>
         <tr>
             <td class="svod_label">Сдано</td>
-            <td class="svod_digit" id="sv_sdano"></td>
+            <td class="svod_digit" id="sv_prihod"></td>
         </tr>
         <tr>
             <td class="svod_head">Детали КПД</td>
@@ -30,7 +31,7 @@
         </tr>
         <tr>
             <td class="svod_label">Сдано</td>
-            <td class="svod_digit" id="sv_sdano_kpd"></td>
+            <td class="svod_digit" id="sv_prihod_kpd"></td>
         </tr>
         <tr>
             <td class="svod_head">ПДН-14</td>
@@ -38,7 +39,7 @@
         </tr>
         <tr>
             <td class="svod_label">Сдано</td>
-            <td class="svod_digit" id="sv_sdano_pdn14"></td>
+            <td class="svod_digit" id="sv_prihod_pdn14"></td>
         </tr>
         <tr>
             <td class="svod_head">ПДН-AV</td>
@@ -46,7 +47,7 @@
         </tr>
         <tr>
             <td class="svod_label">Сдано</td>
-            <td class="svod_digit" id="sv_sdano_pdnav"></td>
+            <td class="svod_digit" id="sv_prihod_pdnav"></td>
         </tr>
         <tr> <td id="sv_col1_error"></td> <td></td></tr>
     </table>
@@ -94,7 +95,7 @@
         </tr>
         <tr>
             <td class="svod_label">Реализация</td>
-            <td class="svod_digit"  id="sv_realiz"></td>
+            <td class="svod_digit"  id="sv_rashod"></td>
         </tr>
         <tr>
             <td class="svod_label">КПД</td>
@@ -110,11 +111,11 @@
         </tr>
         <tr>
             <td class="svod_label">Расход</td>
-            <td class="svod_digit" id="sv_pdn_rashod"></td>
+            <td class="svod_digit" id="sv_rashod_pdn14"></td>
         </tr>
         <tr>
             <td class="svod_label">Остаток</td>
-            <td class="svod_digit" id="sv_pdn_ost"></td>
+            <td class="svod_digit" id="sv_ost_pdn14"></td>
         </tr>
         <tr>
             <td class="svod_head">ПДН-AV</td>
@@ -122,11 +123,11 @@
         </tr>
         <tr>
             <td class="svod_label">Расход</td>
-            <td class="svod_digit" id="sv_pdnav_rashod"></td>
+            <td class="svod_digit" id="sv_rashod_pdnav"></td>
         </tr>
         <tr>
             <td class="svod_label">Остаток</td>
-            <td class="svod_digit" id="sv_pdnav_ost"></td>
+            <td class="svod_digit" id="sv_ost_pdnav"></td>
         </tr>
         <tr>
             <td class="svod_head">Свободные места</td>
@@ -150,16 +151,129 @@
 
 <script>
 
-    document.getElementById("sv_plan").innerHTML = '356';
-    document.getElementById("sv_form").innerHTML = '497';
-    document.getElementById("sv_sdano").innerHTML = '463';
+    function get_sv_date()
+    {
+        var dtc = new Date();
+        document.getElementById("sv_date").innerHTML = toRusDate(dtc);
+        document.getElementById("sv_time").innerHTML = toTime(dtc);
+    }
+
+    // План ЖБИ
+    var set_sv_plan = function (reply)
+    {
+        document.getElementById("sv_plan").innerHTML = reply;
+    };
+    function get_sv_plan()
+    {
+        doQuery ("/reports/get_sv_plan", set_sv_plan);
+    }
+
+    // Формовка ЖБИ за текущий месяц
+    var set_sv_form = function (reply)
+    {
+        document.getElementById("sv_form").innerHTML = reply;
+    };
+    function get_sv_form()
+    {
+        doQuery ("/reports/get_sv_form", set_sv_form);
+    }
+
+    // Сдано на склад ЖБИ за текущий месяц
+    var set_sv_prihod = function (reply)
+    {
+        document.getElementById("sv_prihod").innerHTML = reply;
+    };
+    function get_sv_prihod()
+    {
+        doQuery ("/reports/get_sv_prihod", set_sv_prihod);
+    }
+
+    // Сдано на склад ПДН-14 за текущий месяц
+    var set_sv_prihod_pdn14 = function (reply)
+    {
+        document.getElementById("sv_prihod_pdn14").innerHTML = reply;
+    };
+    function get_sv_prihod_pdn14()
+    {
+        doQuery ("/reports/get_sv_prihod_pdn14", set_sv_prihod_pdn14);
+    }
+
+    // Сдано на склад ПДН-AV за текущий месяц
+    var set_sv_prihod_pdnav = function (reply)
+    {
+        document.getElementById("sv_prihod_pdnav").innerHTML = reply;
+    };
+    function get_sv_prihod_pdnav()
+    {
+        doQuery ("/reports/get_sv_prihod_pdnav", set_sv_prihod_pdnav);
+    }
+
+
+    // Расход со склада ЖБИ за текущий месяц
+    var set_sv_rashod = function (reply)
+    {
+        document.getElementById("sv_rashod").innerHTML = reply;
+    };
+    function get_sv_rashod()
+    {
+        doQuery ("/reports/get_sv_rashod", set_sv_rashod);
+    }
+
+    // Расход со склада _pdn14 за текущий месяц
+    var set_sv_rashod_pdn14 = function (reply)
+    {
+        document.getElementById("sv_rashod_pdn14").innerHTML = reply;
+    };
+    function get_sv_rashod_pdn14()
+    {
+        doQuery ("/reports/get_sv_rashod_pdn14", set_sv_rashod_pdn14);
+    }
+
+    // Расход со склада _pdnav за текущий месяц
+    var set_sv_rashod_pdnav = function (reply)
+    {
+        document.getElementById("sv_rashod_pdnav").innerHTML = reply;
+    };
+    function get_sv_rashod_pdnav()
+    {
+        doQuery ("/reports/get_sv_rashod_pdnav", set_sv_rashod_pdnav);
+    }
+
+    // Расход со склада _pdn14 за текущий месяц
+    var set_sv_ost_pdn14 = function (reply)
+    {
+        document.getElementById("sv_ost_pdn14").innerHTML = reply;
+    };
+    function get_sv_ost_pdn14()
+    {
+        doQuery ("/reports/get_sv_ost_pdn14", set_sv_ost_pdn14);
+    }
+
+    // Расход со склада _pdnav за текущий месяц
+    var set_sv_ost_pdnav = function (reply)
+    {
+        document.getElementById("sv_ost_pdnav").innerHTML = reply;
+    };
+    function get_sv_ost_pdnav()
+    {
+        doQuery ("/reports/get_sv_ost_pdnav", set_sv_ost_pdnav);
+    }
+
+
+    get_sv_date();
+
+    get_sv_plan();
+    get_sv_form();
+    get_sv_prihod();
+/*
 
     document.getElementById("sv_form_kpd").innerHTML = '313';
     document.getElementById("sv_sdano_kpd").innerHTML = '303';
+*/
+    get_sv_prihod_pdn14();
+    get_sv_prihod_pdnav();
 
-    document.getElementById("sv_sdano_pdn14").innerHTML = '0';
-    document.getElementById("sv_sdano_pdnav").innerHTML = '76';
-
+/*
     document.getElementById("sv_cement_ost").innerHTML = '2538';
     document.getElementById("sv_cementovoz").innerHTML = '21';
     document.getElementById("sv_vm3").innerHTML = '411';
@@ -168,7 +282,15 @@
     document.getElementById("sv_realiz").innerHTML = '410';
     document.getElementById("sv_kpd").innerHTML = '272';
     document.getElementById("sv_platform").innerHTML = '14/20';
+*/
 
+    get_sv_rashod();
+    get_sv_rashod_pdn14();
+    get_sv_rashod_pdnav();
+    get_sv_ost_pdn14();
+    get_sv_ost_pdnav();
+
+/*
     document.getElementById("sv_pdn_rashod").innerHTML = '15';
     document.getElementById("sv_pdn_ost").innerHTML = '0';
 
@@ -177,5 +299,5 @@
 
     document.getElementById("sv_svob4").innerHTML = '187';
     document.getElementById("sv_svob5").innerHTML = '110';
-
+*/
 </script>

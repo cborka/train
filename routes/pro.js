@@ -634,14 +634,14 @@ router.post('/sd_fc/update', function(req, res, next) {
     db.none(
       "INSERT INTO  sd_fc (sd_rf, fc_rf, trk, trkk,  forming_time, kob) " +
       "VALUES (" +
-      "  (SELECT item_id FROM item_list WHERE item_name=$1), " +
+      "  (SELECT item_id FROM item_list WHERE item_name=$1 AND spr_rf = 8), " +
       "  (SELECT item_id FROM item_list WHERE item_name=$2 AND spr_rf = 9), $3, $4, $5, $6)",
       [sd_name, fc_name, trk, trkk, forming_time, kob])
       .then (function (data) {
         res.redirect('/pro/sd_fc_s');
       })
       .catch(function (error) {
-        res.send(error);
+        res.send("ОШИБКА: "+error);
       });
   }
 });
