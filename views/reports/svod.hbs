@@ -2,8 +2,12 @@
 <h1 class="svod" id="sv_date"> 3 апреля 2019</h1>
 <h2 class="svod_head1" id="sv_time"> 08:00:00</h2>
 
+    <button id="btnRefreshData" type="button" onclick="refresh_data()">Обновить данные</button>
+    <button id="btnRefreshOnOff" type="button" onclick="refresh_data_on()">Включить автообновление</button>
+    <br>
+    <br>
 
-<div class="left" id="sc_col1" >
+    <div class="left" id="sc_col1" >
     <table class="svod">
         <tr>
             <td class="svod_head1">Формовочный цех</td>
@@ -150,6 +154,8 @@
 </div>
 
 <script>
+    var timerRefreshId = 0;
+
 
     function get_sv_date()
     {
@@ -259,6 +265,7 @@
         doQuery ("/reports/get_sv_ost_pdnav", set_sv_ost_pdnav);
     }
 
+    function refresh_data() {
 
     get_sv_date();
 
@@ -300,4 +307,22 @@
     document.getElementById("sv_svob4").innerHTML = '187';
     document.getElementById("sv_svob5").innerHTML = '110';
 */
+    }
+
+    // ФОРМОВКА
+    function refresh_data_on()
+    {
+        if (timerRefreshId <= 0) {
+            refresh_data();
+            timerRefreshId = setInterval(refresh_data, 60000);
+            document.getElementById("btnRefreshOnOff").innerHTML = 'Выключить автообновление';
+        }
+        else if (timerRefreshId > 0) {
+            clearInterval(timerRefreshId);
+            timerRefreshId = 0;
+            document.getElementById("btnRefreshOnOff").innerHTML = 'Включить автообновление';
+        }
+    }
+
+    refresh_data();
 </script>

@@ -38,15 +38,17 @@ document.writeln('dddd');
 <button type="button" onclick="showfn()">Показать окно</button>
 <button type="button" onclick="showfn2()">Показать окно 2</button>
 
-
 <script>
 
   function showfn() {
-      var newWin = window.open("about:blank", "hello", "width=200,height=200");
+      var newWin = window.open("about:blank", "hello", "width=200,height=200,left=200,top=200");
 
-      newWin.document.write("Привет, мир!");
+//      newWin.document.write("Привет, мир!");
+      newWin.onload = function() {
+          newWin.document.write("Привет, Mир!");
+      }
+
   }
-
 
   function showfn2() {
       var newWin = window.open('/', 'example', 'width=600,height=400');
@@ -68,12 +70,7 @@ document.writeln('dddd');
       }
   }
 
-
-
 </script>
-
-
-
 
 
 
