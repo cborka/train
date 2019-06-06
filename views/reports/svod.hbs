@@ -314,7 +314,7 @@
     {
         if (timerRefreshId <= 0) {
             refresh_data();
-            timerRefreshId = setInterval(refresh_data, 60000);
+            timerRefreshId = setInterval(refresh_data, 300000);
             document.getElementById("btnRefreshOnOff").innerHTML = 'Выключить автообновление';
         }
         else if (timerRefreshId > 0) {
