@@ -216,13 +216,10 @@ thead {
 /*
 ** Таблицы - сводный листок
 */
-
 h1.svod {
   color: darkred;
   text-align: center;
-
 }
-
 table.svod {
   width: auto;
   padding: 1%;
@@ -258,6 +255,37 @@ td.svod_digit {
   padding-right: 5px;
   color: darkred;
 }
+/* Таблицы - сводный листок */
+
+/*
+** Пульс предприятия =================
+*/
+div.puls {
+  color: green;
+  text-align: center;
+
+  margin-left: 5px;
+  margin-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+
+  width: 400px;
+
+  border: 2px solid grey;
+}
+div.puls100 {
+  color: green;
+  text-align: center;
+
+
+}
+h1.puls {
+  xcolor: green;
+  xtext-align: center;
+}
+
+
+/* Пульс предприятия */
 
 
 /* Таблицы-формы */

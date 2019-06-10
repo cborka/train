@@ -89,8 +89,7 @@ router.post('/get_fcrashod_table', function(req, res, next) {
 });
 
 
-// ========== ИНФОРМАЦИОННАЯ ПАНЕЛЬ =============
-
+// ========== ИНФОРМАЦИОННАЯ ПАНЕЛЬ 1 =============
 
 router.get('/inform1', function(req, res, next) {
 
@@ -100,6 +99,18 @@ router.get('/inform1', function(req, res, next) {
   res.render('reports/inform1.hbs', data);
 
 });
+
+// ========== ИНФОРМАЦИОННАЯ ПАНЕЛЬ 2 =============
+
+router.get('/inform2', function(req, res, next) {
+
+    var data = { };
+    data.header = 'Пульс предприятия';
+
+    res.render('reports/inform2.hbs', data);
+
+});
+// =================================================
 
 
 router.post('/get_formovka_day', function(req, res, next) {
