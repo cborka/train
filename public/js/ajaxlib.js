@@ -171,7 +171,7 @@ function WeekDayNum(wd_name)
 // Здесь 0 - воскресенье
 function WeekDayNum2(wd_name)
 {
-  if (wd_name == 'Суббота' ) return 7
+  if (wd_name == 'Суббота' ) return 6
   else if (wd_name == 'Воскресенье' ) return 0
   else if (wd_name == 'Понедельник' ) return 1
   else if (wd_name == 'Вторник' ) return 2

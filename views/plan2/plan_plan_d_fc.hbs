@@ -168,7 +168,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="list">Кол-во дней: <span class="comment1">Расчётное (без учёта рем.дней) | Плановое | Календарных дней</span></td>
+                <td class="list">Кол-во дней: <span class="comment1">Расчётное | Плановое | Календарных дней</span></td>
                 <td class="list right indigo" title="Кол-во рабочих дней необходимых для выполнения плана">
                     <span id="r_days_num_clc"></span>
                 </td>
@@ -208,9 +208,11 @@
                 <td class="list"><b></b></td>
             </tr>
             <tr>
-                <td class="list">Мощность за сутки: <span class="comment1">Текущая | Максимальная  <br> = Кол-во форм * КОб
+                <td class="list">Мощность за сутки: <span class="comment1">Плановая | Текущая | Максимальная  <br> = Кол-во форм * КОб
                     (сколько можем изготовить на данном оборудовании)</span></td>
-                <td class="list"> </td>
+                <td class="list right" title="Сколько ЖБИ должны делать в день, чтобы сделать ПЛАН">
+                    <span id="r_day_power_fact1"></span>(<span id="r_day_power_fact"></span>)
+                </td>
                 <td class="list right green" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
                     <span id="r_day_power"></span>
                 </td>
@@ -218,16 +220,22 @@
                     <span id="r_day_power_max"></span>
                 </td>
             </tr>
+
             <tr>
+                <!--
                 <td class="list">Мощность за месяц: <span class="comment1">Текущая | Максимальная (с учётом <b><span id="r_days_rem"></span></b>> рем. дней {{data.dw}})</span></td>
-                <td class="list"> </td>
+                <td class="list right green" title="Это ПЛАН">
+                    <span id="r_month_power_fact2"></span>
+                </td>
                 <td class="list right green" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
                     <span id="r_month_power2"></span>
                 </td>
                 <td class="list right maroon" title="Сколько ЖБИ сможем изготовить при максимально возможном кол-ве форм с заданным КОб">
                     <span id="r_month_power_max2"></span>
                 </td>
+-->
             </tr>
+
             <tr>
                 <td class="list"><b></b></td>
             </tr>
@@ -243,12 +251,12 @@
                 <td class="list"><b></b></td>
             </tr>
             <tr>
-                <td class="list">Трудоёмкость изготовления 1 шт.: <span class="comment1">Коэф-т | С учётом коэф-та |  Без учёта коэф-та</span></td>
-                <td class="list right" title="Коэф-т корректирующий нормативную трудоёмкость">
-                    <span id="r_trkk"></span>
-                </td>
-                <td class="list right green" title="Трудоёмкость изготоволения 1 ЖБИ с учётом коэф-та">
+                <td class="list">Трудоёмкость изготовления 1 шт.: <span class="comment1">С учётом коэф-та | Коэф-т | Без учёта коэф-та</span></td>
+                <td class="list right" title="Трудоёмкость изготоволения 1 ЖБИ с учётом коэф-та">
                     <span id="r_trk"></span>
+                </td>
+                <td class="list right blue" title="Коэф-т корректирующий нормативную трудоёмкость">
+                    <span id="r_trkk"></span>
                 </td>
                 <td class="list right" title="Нормативная трудоёмкость">
                     <span id="r_trk0"></span>
@@ -319,7 +327,7 @@
         </tr>
         <tr> <td><span id="save_sd_params_error" ></span></td><td>&nbsp;</td></tr>
     </table>
-    <div id="xxsave_sd_params_error" ></div>
+    <div id="save_sd_params_error" ></div>
 </div>
 
 <div class="left" id="form_fc_params" >
@@ -448,17 +456,18 @@
 
         var r_workers_num = Math.round(document.getElementById("workers_num").value*10)/10;
 
-        var r_days_rem = calc_rem_days_num();
-        var r_days_num = Math.round(document.getElementById("days_num").value) ;
+        var r_days_rem = calc_rem_days_num();                                       // Кол-во рем. дней
+        var r_days_num = Math.round(document.getElementById("days_num").value) ;    // Кол-во дней плановое
 
-        var r_days_num_cal = PlanLastDay(plan_name);
+        var r_days_num_cal = PlanLastDay(plan_name);                                // Кол-во дней календарное
 
         // получить параметры из таблицы Пролет-ЖБИ
-        var r_trk = document.getElementById("trk").value;
-        var r_trkk = document.getElementById("trkk").value;
-        var r_trk0 = r_trk;
-        r_trk = r_trk * r_trkk;
+        var r_trk = document.getElementById("trk").value;       // Трудоемкость
+        var r_trkk = document.getElementById("trkk").value;     // Коэф-т к трудоемкости
+        var r_trk0 = r_trk;                                     // Трудоемкость
+        r_trk = r_trk * r_trkk;                                 // Трудоемксть с учетом коэф-та
         r_trk = Math.round(r_trk * 100) / 100 ;
+        r_trk0 = Math.round(r_trk0 * 100) / 100 ;
 
         // Итого трудоёмкость на план
         var r_sum_trk0 = r_trk0 * r_fc_num;
@@ -485,6 +494,9 @@
 
         // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
         var r_day_power = r_form_num * r_ffc_num * r_kob;
+        var r_day_power_fact = r_fc_num / r_days_num;
+        r_day_power_fact = Math.round(r_day_power_fact * 100) / 100 ;
+        var r_day_power_fact1 = Math.ceil(r_day_power_fact);
         // Макс. мощность за сутки = макс. кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
         var r_day_power_max = r_form_num_max * r_ffc_num * r_kob;
 
@@ -497,8 +509,10 @@
         var r_days_rem_cal = r_days_rem; // Неважно, берём рабочие дни или календарные, кол-во четвергов от этого не меняется
         var r_month_power_max =  r_day_power_max * (r_days_num_cal - r_days_rem_cal) +  (r_days_rem_cal * r_day_power_max*r_rem_time_procent);
 
-        // Расчётное кол-во дней без учёта рем дней
-        var r_days_num_clc = r_fc_num / (r_form_num * r_ffc_num * r_kob);
+
+   //     var r_days_num_clc = r_fc_num / (r_form_num * r_ffc_num * r_kob); // Расчётное кол-во дней без учёта рем дней
+        var r_days_num_clc = calc_num_days7(); // Расчётное кол-во дней с учётом рем дней
+
         r_days_num_clc = Math.round(r_days_num_clc*10)/10 ;
 
         // Эффективность работы пролёта
@@ -544,12 +558,15 @@
         document.getElementById("r_form_num_max").innerHTML = r_form_num_max;
 
         document.getElementById("r_day_power").innerHTML = r_day_power;
+        document.getElementById("r_day_power_fact").innerHTML = r_day_power_fact;
+        document.getElementById("r_day_power_fact1").innerHTML = r_day_power_fact1;
         document.getElementById("r_day_power_max").innerHTML = r_day_power_max;
 
-        document.getElementById("r_month_power2").innerHTML = r_month_power;
-        document.getElementById("r_month_power_max2").innerHTML = r_month_power_max;
+//        document.getElementById("r_month_power_fact2").innerHTML = r_fc_num;
+//        document.getElementById("r_month_power2").innerHTML = r_month_power;
+//        document.getElementById("r_month_power_max2").innerHTML = r_month_power_max;
 //            <td class="list">Мощность за месяц: <span class="comment1">Текущая | Максимальная (с учётом <b>{{data.days_rem}}</b> рем. дней {{data.dw}})</span></td>
-        document.getElementById("r_days_rem").innerHTML = r_days_rem;
+//        document.getElementById("r_days_rem").innerHTML = r_days_rem;
 
         document.getElementById("r_efficiency").innerHTML = r_efficiency;
 
@@ -728,8 +745,6 @@
        4. вычитаем данное кол-во из кол-ва на план, запоминаем сколько осталось сделать
 
        если изделия или дни не закончились, то  идем к шагу 1
-
-
      */
     function calc_num_days2 ()
     {
@@ -773,6 +788,9 @@
         i = 1;
         s = '';
 
+        // мощность за сутки = кол-во форм * кол-во ЖБИ в одной форме * Коэф-т оборачиваемости
+//        var r_day_power = r_form_num * r_ffc_num * r_kob;
+
         fc_one = form_num * form_fc_num;
 
         while (dtc < dte && i < 1000000)
@@ -784,12 +802,7 @@
 
 //            document.getElementById("h"+k).innerHTML = dtc.getDay();
 
-            // Если рем.день, то fc_one *= rem_time_proc
-
-//            alert(k+','+fc_one+','+fc_num);
             j = Math.min( Math.round(fc_one*kk/100), fc_num);
-
- //           alert(rem_day+','+kk+','+Math.round(fc_one*kk));
 
             document.getElementById("np"+k).value = +document.getElementById("np"+k).value +j;
 
@@ -848,9 +861,54 @@
 //        document.getElementById("np5").value = 12;
     }
 
+    // Расчитать кол-во ЖБИ по дням месяца
+    // в ссответствии с кол-вом форм и временем пропарки
+    // вернуть кол-во дней
+     function calc_num_days7 () {
+
+        dtb = PlanFirstDate(plan_name); // Начало месяца
+        dte = PlanLastDate(plan_name);  // Конец месяца
+        dtc = dtb;                      // Текущее датавремя
+
+        month_days = PlanLastDay(plan_name);
 
 
-    //
+        var fc_num = document.getElementById("num_plan").value;
+        var form_num = document.getElementById("sd_form_num").value;
+        var form_fc_num = document.getElementById("form_fc_num").value;
+        var form_time = document.getElementById("forming_time").value * 60 * 60;
+        var rem_time_proc = document.getElementById("rem_time_proc").value;
+        var rem_day = WeekDayNum2(document.getElementById("rem_day_name").value);
+
+        dte.setDate(dte.getDate() + 1);
+
+        // тут сделать все проверки
+        if (form_num == '')
+            alert('Не указано количество форм');
+
+        i = 0;
+        fc_one = form_num * form_fc_num;
+        while (dtc < dte && fc_num > 0 && i < 1000000) {
+            k = dtc.getDate();
+
+            kk = 100; // Процент используемого рабочего времени
+            if (rem_day == dtc.getDay()) kk = rem_time_proc;
+
+            fc_num = Math.max(fc_num - Math.round(fc_one * kk / 100), 0);
+
+            i++;
+            dtc.setSeconds(dtc.getSeconds() + form_time);
+        }
+        return i;
+    }
+
+
+
+
+
+
+
+        //
     // Расчитать кол-во ЖБИ по дням месяца
     // равномерно по календарю
     //

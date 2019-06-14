@@ -269,21 +269,20 @@ div.puls {
   padding-left: 5px;
   padding-right: 5px;
 
-  width: 400px;
+  xwidth: 400px;
 
   border: 2px solid grey;
 }
 div.puls100 {
   color: green;
   text-align: center;
-
-
+  margin: 2px;
+  xborder: 1px solid red;
 }
 h1.puls {
   xcolor: green;
   xtext-align: center;
 }
-
 
 /* Пульс предприятия */
 

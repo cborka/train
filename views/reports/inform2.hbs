@@ -7,17 +7,19 @@
     <br>
     <br>
 
-    <div class="puls100">
+    <div class="puls100 wrapper_2">
         <h1 class="puls" id="puls_h1">КОНТРОЛЬ</h1>
-    </div>
-    <br>
 
 
-    <div class="left" id="puls_div1" >
-        <div class="puls">
+        <button type="button" id="btn_calc_report33" onclick="clc_report33(); document.getElementById('tbl33').style.display = 'block'" >Пересчитать</button>
+        <button type="button" id="btn_calc_report33" onclick="document.getElementById('tbl33').style.display = 'none';" >Скрыть</button><br>
+
+
+    <div class="left puls" id="puls_div1" >
+        <div class="puls" onclick="document.getElementById('puls_div11').style.display = 'none';">
         <h1 class="puls" id="puls_h1">ЗАКАЗ</h1>
         </div>
-        <div class="puls">
+        <div class="puls" id="puls_div11">
         <table class="svod">
             <tr>
                 <td class="svod_head1">Загрузка</td>
@@ -78,4 +80,21 @@
     </div>
 
 
+    </div>
 
+
+<script>
+
+    // Показать, спрятать таблицу
+    function show_hide(div_id)
+    {
+        var dv = document.getElementById(div_id);
+        if (dv.style.display != 'none')
+            dv.style.display != 'none'
+        else dv.style.display != 'block'    ;
+    }
+
+
+
+
+</script>
