@@ -152,15 +152,17 @@
     <button type="button" id="btn_calc_report33" onclick="document.getElementById('tbl33').style.display = 'none';" >Скрыть</button><br>
     <table class="list" id="tbl33">
             <tr>
-                <td class="list"><b>ЖБИ</b></td>
-                <td class="list" colspan="3"><b>{{data.fc_name}}</b></td>
+                <td class="list"><b>ЖБИ</b> <span id="r_fc_name"></span></td>
+                <td class="list">от оснастки</td>
+                <td class="list">от дней</td>
+                <td class="list">максимум</td>
             </tr>
             <tr>
-                <td class="list">Количество ЖБИ:<span class="comment1"> Плановое | Можем сделать | Максимальное</span></td>
+                <td class="list">Количество ЖБИ:<span class="comment1"> Плановое | Плановое | Максимальное</span></td>
                 <td class="list right indigo" title="Плановое кол-во ЖБИ">
                     <span id="r_fc_num"></span>
                 </td>
-                <td class="list right green" title="Можем сделать">
+                <td class="list right green" title="Плановое кол-во ЖБИ">
                     <span id="r_month_power"></span>
                 </td>
                 <td class="list right maroon" title="Максимальное кол-во ЖБИ, которое сможем изготовить при максимальном кол-ве форм и дней">
@@ -178,6 +180,9 @@
                 <td class="list right maroon" title="Календарных дней">
                     <span id="r_days_num_cal"></span>
                 </td>
+                <td class="list right" title="Плановое кол-во рабочих дней">
+                    <span id="r_days_num2"></span>
+                </td>
             </tr>
             <tr>
                 <td class="list">Кол-во человек в смене: <span class="comment1">Расчётное | Фактическое | Максимальное <br> =
@@ -191,17 +196,23 @@
                 <td class="list right maroon" title="Максимальное кол-во рабочих в смене">
                     <span id="r_max_workers_num"></span>
                 </td>
+                <td class="list right" title="Фактическое кол-во рабочих в смене">
+                    <span id="r_workers_num2"></span>
+                </td>
             </tr>
             <tr>
-                <td class="list">Количество форм: <span class="comment1">Требуемое | Фактическое | Максимальное </span></td>
-                <td class="list right indigo" title="Расчетное кол-во форм необходимых для выполения плана за плановое кол-во дней">
-                    <span id="r_need_form_num"></span>(<span id="r_need_form_num_clc"></span>)
-                </td>
-                <td class="list right green" title="Фактическое, имеющееся кол-во форм">
+                <td class="list">Количество форм: <span class="comment1">Фактическое | Требуемое | Максимальное </span></td>
+                <td class="list right indigo" title="Фактическое, имеющееся кол-во форм">
                     <span id="r_form_num"></span>
+                </td>
+                <td class="list right green" title="Расчетное кол-во форм необходимых для выполения плана за плановое кол-во дней">
+                    <span id="r_need_form_num"></span>(<span id="r_need_form_num_clc"></span>)
                 </td>
                 <td class="list right maroon" title="Максимально возможное кол-во форм">
                     <span id="r_form_num_max"></span>
+                </td>
+                <td class="list right" title="Фактическое, имеющееся кол-во форм">
+                    <span id="r_form_num2"></span>
                 </td>
             </tr>
             <tr>
@@ -210,7 +221,7 @@
             <tr>
                 <td class="list">Мощность за сутки: <span class="comment1">Плановая | Текущая | Максимальная  <br> = Кол-во форм * КОб
                     (сколько можем изготовить на данном оборудовании)</span></td>
-                <td class="list right" title="Сколько ЖБИ должны делать в день, чтобы сделать ПЛАН">
+                <td class="list right indigo" title="Сколько ЖБИ должны делать в день, чтобы сделать ПЛАН">
                     <span id="r_day_power_fact1"></span>(<span id="r_day_power_fact"></span>)
                 </td>
                 <td class="list right green" title="Сколько ЖБИ сможем изготовить при имеющемся кол-ве форм с заданным КОб">
@@ -240,11 +251,13 @@
                 <td class="list"><b></b></td>
             </tr>
             <tr>
-                <td class="list">Эффективность <span class="comment1">= (Плановое кол-во / Максимальная мощность за месяц) * 100%</span></td>
-                <td class="list right red" title="Эффективность производства в процентах от максимально возможной эффективности">
+                <td class="list">Эффективность <span class="comment1"> за день | месяц <br>= (Плановое кол-во / Максимальная мощность) * 100%</span></td>
+                <td class="list right red" title="Эффективность за сутки">
+                    <span id="r_efficiency_day"></span>%
+                </td>
+                <td class="list right red" title="Эффективность производства за месяц в процентах от максимально возможной эффективности">
                     <span id="r_efficiency"></span>%
                 </td>
-                <td class="list"> </td>
                 <td class="list"> </td>
             </tr>
             <tr>
@@ -452,9 +465,9 @@
 
         var day_length = 1000*60*60*24; // Миллисекунд в сутках
 
-        var r_fc_num = document.getElementById("num_plan").value;
+        var r_fc_num = document.getElementById("num_plan").value;                   // Кол-во ЖБИ на план
 
-        var r_workers_num = Math.round(document.getElementById("workers_num").value*10)/10;
+        var r_workers_num = Math.round(document.getElementById("workers_num").value*10)/10;  // Кол-во рабочих в смене
 
         var r_days_rem = calc_rem_days_num();                                       // Кол-во рем. дней
         var r_days_num = Math.round(document.getElementById("days_num").value) ;    // Кол-во дней плановое
@@ -474,7 +487,7 @@
         var r_sum_trk = r_trk * r_fc_num;
 
         // Нужно рабочих в смене = Итого трудоёмкость / (11 * 2 * Кол-во рабочих дней)
-        var r_need_workers_num = Math.round(r_sum_trk / (22 * r_days_num)*10) / 10;
+        var r_need_workers_num = Math.ceil(r_sum_trk / (22 * r_days_num)*10) / 10;
 
         // Округляю до двух цифр после запятой для вывода на экран
         r_sum_trk0 = Math.round(r_sum_trk0 * 100) / 100 ;
@@ -483,7 +496,7 @@
         // Макс. кол-во рабочих в смене
         var r_max_workers_num = 17;
         // Округляю и проверяю на минимальное и максимальное кол-во рабочих
-        var r_fact_workers_num  = Math.round(r_need_workers_num);
+        var r_fact_workers_num  = Math.ceil(r_need_workers_num);
         if (r_need_workers_num < 3)  r_fact_workers_num = 3;
         if (r_need_workers_num > r_max_workers_num) r_fact_workers_num = r_max_workers_num;
 
@@ -504,7 +517,8 @@
         
         // мощность за месяц с учётом рем.дней,
         // = мощность за день * (кол-во дней - кол-во рем.дней) + (кол-во рем.дней * мощность за день * процент рабочего времени в рем.день)
-        var r_month_power =  r_day_power * (r_days_num - r_days_rem) +  (r_days_rem * r_day_power*r_rem_time_procent);
+//        var r_month_power =  r_day_power * (r_days_num - r_days_rem) +  (r_days_rem * r_day_power*r_rem_time_procent);
+        var r_month_power = r_fc_num; //решили, что будет так.
         // Максимальная мощность, берём КАЛЕНДАРНЫЕ ДНИ
         var r_days_rem_cal = r_days_rem; // Неважно, берём рабочие дни или календарные, кол-во четвергов от этого не меняется
         var r_month_power_max =  r_day_power_max * (r_days_num_cal - r_days_rem_cal) +  (r_days_rem_cal * r_day_power_max*r_rem_time_procent);
@@ -517,6 +531,8 @@
 
         // Эффективность работы пролёта
         var r_efficiency =  Math.round((r_fc_num / r_month_power_max) * 10000) / 100;
+        // Суточная эффективность
+        var r_efficiency_day =  Math.round((r_day_power_fact / r_day_power_max) * 10000) / 100;
 
         // Округляю до двух цифр после запятой для вывода на экран
         r_day_power = Math.round(r_day_power * 100) / 100 ;
@@ -537,6 +553,8 @@
         if (r_fc_num > r_month_power) r_fc_num = '(!!!)' + r_fc_num;
 
 
+        document.getElementById("r_fc_name").innerHTML = document.getElementById("item_name").value;
+
         document.getElementById("r_fc_num").innerHTML = r_fc_num;
         document.getElementById("r_month_power").innerHTML = r_month_power;
         document.getElementById("r_month_power_max").innerHTML = r_month_power_max;
@@ -544,11 +562,13 @@
         document.getElementById("r_days_num_clc").innerHTML = r_days_num_clc;
         document.getElementById("r_days_num").innerHTML = r_days_num;
         document.getElementById("r_days_num_cal").innerHTML = r_days_num_cal;
+        document.getElementById("r_days_num2").innerHTML = r_days_num;
 
         document.getElementById("r_need_workers_num").innerHTML = r_need_workers_num;
         document.getElementById("r_fact_workers_num").innerHTML = r_fact_workers_num;
         document.getElementById("r_workers_num").innerHTML = r_workers_num;
         document.getElementById("r_max_workers_num").innerHTML = r_max_workers_num;
+        document.getElementById("r_workers_num2").innerHTML = r_workers_num;
 
 
 
@@ -556,6 +576,7 @@
         document.getElementById("r_need_form_num_clc").innerHTML = r_need_form_num_clc;
         document.getElementById("r_form_num").innerHTML = r_form_num;
         document.getElementById("r_form_num_max").innerHTML = r_form_num_max;
+        document.getElementById("r_form_num2").innerHTML = r_form_num;
 
         document.getElementById("r_day_power").innerHTML = r_day_power;
         document.getElementById("r_day_power_fact").innerHTML = r_day_power_fact;
@@ -569,6 +590,7 @@
 //        document.getElementById("r_days_rem").innerHTML = r_days_rem;
 
         document.getElementById("r_efficiency").innerHTML = r_efficiency;
+        document.getElementById("r_efficiency_day").innerHTML = r_efficiency_day;
 
         document.getElementById("r_trkk").innerHTML = r_trkk;
         document.getElementById("r_trk").innerHTML = r_trk;
