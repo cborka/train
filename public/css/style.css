@@ -26,21 +26,35 @@
 
 /* РАЗМЕТКА */
 
+/* ТЕЛО */
+body {
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+  #  font-family: "Segoe UI", Arial, Tahoma, Verdana, Georgia, 'Times New Roman', Times, serif;
+  #  font-family: Tahoma;
+
+  font-size: var(--main-font-size, medium);
+  color: #333;
+  padding: 3px;
+  margin: auto;
+}
+
+
 DIV.left {
   float: left;
-  margin-right: 10px;
+  xmargin-right: 10px;
 }
 DIV.right {
   float: right;
-  margin-left: 10px;
+  xmargin-left: 10px;
 }
 
 
 
-
+/* ЗАГОЛОВОК */
 DIV.header {
   text-align: left;
   padding: 0;
+  margin: auto;
   margin-top: 3px;
   margin-bottom: 3px;
   color: darkviolet;
@@ -48,17 +62,21 @@ DIV.header {
 DIV.footer {
   margin-bottom: 3px;
   position: relative; /* Нужно для задания абсолютной позиции внутренних блоков */
+  background-color: #afffdf;
 }
 
 DIV.header, DIV.footer, DIV.wrapper_1, DIV.wrapper {
-  margin-left: 3px;
-  margin-right: 3px;
+  xmargin-left: 3px;
+  xmargin-right: 3px;
+  xpadding: 10px;
   width: 100%;
+
 }
 
 DIV.wrapper_1 {
   overflow: auto;
   line-height: 1.2;
+  width: 100%;
 }
 DIV.wrapper_2 {
   overflow: auto;
@@ -67,21 +85,21 @@ DIV.wrapper_2 {
 
 DIV.leftcol {
   float: left;
-  width: 18%;
-#  background-color: #ffffdf;
+  width: 15%;
+  background-color: #ffffdf;
 
   margin-right: 15px;
-
   /*background-color: #eee;*/
 }
 DIV.rightcol {
   float: right;
   width: 15%;
-#  background-color: #ffffcf;
+  background-color: #ffffcf;
 }
-DIV.center {
+DIV.centercol {
   float: left;
-  width: 80%;
+  width: 68%;
+  background-color: honeydew;
 }
 
 /* А ЕСЛИ СМАРТФОН */
@@ -96,7 +114,6 @@ DIV.center {
   DIV.center {
     width: 100%;
   }
-
 
 }
 
@@ -153,24 +170,7 @@ div.top_menu_item {
 
 
 
-/* ТЕЛО */
-body {
-  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
-#  font-family: "Segoe UI", Arial, Tahoma, Verdana, Georgia, 'Times New Roman', Times, serif;
-#  font-family: Tahoma;
 
-  font-size: var(--main-font-size, medium);
-  color: #333;
-  padding: 1%;
-  margin: auto;
-}
-
-/* ЗАГОЛОВОК */
-div.headerz {
-  text-align: center;
-  padding: 0;
-  margin: auto;
-}
 
 /* ССЫЛКИ */
 a {
@@ -260,6 +260,51 @@ td.svod_digit {
 /*
 ** Пульс предприятия =================
 */
+
+
+div.puls0 {
+  color: green;
+  background-color: #eeeeee;
+  text-align: center;
+
+  margin: 10px;
+  padding: 10px;
+
+  width: 22%;
+
+  border: 1px solid grey;
+}
+.pfont0 {
+  font-size: xx-large;
+  font-weight: bolder;
+}
+
+
+/* А ЕСЛИ СМАРТФОН */
+@media screen and (min-width:801px) and (max-width: 1024px)
+{
+  div.puls0 {
+    width: 43%;
+  }
+
+
+}
+
+/* А ЕСЛИ СМАРТФОН */
+@media screen and (min-width:100px) and (max-width: 800px)
+{
+  div.puls0 {
+    width: 93%;
+  }
+
+
+}
+
+
+div.puls1 {
+  color: red;
+}
+
 div.puls {
   color: green;
   text-align: center;
@@ -269,9 +314,9 @@ div.puls {
   padding-left: 5px;
   padding-right: 5px;
 
-  xwidth: 400px;
+  xwidth: 30%;
 
-  border: 2px solid grey;
+  border: 1px solid grey;
 }
 div.puls100 {
   color: green;
@@ -282,6 +327,7 @@ div.puls100 {
 h1.puls {
   xcolor: green;
   xtext-align: center;
+  width: 30%;
 }
 
 /* Пульс предприятия */

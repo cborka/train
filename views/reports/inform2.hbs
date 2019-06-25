@@ -1,4 +1,4 @@
-
+<!--
     <h1 class="svod" id="sv_date"> 3 апреля 2019</h1>
     <h2 class="svod_head1" id="sv_time"> 08:00:00</h2>
 
@@ -6,7 +6,32 @@
     <button id="btnRefreshOnOff" type="button" onclick="refresh_data_on()">Включить автообновление</button>
     <br>
     <br>
+-->
 
+    <div class="left puls0" onclick="show_hide('puls_div11');">
+        <span class="pfont0" id="puls_h11">КОНТРОЛЬ</span>
+        <div class="puls1" id="puls_div11" onclick="show_hide('leftcol');">111</div>
+    </div>
+
+    <div class="left puls0" onclick="show_hide('puls_div12');">
+        <span class="pfont0" id="puls_h12">ЗАКАЗ</span>
+        <div class="puls1" id="puls_div12">222</div>
+    </div>
+
+    <div class="left puls0" onclick="show_hide('puls_div13');">
+        <span class="pfont0" id="puls_h13">МАТЕРИАЛЫ</span>
+        <div class="puls1" id="puls_div13">333</div>
+    </div>
+
+    <div class="left puls0" onclick="show_hide('puls_div14');">
+        <span class="pfont0" id="puls_h14">ОТГРУЗКА</span>
+        <div class="puls1" id="puls_div14">444</div>
+    </div>
+
+    <br>
+    <br>
+
+<!--
     <div class="puls100 wrapper_2">
         <h1 class="puls" id="puls_h1">КОНТРОЛЬ</h1>
 
@@ -16,7 +41,7 @@
 
 
     <div class="left puls" id="puls_div1" >
-        <div class="puls" onclick="document.getElementById('puls_div11').style.display = 'none';">
+        <div class="puls" onclick="show_hide('puls_div11');">
         <h1 class="puls" id="puls_h1">ЗАКАЗ</h1>
         </div>
         <div class="puls" id="puls_div11">
@@ -82,6 +107,7 @@
 
     </div>
 
+-->
 
 <script>
 
@@ -90,8 +116,8 @@
     {
         var dv = document.getElementById(div_id);
         if (dv.style.display != 'none')
-            dv.style.display != 'none'
-        else dv.style.display != 'block'    ;
+            dv.style.display = 'none'
+        else dv.style.display = 'block';
     }
 
 
