@@ -748,6 +748,114 @@ router.get('/get_sv_ost_pdnav', function(req, res, next) {
 });
 
 
+// =========================== ПУЛЬС ===============================
+// =========================== ПУЛЬС ===============================
+// =========================== ПУЛЬС ===============================
+
+router.get('/get_puls_zakaz', function(req, res, next) {
+    db.one(
+        "SELECT num_fact AS sumv" +
+        " FROM sklad s " +
+        "   WHERE sklad_rf = 25 " +
+        "     AND item_rf = 279 ")
+        .then (function (data) {
+            var result = '\
+        <table class="svod w100"> \
+                <tr> \
+                  <td class="svod_head1">Загрузка</td> \
+                <td></td> \
+                </tr> \
+                <tr>\
+                <td class="svod_label">3 пролёт</td>\
+            <td class="svod_digit" id="puls_t11">100%</td>\
+                </tr>\
+                <tr>\
+                <td class="svod_label">4 пролёт</td>\
+            <td class="svod_digit" id="puls_t12">95%</td>\
+                </tr>\
+                <tr> <td id="sv_col2_error"></td> <td></td></tr>\
+            </table>\
+';
+
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+//            result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_puls_mat', function(req, res, next) {
+    db.one(
+        "SELECT num_fact AS sumv" +
+        " FROM sklad s " +
+        "   WHERE sklad_rf = 25 " +
+        "     AND item_rf = 279 ")
+        .then (function (data) {
+            var result = '\
+            \
+                    <table class="svod w100">\n' +
+                '            <tr>\n' +
+                '                <td class="svod_head1">На сколько дней осталось </td>\n' +
+                '                <td></td>\n' +
+                '            </tr>\n' +
+                '            <tr>\n' +
+                '                <td class="svod_label">Бетон</td>\n' +
+                '                <td class="svod_digit" id="puls_t21">3</td>\n' +
+                '            </tr>\n' +
+                '            <tr>\n' +
+                '                <td class="svod_label">Арматура</td>\n' +
+                '                <td class="svod_digit" id="puls_t22">5</td>\n' +
+                '            </tr>\n' +
+                '            <tr> <td id="sv_col2_error"></td> <td></td></tr>\n' +
+                '        </table>\n';
+
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+ //           result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+router.get('/get_puls_otgr', function(req, res, next) {
+    db.one(
+        "SELECT num_fact AS sumv" +
+        " FROM sklad s " +
+        "   WHERE sklad_rf = 25 " +
+        "     AND item_rf = 279 ")
+        .then (function (data) {
+            var result = '\
+         <table class="svod w100">\n' +
+                '            <tr>\n' +
+                '                <td class="svod_head1">На сколько дней осталось места на складе</td>\n' +
+                '                <td></td>\n' +
+                '            </tr>\n' +
+                '            <tr>\n' +
+                '                <td class="svod_label">3 пролёт</td>\n' +
+                '                <td class="svod_digit" id="puls_t31">7</td>\n' +
+                '            </tr>\n' +
+                '            <tr>\n' +
+                '                <td class="svod_label">4 пролёт</td>\n' +
+                '                <td class="svod_digit" id="puls_t32">5</td>\n' +
+                '            </tr>\n' +
+                '            <tr> <td id="sv_col2_error"></td> <td></td></tr>\n' +
+                '        </table>\n';
+
+
+            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
+//            result = result + data.sumv.toFixed(0);
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
 
 
 

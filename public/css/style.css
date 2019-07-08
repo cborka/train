@@ -261,7 +261,9 @@ td.svod_digit {
 ** Пульс предприятия =================
 */
 
-
+table.w100 {
+    width: 100%;
+}
 div.puls0 {
   color: green;
   background-color: #eeeeee;

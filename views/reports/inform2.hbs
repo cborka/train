@@ -10,22 +10,24 @@
 
     <div class="left puls0" onclick="show_hide('puls_div11');">
         <span class="pfont0" id="puls_h11">КОНТРОЛЬ</span>
-        <div class="puls1" id="puls_div11" onclick="show_hide('leftcol');">111</div>
+        <div class="puls1" id="puls_div11" style="display: none;">
+            <a href="/reports/svod" target="_blank">Показать ИТОГИ</a>
+        </div>
     </div>
 
-    <div class="left puls0" onclick="show_hide('puls_div12');">
+    <div class="left puls0" onclick="get_puls_zakaz();">
         <span class="pfont0" id="puls_h12">ЗАКАЗ</span>
-        <div class="puls1" id="puls_div12">222</div>
+        <div class="puls1" id="puls_div12" style="display: none;">222</div>
     </div>
 
-    <div class="left puls0" onclick="show_hide('puls_div13');">
+    <div class="left puls0" onclick="get_puls_mat();">
         <span class="pfont0" id="puls_h13">МАТЕРИАЛЫ</span>
-        <div class="puls1" id="puls_div13">333</div>
+        <div class="puls1" id="puls_div13" style="display: none;">333</div>
     </div>
 
-    <div class="left puls0" onclick="show_hide('puls_div14');">
+    <div class="left puls0" onclick="get_puls_otgr();">
         <span class="pfont0" id="puls_h14">ОТГРУЗКА</span>
-        <div class="puls1" id="puls_div14">444</div>
+        <div class="puls1" id="puls_div14" style="display: none;">444</div>
     </div>
 
     <br>
@@ -121,8 +123,49 @@
     }
 
 
+    //
+    var set_puls_zakaz = function (reply)
+    {
+        document.getElementById("puls_div12").style.display = 'block';
+        document.getElementById("puls_div12").innerHTML = reply;
+    };
+    function get_puls_zakaz()
+    {
+        if (document.getElementById("puls_div12").style.display != 'none')
+            document.getElementById("puls_div12").style.display = 'none'
+        else
+          doQuery ("/reports/get_puls_zakaz", set_puls_zakaz);
+    }
 
 
+    //
+    var set_puls_mat = function (reply)
+    {
+        document.getElementById("puls_div13").style.display = 'block';
+        document.getElementById("puls_div13").innerHTML = reply;
+    };
+    function get_puls_mat()
+    {
+        if (document.getElementById("puls_div13").style.display != 'none')
+            document.getElementById("puls_div13").style.display = 'none'
+        else
+            doQuery ("/reports/get_puls_mat", set_puls_mat);
+    }
+
+
+    //
+    var set_puls_otgr = function (reply)
+    {
+        document.getElementById("puls_div14").style.display = 'block';
+        document.getElementById("puls_div14").innerHTML = reply;
+    };
+    function get_puls_otgr()
+    {
+        if (document.getElementById("puls_div14").style.display != 'none')
+            document.getElementById("puls_div14").style.display = 'none'
+        else
+            doQuery ("/reports/get_puls_otgr", set_puls_otgr);
+    }
 
 
 </script>
