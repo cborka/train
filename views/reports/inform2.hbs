@@ -7,7 +7,8 @@
     <br>
     <br>
 -->
-
+<button id="btnRefreshData" type="button" onclick="show_hide('puls_div13')">Обновить данные</button>
+<br>
     <div class="left puls0" onclick="show_hide('puls_div11');">
         <span class="pfont0" id="puls_h11">КОНТРОЛЬ</span>
         <div class="puls1" id="puls_div11" style="display: none;">
@@ -32,7 +33,6 @@
 
     <br>
     <br>
-
 <!--
     <div class="puls100 wrapper_2">
         <h1 class="puls" id="puls_h1">КОНТРОЛЬ</h1>
@@ -141,14 +141,27 @@
     //
     var set_puls_mat = function (reply)
     {
-        document.getElementById("puls_div13").style.display = 'block';
+//        document.getElementById("puls_div13").style.display = 'block';
+        var d13 = document.getElementById("puls_h13");
+
         document.getElementById("puls_div13").innerHTML = reply;
+//alert('xxx');
+        d13.className = 'pfont0 yellow';
+
+        var t13 = document.getElementById("puls_t21");
+        t13.className += ' pink';
+//        alert('z'+t13.innerHTML);
+ //       d13.refresh();
+
+
+
+
     };
     function get_puls_mat()
     {
-        if (document.getElementById("puls_div13").style.display != 'none')
-            document.getElementById("puls_div13").style.display = 'none'
-        else
+//        if (document.getElementById("puls_div13").style.display != 'none')
+//            document.getElementById("puls_div13").style.display = 'none'
+//        else
             doQuery ("/reports/get_puls_mat", set_puls_mat);
     }
 
@@ -167,5 +180,7 @@
             doQuery ("/reports/get_puls_otgr", set_puls_otgr);
     }
 
+
+    get_puls_mat(); //document.getElementById("puls_div13").style.display = 'block';
 
 </script>

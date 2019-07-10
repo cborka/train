@@ -787,12 +787,14 @@ router.get('/get_puls_zakaz', function(req, res, next) {
         });
 });
 
+//
+// На сколько дней хватит металл и бетона
+//
 router.get('/get_puls_mat', function(req, res, next) {
     db.one(
-        "SELECT num_fact AS sumv" +
-        " FROM sklad s " +
-        "   WHERE sklad_rf = 25 " +
-        "     AND item_rf = 279 ")
+        "SELECT " +
+        " (select MIN(days_num) from rep_mat_ost_daily3(18) where mat_name != 'Материал') AS arm_days," +
+        " (select MIN(days_num) from rep_mat_ost_daily3(4)  where mat_name != 'Материал') AS bet_days")
         .then (function (data) {
             var result = '\
             \
@@ -803,11 +805,11 @@ router.get('/get_puls_mat', function(req, res, next) {
                 '            </tr>\n' +
                 '            <tr>\n' +
                 '                <td class="svod_label">Бетон</td>\n' +
-                '                <td class="svod_digit" id="puls_t21">3</td>\n' +
+                '                <td class="svod_digit" id="puls_t21">'+data.bet_days+'</td>\n' +
                 '            </tr>\n' +
                 '            <tr>\n' +
                 '                <td class="svod_label">Арматура</td>\n' +
-                '                <td class="svod_digit" id="puls_t22">5</td>\n' +
+                '                <td class="svod_digit" id="puls_t22">'+data.arm_days+'</td>\n' +
                 '            </tr>\n' +
                 '            <tr> <td id="sv_col2_error"></td> <td></td></tr>\n' +
                 '        </table>\n';
