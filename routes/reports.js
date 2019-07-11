@@ -439,26 +439,31 @@ router.post('/get_sklad_arm', function(req, res, next) {
 
 
 //
-// Остатки АРМАТУРЫ по дням начиная от сегодня (на сколько дней хватит металла)
+// Остатки МАТЕРИАЛОВ (арматура, бетон) по дням начиная от сегодня (на сколько дней хватит)
 //
-router.post('/get_arm_ost_daily', function(req, res, next) {
+router.post('/get_mat_ost_daily', function(req, res, next) {
+    var mat = req.body.mat;
     var array_length = 0;
     var an = 0;
 
+    var mat_grp = 0; //арматура
+    if (mat == 'АРМАТУРА') mat_grp = 18;
+    else if (mat == 'БЕТОН') mat_grp = 4;
+
     db.any(
-        "select arm_name, arm_num from rep_arm_ost_daily2()")
+        "SELECT mat_name, days_num, mat_num FROM rep_mat_ost_daily3("+mat_grp+") ORDER BY days_num")
     .then (function (data) {
 
     var result = '';
-    result = result + 'Остатки АРМАТУРЫ по дням начиная от сегодня (на сколько дней хватит металла)<br>';
+    result = result +mat+': Прогноз остатков на складе по дням начиная от сегодня <br>(на сколько дней хватит)<br>';
     result = result + '<br><table class="report" align="left">';
 
-    array_length = data[0].arm_num.length;
+    array_length = data[0].mat_num.length;
 
     // Первая строка - шапка
-    result = result + '<thead><td  class="report left">' + data[0].arm_name + '</td>';
+    result = result + '<thead><td  class="report left">' + data[0].mat_name + '</td><td class="report">Дней</td>';
     for(var j = 0; j < array_length; j++)
-        result = result + '<td  class="report ">' + data[0].arm_num[j] + '</td>';
+        result = result + '<td  class="report ">' + data[0].mat_num[j] + '</td>';
     result = result + '</thead>';
 
     // Строки данных
@@ -466,10 +471,10 @@ router.post('/get_arm_ost_daily', function(req, res, next) {
 
 //        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
 
-        result = result + '<tr><td  class="report left">' + data[i].arm_name + '</td>';
+        result = result + '<tr><td class="report left">' + data[i].mat_name + '</td><td class="report">' + data[i].days_num + '</td>';
 
         for(j = 0; j < array_length; j++) {
-            an = +data[i].arm_num[j];
+            an = +data[i].mat_num[j];
             if (an == 0)  an= '';
             if (an < 0) an = '<span class="silver">' + an + '</span>';
             result = result + '<td  class="report ">' + an + '</td>';
@@ -491,7 +496,7 @@ router.post('/get_arm_ost_daily', function(req, res, next) {
 
 });
 //
-// Остатки БЕТОНА по дням начиная от сегодня (на сколько дней хватит металла)
+// Остатки БЕТОНА по дням начиная от сегодня (на сколько дней хватит бетона)
 //
 router.post('/get_bet_ost_daily', function(req, res, next) {
     var array_length = 0;
@@ -798,21 +803,21 @@ router.get('/get_puls_mat', function(req, res, next) {
         .then (function (data) {
             var result = '\
             \
-                    <table class="svod w100">\n' +
-                '            <tr>\n' +
-                '                <td class="svod_head1">На сколько дней осталось </td>\n' +
-                '                <td></td>\n' +
-                '            </tr>\n' +
-                '            <tr>\n' +
-                '                <td class="svod_label">Бетон</td>\n' +
-                '                <td class="svod_digit" id="puls_t21">'+data.bet_days+'</td>\n' +
-                '            </tr>\n' +
-                '            <tr>\n' +
-                '                <td class="svod_label">Арматура</td>\n' +
-                '                <td class="svod_digit" id="puls_t22">'+data.arm_days+'</td>\n' +
-                '            </tr>\n' +
-                '            <tr> <td id="sv_col2_error"></td> <td></td></tr>\n' +
-                '        </table>\n';
+                    <table class="svod w100">' +
+                '            <tr>' +
+                '                <td class="svod_head1">На сколько дней осталось </td>' +
+                '                <td></td>' +
+                '            </tr>' +
+                '            <tr>' +
+                '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_bet_ost_daily" title="Показать по видам бетона" target="_blank">Бетон</a></td>' +
+                '                <td class="svod_digit" id="puls_t21">'+data.bet_days+'</td>' +
+                '            </tr>' +
+                '            <tr>' +
+                '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_arm_ost_daily" title="Показать по видам арматуры" target="_blank">Арматура</a></td>' +
+                '                <td class="svod_digit" id="puls_t22">'+data.arm_days+'</td>' +
+                '            </tr>' +
+                '            <tr> <td id="sv_col2_error"></td> <td></td></tr>' +
+                '        </table>';
 
 
             data.sumv = Math.round(data.sumv * 1000) / 1000 ;
@@ -859,6 +864,12 @@ router.get('/get_puls_otgr', function(req, res, next) {
 });
 
 
+router.get('/inform_any', function(req, res, next) {
+
+    res.render('reports/inform_any'); // Показ формы
+//    res.render('/reports/inform_any', {data: data}); // Показ формы
+
+});
 
 
 module.exports = router;

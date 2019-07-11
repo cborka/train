@@ -1,0 +1,46 @@
+<br>
+<div id="inform" align="left" style='float: left; overflow: auto;'></div>
+
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+<script>
+
+// Получить GET-параметр из адресной строки
+function get(name)
+{
+  if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+  return decodeURIComponent(name[1]);
+}
+
+function show_action()
+{
+  var action = get('action');
+
+  if (action == 'show_arm_ost_daily') get_arm_ost_daily();
+  else if (action == 'show_bet_ost_daily') get_bet_ost_daily();
+
+
+}
+var set_inform = function (reply)
+{
+    document.getElementById("inform").innerHTML = reply;
+};
+
+// Показать прогноз по ежедневным остаткам АРМАТУРЫ
+function get_arm_ost_daily()
+{
+    doQuery ("/reports/get_mat_ost_daily", set_inform,'&mat=АРМАТУРА');
+}
+// Показать прогноз по ежедневным остаткам БЕТОНА
+function get_bet_ost_daily()
+{
+    doQuery ("/reports/get_mat_ost_daily", set_inform,'&mat=БЕТОН');
+}
+show_action();
+
+//alert(get('action'));
+//document.getElementById("inform").innerHTML = get('action');
+
+</script>

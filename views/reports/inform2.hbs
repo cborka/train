@@ -6,34 +6,37 @@
     <button id="btnRefreshOnOff" type="button" onclick="refresh_data_on()">Включить автообновление</button>
     <br>
     <br>
--->
 <button id="btnRefreshData" type="button" onclick="show_hide('puls_div13')">Обновить данные</button>
+-->
 <br>
-    <div class="left puls0" onclick="show_hide('puls_div11');">
-        <span class="pfont0" id="puls_h11">КОНТРОЛЬ</span>
+    <div class="left puls0">
+        <span class="pfont0" id="puls_h11" onclick="show_hide('puls_div11');">КОНТРОЛЬ</span>
         <div class="puls1" id="puls_div11" style="display: none;">
             <a href="/reports/svod" target="_blank">Показать ИТОГИ</a>
         </div>
     </div>
 
-    <div class="left puls0" onclick="get_puls_zakaz();">
-        <span class="pfont0" id="puls_h12">ЗАКАЗ</span>
+    <div class="left puls0">
+        <span class="pfont0" id="puls_h12" onclick="get_puls_zakaz();">ЗАКАЗ</span>
         <div class="puls1" id="puls_div12" style="display: none;">222</div>
     </div>
 
-    <div class="left puls0" onclick="get_puls_mat();">
-        <span class="pfont0" id="puls_h13">МАТЕРИАЛЫ</span>
+    <div class="left puls0">
+        <span class="pfont0" id="puls_h13" onclick="get_puls_mat();">МАТЕРИАЛЫ</span>
         <div class="puls1" id="puls_div13" style="display: none;">333</div>
     </div>
 
-    <div class="left puls0" onclick="get_puls_otgr();">
-        <span class="pfont0" id="puls_h14">ОТГРУЗКА</span>
+    <div class="left puls0">
+        <span class="pfont0" id="puls_h14" onclick="get_puls_otgr();">ОТГРУЗКА</span>
         <div class="puls1" id="puls_div14" style="display: none;">444</div>
     </div>
 
     <br>
     <br>
+
 <!--
+<a href="/reports/inform_any?action=show_arm_ost_daily" target="_blank">Показать прогноз по ежедневным остаткам металла</a>
+
     <div class="puls100 wrapper_2">
         <h1 class="puls" id="puls_h1">КОНТРОЛЬ</h1>
 
@@ -113,6 +116,8 @@
 
 <script>
 
+    var is_start = true;
+
     // Показать, спрятать таблицу
     function show_hide(div_id)
     {
@@ -141,27 +146,39 @@
     //
     var set_puls_mat = function (reply)
     {
-//        document.getElementById("puls_div13").style.display = 'block';
+        if (is_start == false)
+          document.getElementById("puls_div13").style.display = 'block';
         var d13 = document.getElementById("puls_h13");
 
         document.getElementById("puls_div13").innerHTML = reply;
-//alert('xxx');
+
         d13.className = 'pfont0 yellow';
 
         var t13 = document.getElementById("puls_t21");
-        t13.className += ' pink';
+
+        var bet_days = +document.getElementById("puls_t21").innerHTML;
+        var arm_days = +document.getElementById("puls_t22").innerHTML;
+
+        var min_days = Math.min(bet_days, arm_days);
+//        alert(min_days);
+
+        if (min_days >= 7)
+            d13.className = 'pfont0 green';
+        else if (min_days >= 3)
+            d13.className = 'pfont0 yellow';
+        else
+            d13.className = 'pfont0 red';
+
 //        alert('z'+t13.innerHTML);
  //       d13.refresh();
-
-
 
 
     };
     function get_puls_mat()
     {
-//        if (document.getElementById("puls_div13").style.display != 'none')
-//            document.getElementById("puls_div13").style.display = 'none'
-//        else
+        if (document.getElementById("puls_div13").style.display != 'none')
+            document.getElementById("puls_div13").style.display = 'none'
+        else
             doQuery ("/reports/get_puls_mat", set_puls_mat);
     }
 
@@ -180,7 +197,10 @@
             doQuery ("/reports/get_puls_otgr", set_puls_otgr);
     }
 
+    function is_not_start() {is_start = false}
 
-    get_puls_mat(); //document.getElementById("puls_div13").style.display = 'block';
+    get_puls_mat(); //document.getElementById("puls_div13").style.display = 'none';
+
+    setTimeout(is_not_start, 2000);
 
 </script>

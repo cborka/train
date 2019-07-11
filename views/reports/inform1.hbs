@@ -328,8 +328,8 @@
     {
 //        document.getElementById("formovka").innerHTML = '';
 
-        doQuery ("/reports/get_arm_ost_daily", set_arm_ost_daily,
-                '&dtb=' + encodeURIComponent(PlanName)
+        doQuery ("/reports/get_mat_ost_daily", set_arm_ost_daily
+                ,'&mat=АРМАТУРА'
         );
     }
     //
@@ -354,9 +354,12 @@
     {
 //        document.getElementById("formovka").innerHTML = '';
 
-        doQuery ("/reports/get_bet_ost_daily", set_bet_ost_daily,
-                '&dtb=' + encodeURIComponent(PlanName)
+        doQuery ("/reports/get_mat_ost_daily", set_bet_ost_daily
+                ,'&mat=БЕТОН'
         );
+//        doQuery ("/reports/get_bet_ost_daily", set_bet_ost_daily,
+//                '&dtb=' + encodeURIComponent(PlanName)
+//        );
     }
 
     
