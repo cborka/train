@@ -491,63 +491,63 @@ router.post('/get_mat_ost_daily', function(req, res, next) {
     res.send(result);
 })
     .catch(function (error) {
-        res.send(error);
+        res.send('ОШИБКА: '+error);
     });
 
 //  res.send('Здесь формовка за ' + dt+10000);
 
 });
+
+
 //
-// Остатки БЕТОНА по дням начиная от сегодня (на сколько дней хватит бетона)
+// Остатки МЕСТА НА СКЛАДЕ ЖБИ на сколько дней хватит)
 //
-router.post('/get_bet_ost_daily', function(req, res, next) {
+router.post('/get_num_places_daily', function(req, res, next) {
     var array_length = 0;
     var an = 0;
 
     db.any(
-        "select bet_name, bet_num from rep_bet_ost_daily2()")
+        "SELECT sd_name, mat_name, days_num, num_fact, num_max, place_num  FROM rep_num_places_daily3() ORDER BY 1,3,2")
         .then (function (data) {
 
             var result = '';
-            result = result + 'Остатки БЕТОНА по дням начиная от сегодня (на сколько дней хватит бетона)<br>';
+            result = result + 'На сколько дней хватит МЕСТ НА СКЛАДЕ ЖБИ по дням начиная от сегодня<br>';
             result = result + '<br><table class="report" align="left">';
 
-            array_length = data[0].bet_num.length;
+            array_length = data[0].place_num.length;
 
             // Первая строка - шапка
-            result = result + '<thead><td  class="report left">' + data[0].bet_name + '</td>';
+            result = result + '<thead><td  class="report left">Пролет</td><td class="report left">ЖБИ</td><td class="report">Дней</td>'+
+                '<td class="report">Кол-во</td><td class="report">Мест</td>';
             for(var j = 0; j < array_length; j++)
-                result = result + '<td  class="report ">' + data[0].bet_num[j] + '</td>';
+                result = result + '<td  class="report ">' + data[0].place_num[j] + '</td>';
             result = result + '</thead>';
 
             // Строки данных
             for (var i = 1; i < data.length; i++) {
 
-//        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
-
-                result = result + '<tr><td  class="report left">' + data[i].bet_name + '</td>';
+                result = result + '<tr>' +
+                    '<td class="report left">' + data[i].sd_name + '</td>' +
+                    '<td class="report left">' + data[i].mat_name + '</td>' +
+                    '<td class="report right">' + Math.round(+data[i].days_num) + '</td>' +
+                    '<td class="report right">' + Math.round(+data[i].num_fact) + '</td>' +
+                    '<td class="report right">' + Math.round(+data[i].num_max) + '</td>'
+                ;
 
                 for(j = 0; j < array_length; j++) {
-                    an = +data[i].bet_num[j];
+                    an = Math.round(+data[i].place_num[j]);
                     if (an == 0)  an= '';
                     if (an < 0) an = '<span class="silver">' + an + '</span>';
-                    result = result + '<td  class="report ">' + an + '</td>';
-
-//            if (data[i].bet_num[j] == 0)  data[i].bet_num[j] = '';
-//            result = result + '<td  class="report ">' + data[i].bet_num[j] + '</td>';
+                    result = result + '<td  class="report right">' + an + '</td>';
                 }
-
                 result = result + '</tr>';
             }
             result = result +'</table>';
             res.send(result);
         })
         .catch(function (error) {
-            res.send(error);
+            res.send('ОШИБКА: '+error);
         });
-
-//  res.send('Здесь формовка за ' + dt+10000);
-
 });
 
 
@@ -853,7 +853,8 @@ router.get('/get_puls_otgr', function(req, res, next) {
                     mindays = data[i].days_num;
 
             }
-            result = result + '<tr><td class="svod_label">Осталось дней</td><td class="svod_digit"  id="mindays4">' + mindays + '</td></tr>';
+            result = result + '<tr><td class="svod_label">Осталось дней <a href="/reports/inform_any?action=get_num_places_daily" title="Показать по каждому ЖБИ" target="_blank"> (подробнее)</a>' +
+                '</td><td class="svod_digit"  id="mindays4">' + mindays + '</td></tr>';
             result = result +'</table>';
 
             res.send(result);
