@@ -451,7 +451,7 @@ router.post('/get_mat_ost_daily', function(req, res, next) {
     else if (mat == 'БЕТОН') mat_grp = 4;
 
     db.any(
-        "SELECT mat_name, days_num, mat_num FROM rep_mat_ost_daily3("+mat_grp+") ORDER BY days_num")
+        "SELECT mat_name, days_num, mat_num FROM rep_mat_ost_daily3("+mat_grp+") ORDER BY days_num, mat_name")
     .then (function (data) {
 
     var result = '';
@@ -470,14 +470,16 @@ router.post('/get_mat_ost_daily', function(req, res, next) {
     for (var i = 1; i < data.length; i++) {
 
 //        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+//        data[i].mat_num = Math.round(data[i].mat_num);
 
         result = result + '<tr><td class="report left">' + data[i].mat_name + '</td><td class="report">' + data[i].days_num + '</td>';
 
         for(j = 0; j < array_length; j++) {
-            an = +data[i].mat_num[j];
+            an = Math.round(+data[i].mat_num[j]);
+//            an = +data[i].mat_num[j];
             if (an == 0)  an= '';
             if (an < 0) an = '<span class="silver">' + an + '</span>';
-            result = result + '<td  class="report ">' + an + '</td>';
+            result = result + '<td  class="report right">' + an + '</td>';
 
 //            if (data[i].arm_num[j] == 0)  data[i].arm_num[j] = '';
 //            result = result + '<td  class="report ">' + data[i].arm_num[j] + '</td>';
@@ -829,33 +831,31 @@ router.get('/get_puls_mat', function(req, res, next) {
         });
 });
 
+//
+// На сколько дней хватит места на складе ЖБИ
+//
 router.get('/get_puls_otgr', function(req, res, next) {
-    db.one(
-        "SELECT num_fact AS sumv" +
-        " FROM sklad s " +
-        "   WHERE sklad_rf = 25 " +
-        "     AND item_rf = 279 ")
+    db.any(
+        "select sd_name, MIN(days_num) AS days_num from rep_num_places_daily3() GROUP BY sd_name")
         .then (function (data) {
-            var result = '\
-         <table class="svod w100">\n' +
-                '            <tr>\n' +
-                '                <td class="svod_head1">На сколько дней осталось места на складе</td>\n' +
-                '                <td></td>\n' +
-                '            </tr>\n' +
-                '            <tr>\n' +
-                '                <td class="svod_label">3 пролёт</td>\n' +
-                '                <td class="svod_digit" id="puls_t31">7</td>\n' +
-                '            </tr>\n' +
-                '            <tr>\n' +
-                '                <td class="svod_label">4 пролёт</td>\n' +
-                '                <td class="svod_digit" id="puls_t32">5</td>\n' +
-                '            </tr>\n' +
-                '            <tr> <td id="sv_col2_error"></td> <td></td></tr>\n' +
-                '        </table>\n';
+            var mindays = 100;
 
+            var result = '<table class="svod w100">';
 
-            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
-//            result = result + data.sumv.toFixed(0);
+            result = result + '<tr><td class="svod_head1">На сколько дней осталось места на складе ЖБИ</td><td class="svod_digit "></td></tr>';
+
+            // Строки данных
+            for (var i = 1; i < data.length; i++) {
+
+                result = result + '<tr><td  class="svod_label">' + data[i].sd_name + '</td><td class="svod_digit">' + data[i].days_num + '</td></tr>';
+
+                if (mindays > +data[i].days_num)
+                    mindays = data[i].days_num;
+
+            }
+            result = result + '<tr><td class="svod_label">Осталось дней</td><td class="svod_digit"  id="mindays4">' + mindays + '</td></tr>';
+            result = result +'</table>';
+
             res.send(result);
         })
         .catch(function (error) {
@@ -864,6 +864,9 @@ router.get('/get_puls_otgr', function(req, res, next) {
 });
 
 
+//
+// Рандомная страница, содержимое зависит от переданного в неё GET-параметра
+//
 router.get('/inform_any', function(req, res, next) {
 
     res.render('reports/inform_any'); // Показ формы

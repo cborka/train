@@ -123,7 +123,7 @@
     {
         var dv = document.getElementById(div_id);
         if (dv.style.display != 'none')
-            dv.style.display = 'none'
+            dv.style.display = 'none';
         else dv.style.display = 'block';
     }
 
@@ -137,62 +137,67 @@
     function get_puls_zakaz()
     {
         if (document.getElementById("puls_div12").style.display != 'none')
-            document.getElementById("puls_div12").style.display = 'none'
+            document.getElementById("puls_div12").style.display = 'none';
         else
           doQuery ("/reports/get_puls_zakaz", set_puls_zakaz);
     }
 
 
-    //
+    // Прогноз ОСТАТКОВ МАТЕРАЛОВ на складе по дням начиная от сегодня (на сколько дней хватит)
     var set_puls_mat = function (reply)
     {
         if (is_start == false)
           document.getElementById("puls_div13").style.display = 'block';
+
+        // Заголовок, который надо будет раскрасить в зависимости от результатов запроса
         var d13 = document.getElementById("puls_h13");
 
         document.getElementById("puls_div13").innerHTML = reply;
 
-        d13.className = 'pfont0 yellow';
-
-        var t13 = document.getElementById("puls_t21");
+        if (reply.substr(0, 6) == 'ОШИБКА') return;
 
         var bet_days = +document.getElementById("puls_t21").innerHTML;
         var arm_days = +document.getElementById("puls_t22").innerHTML;
 
         var min_days = Math.min(bet_days, arm_days);
-//        alert(min_days);
 
-        if (min_days >= 7)
-            d13.className = 'pfont0 green';
-        else if (min_days >= 3)
-            d13.className = 'pfont0 yellow';
-        else
-            d13.className = 'pfont0 red';
-
-//        alert('z'+t13.innerHTML);
- //       d13.refresh();
-
+        if (min_days >= 7)      d13.className = 'pfont0 green';
+        else if (min_days >= 3) d13.className = 'pfont0 yellow';
+        else                    d13.className = 'pfont0 red';
 
     };
     function get_puls_mat()
     {
         if (document.getElementById("puls_div13").style.display != 'none')
-            document.getElementById("puls_div13").style.display = 'none'
+            document.getElementById("puls_div13").style.display = 'none';
         else
             doQuery ("/reports/get_puls_mat", set_puls_mat);
     }
 
 
-    //
+    // Прогноз МЕСТА НА СКЛАДЕ по дням начиная от сегодня (на сколько дней хватит)
     var set_puls_otgr = function (reply)
     {
-        document.getElementById("puls_div14").style.display = 'block';
+        if (is_start == false)
+          document.getElementById("puls_div14").style.display = 'block';
+
+        // Заголовок, который надо будет раскрасить в зависимости от результатов запроса
+        var d14 = document.getElementById("puls_h14");
+
         document.getElementById("puls_div14").innerHTML = reply;
+
+        if (reply.substr(0, 6) == 'ОШИБКА') return;
+
+        var min_days4 = +document.getElementById("mindays4").innerHTML;
+//alert('xxx');
+        if (min_days4 >= 7)      d14.className = 'pfont0 green';
+        else if (min_days4 >= 3) d14.className = 'pfont0 yellow';
+        else                    d14.className = 'pfont0 red';
     };
     function get_puls_otgr()
     {
         if (document.getElementById("puls_div14").style.display != 'none')
-            document.getElementById("puls_div14").style.display = 'none'
+            document.getElementById("puls_div14").style.display = 'none';
         else
             doQuery ("/reports/get_puls_otgr", set_puls_otgr);
     }
@@ -200,7 +205,8 @@
     function is_not_start() {is_start = false}
 
     get_puls_mat(); //document.getElementById("puls_div13").style.display = 'none';
+    get_puls_otgr();
 
-    setTimeout(is_not_start, 2000);
+    setTimeout(is_not_start, 1500);
 
 </script>
