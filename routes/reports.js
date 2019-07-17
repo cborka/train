@@ -760,33 +760,33 @@ router.get('/get_sv_ost_pdnav', function(req, res, next) {
 // =========================== ПУЛЬС ===============================
 
 router.get('/get_puls_zakaz', function(req, res, next) {
-    db.one(
-        "SELECT num_fact AS sumv" +
-        " FROM sklad s " +
-        "   WHERE sklad_rf = 25 " +
-        "     AND item_rf = 279 ")
+    db.any(
+        "SELECT sd_name, efficiency FROM rep_efficiency3() ORDER BY sd_name")
         .then (function (data) {
-            var result = '\
-        <table class="svod w100"> \
-                <tr> \
-                  <td class="svod_head1">Загрузка</td> \
-                <td></td> \
-                </tr> \
-                <tr>\
-                <td class="svod_label">3 пролёт</td>\
-            <td class="svod_digit" id="puls_t11">100%</td>\
-                </tr>\
-                <tr>\
-                <td class="svod_label">4 пролёт</td>\
-            <td class="svod_digit" id="puls_t12">95%</td>\
-                </tr>\
-                <tr> <td id="sv_col2_error"></td> <td></td></tr>\
-            </table>\
-';
+            var mindays = 100;
+
+            var result = '<table class="svod w100">';
+
+            result = result + '<tr><td class="svod_head1">Загрузка</td><td class="svod_digit "></td></tr>';
+
+            // Строки данных
+            for (var i = 0; i < data.length; i++) {
+
+                data[i].efficiency = Math.round(data[i].efficiency * 100) / 100 ;
+
+                result = result + '<tr><td  class="svod_label">' + data[i].sd_name + '</td><td class="svod_digit">' + data[i].efficiency + '%</td></tr>';
+
+                if (mindays > +data[i].efficiency)
+                    mindays = data[i].efficiency;
 
 
-            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
-//            result = result + data.sumv.toFixed(0);
+            }
+//            result = result + '<tr><td class="svod_label">Эффективность <a href="/reports/inform_any?action=get_efficiency" title="Показать эффективность по каждому ЖБИ" target="_blank"> (подробнее)</a>' +
+            result = result + '<tr><td class="svod_label">Минимальная эффективность' +
+                '</td><td class="svod_digit"  id="mindays1">' + mindays + '%</td></tr>';
+            result = result +'</table>';
+
+
             res.send(result);
         })
         .catch(function (error) {
@@ -821,9 +821,6 @@ router.get('/get_puls_mat', function(req, res, next) {
                 '            <tr> <td id="sv_col2_error"></td> <td></td></tr>' +
                 '        </table>';
 
-
-            data.sumv = Math.round(data.sumv * 1000) / 1000 ;
- //           result = result + data.sumv.toFixed(0);
             res.send(result);
         })
         .catch(function (error) {

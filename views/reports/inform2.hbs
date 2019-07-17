@@ -131,8 +131,24 @@
     //
     var set_puls_zakaz = function (reply)
     {
-        document.getElementById("puls_div12").style.display = 'block';
+//        document.getElementById("puls_div12").style.display = 'block';
+//        document.getElementById("puls_div12").innerHTML = reply;
+
+        if (is_start == false)
+            document.getElementById("puls_div12").style.display = 'block';
+
+        // Заголовок, который надо будет раскрасить в зависимости от результатов запроса
+        var d14 = document.getElementById("puls_h12");
+
         document.getElementById("puls_div12").innerHTML = reply;
+
+        if (reply.substr(0, 6) == 'ОШИБКА') return;
+
+        var min_days1 = +document.getElementById("mindays1").innerHTML;
+
+        if (min_days1 >= 20)      d14.className = 'pfont0 green';
+        else if (min_days1 >= 15) d14.className = 'pfont0 yellow';
+        else                    d14.className = 'pfont0 red';
     };
     function get_puls_zakaz()
     {
@@ -204,6 +220,7 @@
 
     function is_not_start() {is_start = false}
 
+    get_puls_zakaz();
     get_puls_mat(); //document.getElementById("puls_div13").style.display = 'none';
     get_puls_otgr();
 
