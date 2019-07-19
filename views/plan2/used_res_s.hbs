@@ -1,0 +1,51 @@
+<h1>Использование общезаводских ресурсов по Промплощадке №2</h1>
+<div><p>...<br>
+</p></div>
+<a href="/plan2/used_res_addnew" title="Добавить" > Добавить </a>
+<div>
+    <table class="list">
+        <tr>
+            <td class="list"><b>Подразделение</b></td>
+            <td class="list"><b>Дата</b></td>
+            <td class="list"><b>Смена</b></td>
+            <td class="list"><b>Ресурс</b></td>
+            <td class="list"><b>Количество</b></td>
+            <!--            <td class="list">Кнопки</td> -->
+        </tr>
+        {{#each data}}
+            <tr>
+                <td class="list">{{sd_name}}</td>
+                <td class="list">{{dt}}</td>
+                <td class="list">{{smena}}</td>
+                <td class="list">{{item_name}}</td>
+                <td class="list">{{res_num}}</td>
+                <td class="list">
+                    <button type="button" onclick="edit_used_res({{sd_rf}},{{item_rf}},{{dt}},{{smena}} )">Изменить</button>
+                    <button type="button" onclick="delete_used_res({{sd_rf}},{{item_rf}},{{dt}},{{smena}},'{{sd_name}}','{{item_name}}')">Удалить</button>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
+<a href="/plan2/used_res_addnew" title="Добавить" > Добавить </a>
+<br>
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+<script>
+
+    function delete_used_res(sd_rf, item_rf, dt, smena, sd_name, item_name) {
+
+        var result = confirm("Удалить "+plan_name+'/'+sd_name+'/'+item_name+ " ?");
+        if (result) {
+            location.href = '/plan2/used_res_delete/'+sd_rf+'/'+item_rf+'/'+dt+'/'+smena;
+        }
+        else
+            erro("Оставляю "+'/'+sd_name+'/'+item_name+'/'+dt+'/'+smena+" !");
+    }
+
+    function edit_used_res(sd_rf, item_rf, dt, smena) {
+        location.href = '/plan2/used_res/'+sd_rf+'/'+item_rf+'/'+dt+'/'+smena;
+    }
+
+</script>

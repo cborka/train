@@ -80,7 +80,7 @@
     si.onkeyup = onk;
     function onk(f) {
         if (f.keyCode == 13) setval(this);       // здесь this - это список выбора аматуры (select)
-      else if (f.keyCode == 27) {this.onblur(); gcell.focus(); }
+      else if (f.keyCode == 27) {this.onblur(); gcell.focus(); } // Перевод фокуса со списка на редактируемую ячейку
     }
 
     // При получении фокуса на ячейку с выбором из списка
@@ -177,7 +177,7 @@
     function save_row(t)
     {
         if (doc_id.value == "0") {
-            alert("Сначала сохраните Шапку документа!")
+            alert("Сначала сохраните Шапку документа!");
             return;
         }
 
@@ -256,7 +256,7 @@
     {
         si.innerHTML = reply;
         si.style.visibility = 'hidden';
-    }
+    };
 
     // Изготовить список подразделений для выбора
     function get_sd_names()
@@ -267,7 +267,7 @@
     {
         document.getElementById("sd_name").innerHTML = reply;
         document.getElementById("sd_name").value = '{{data.sd_name}}';
-    }
+    };
 
    get_arm_names();
    get_sd_names();

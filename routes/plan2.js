@@ -2064,4 +2064,143 @@ router.post('/save_sd_form_params', function(req, res, next) {
 });
 
 
+
+//====== Общецеховые ИСПОЛЬЗУЕМЫЕ РЕСУРСЫ ======= таблица used_res =========================================================
+// То, что сделано
+
+//
+// Показать список ИСПОЛЬЗУЕМЫЕ РЕСУРСЫ
+//
+router.get('/used_res_s', function(req, res, next) {
+    var where_clause = '';
+
+    db.any(
+        "SELECT pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, CAST(pp.dt AS VARCHAR) AS dt, smena, res_num " +
+        " FROM ((used_res pp " +
+        "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
+        "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+        " ORDER BY pp.dt, pp.smena, sd.item_name, item.item_name ")
+        .then(function (data) {
+            for (var i = 0; i < data.length; i++) {
+                data[i].num_fact = Math.round(data[i].num_fact * 1000) / 1000
+            }
+            res.render('plan2/used_res_s', {data: data}); // Показ формы
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА: '+error);
+        });
+});
+
+//
+// Добавить новую строку в ФАКТ
+//
+router.get('/used_res_addnew', function(req, res, next) {
+    var spr_name = req.params.spr_name;
+    db.one("SELECT 0 AS sd_rf, 'Цех 3' AS sd_name, 0 AS item_rf, 'Газ' AS item_name, CAST(CURRENT_DATE AS VARCHAR) AS dt, 1 AS smena, 0 AS res_num ")
+        .then(function (data) {
+
+//            data.spr_name = spr_name;
+
+            res.render('plan2/used_res', data);
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА: '+error);
+        });
+});
+/*
+//
+// Показать/обновить строку ФАКТа
+//
+router.get('/plan_fact/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+    var spr_name = req.params.spr_name;
+    var plan_rf = req.params.plan_rf;
+    var sd_rf = req.params.sd_rf;
+    var item_rf = req.params.item_rf;
+    db.one(
+        "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
+        "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, CAST(pp.dt AS VARCHAR) AS dt, num_fact " +
+        " FROM (((plan_fact pp " +
+        "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
+        "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
+        "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
+        " WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
+        .then(function (data) {
+
+            data.num_fact = Math.round(data.num_fact * 1000) / 1000
+
+            data.spr_name = spr_name;
+
+            res.render('plan2/plan_fact', data);
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+});
+*/
+//
+// Добавление и корректировка строки ФАКТа
+//
+router.post('/used_res/update', function(req, res, next) {
+//    var spr_name = req.body.spr_name;
+    var sd_name = req.body.sd_name;
+    var item_name = req.body.item_name;
+    var dt = req.body.dt;
+    var smena = req.body.smena;
+    var res_num = req.body.res_num;
+    var old_dt = req.body.old_dt;
+    var old_smena = req.body.old_smena;
+    var old_sd_rf = req.body.old_sd_rf;
+    var old_item_rf = req.body.old_item_rf;
+    if (old_sd_rf > 0 ) {
+//  Обновление
+        db.none(
+            "UPDATE used_res " +
+            "SET sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$1), " +
+            "    item_rf=(SELECT item_id FROM item_list WHERE spr_rf = 965 AND item_name=$2), " +
+            "    dt=$3, smena=$4, res_num=$5 " +
+            "WHERE sd_rf=$6 AND item_rf=$7 AND dt=$8 AND smena=$9",
+            [sd_name, item_name, dt, smena, res_num, old_sd_rf, old_item_rf, old_dt, old_smena])
+            .then (function () {
+                res.redirect('/plan2/used_res_s');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА: '+error);
+            });
+    }
+    else {
+//  Добавление
+        db.none(
+            "INSERT INTO used_res (sd_rf, item_rf, dt, smena, res_num) " +
+            " VALUES (" +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$1), " +
+            "  (SELECT item_id FROM item_list WHERE spr_rf = 965 AND item_name=$2), $3, $4, $5)",
+            [sd_name, item_name, dt, smena, res_num])
+            .then (function (data) {
+                res.redirect('/plan2/used_res_s');
+            })
+            .catch(function (error) {
+                res.send('ОШИБКА: '+error);
+            });
+    }
+});
+/*
+// Удалить ФАКТ
+router.get('/plan_fact_delete/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
+    var spr_name = req.params.spr_name;
+    var plan_rf = req.params.plan_rf;
+    var sd_rf = req.params.sd_rf;
+    var item_rf = req.params.item_rf;
+    db.none("DELETE FROM plan_fact WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
+        .then(function () {
+            res.redirect('/plan2/plan_fact_s/'+spr_name); // Обновление списка
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+});
+
+*/
+
+
+
 module.exports = router;

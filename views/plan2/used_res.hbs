@@ -1,0 +1,75 @@
+<form action="/plan2/used_res/update" method="POST" >
+    <table class="form">
+        <tr>
+        <tr>
+            <td><label>Подразделение:</label></td>
+            <td><select width="100%" size="1" name='sd_name' id='sd_name' value="{{sd_name}}"></select>
+                <input id="old_sd_rf" type="text" name="old_sd_rf" readonly value={{sd_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Предмет:</label></td>
+            <td>
+                <select width="100%" size="1" name='item_name' id='item_name' value="{{item_name}}"></select>
+                <input id="old_item_rf" type="text" name="old_item_rf" readonly value={{item_rf}} hidden >
+            </td>
+        </tr>
+        <tr>
+            <td><label>Дата ГГГГ-ММ-ДД</label></td>
+            <td>
+                <input id="dt" type="date" name="dt" value="{{dt}}" ></td>
+                <input id="old_dt" type="date" name="old_dt" readonly value={{dt}} hidden >
+        </tr>
+        <tr>
+            <td><label>Смена:</label></td>
+            <td><input id="smena" type="number" name="smena" step="1" value={{smena}} ></td>
+            <td><input id="old_smena" type="number" name="old_smena" step="1" value={{smena}} hidden></td>
+        </tr>
+        <tr>
+            <td><label>Количество:</label></td>
+            <td><input id="res_num" type="number" name="res_num" step="0.001" value={{res_num}}></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button type="submit" >Сохранить</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="hint" ></div>
+                <div id="erro" ></div>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+
+    // Изготовить список подразделений для выбора
+    var set_sd_names = function (reply)
+    {
+        document.getElementById("sd_name").innerHTML = reply;
+        document.getElementById("sd_name").value = '{{sd_name}}';
+    };
+    function get_sd_names()
+    {
+        doQuery ("/common/get_spr_names/Подразделения", set_sd_names);
+    }
+
+    // Изготовить список ЖБИ для выбора
+    var set_item_names = function (reply)
+    {
+        document.getElementById("item_name").innerHTML = reply;
+        document.getElementById("item_name").value = '{{item_name}}';
+    };
+    function get_item_names()
+    {
+//        doQuery ("/common/get_all_items", set_item_names);
+        doQuery ("/common/get_spr_names/Ресурсы", set_item_names);
+    }
+    get_sd_names();
+    get_item_names();
+
+</script>
