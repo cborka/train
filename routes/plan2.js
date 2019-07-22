@@ -2079,7 +2079,7 @@ router.get('/used_res_s', function(req, res, next) {
         " FROM ((used_res pp " +
         "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
         "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
-        " ORDER BY pp.dt, pp.smena, sd.item_name, item.item_name ")
+        " ORDER BY pp.dt DESC, pp.smena, sd.item_name, item.item_name ")
         .then(function (data) {
             for (var i = 0; i < data.length; i++) {
                 data[i].num_fact = Math.round(data[i].num_fact * 1000) / 1000
@@ -2092,7 +2092,7 @@ router.get('/used_res_s', function(req, res, next) {
 });
 
 //
-// Добавить новую строку в ФАКТ
+// Добавить новую строку в ИСПОЛЬЗУЕМЫЕ РЕСУРСЫ
 //
 router.get('/used_res_addnew', function(req, res, next) {
     var spr_name = req.params.spr_name;
@@ -2107,38 +2107,36 @@ router.get('/used_res_addnew', function(req, res, next) {
             res.send('ОШИБКА: '+error);
         });
 });
-/*
+
 //
-// Показать/обновить строку ФАКТа
+// Показать/обновить строку ИСПОЛЬЗУЕМЫЕ РЕСУРСЫ
 //
-router.get('/plan_fact/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
-    var spr_name = req.params.spr_name;
-    var plan_rf = req.params.plan_rf;
+router.get('/used_res/:sd_rf/:item_rf/:dt/:smena', function(req, res, next) {
     var sd_rf = req.params.sd_rf;
     var item_rf = req.params.item_rf;
+    var dt = req.params.dt;
+    var smena = req.params.smena;
     db.one(
-        "SELECT pp.plan_rf, plan.item_name AS plan_name, " +
-        "    pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, CAST(pp.dt AS VARCHAR) AS dt, num_fact " +
-        " FROM (((plan_fact pp " +
-        "   LEFT JOIN item_list plan ON plan_rf = plan.item_id) " +
+        "SELECT pp.sd_rf, sd.item_name AS sd_name, pp.item_rf, item.item_name AS item_name, CAST(pp.dt AS VARCHAR) AS dt, smena, res_num " +
+        " FROM ((used_res pp " +
         "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
         "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
-        " WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
+        " WHERE sd_rf=$1 AND item_rf=$2 AND dt=$3 AND smena=$4", [sd_rf, item_rf, dt, smena])
         .then(function (data) {
 
-            data.num_fact = Math.round(data.num_fact * 1000) / 1000
+            data.res_num = Math.round(data.res_num * 1000) / 1000;
 
-            data.spr_name = spr_name;
+//            data.spr_name = spr_name;
 
-            res.render('plan2/plan_fact', data);
+            res.render('plan2/used_res', data);
         })
         .catch(function (error) {
-            res.send(error);
+            res.send('ОШИБКА: '+error);
         });
 });
-*/
+
 //
-// Добавление и корректировка строки ФАКТа
+// Добавление и корректировка строки ИСПОЛЬЗУЕМЫЕ РЕСУРСЫ
 //
 router.post('/used_res/update', function(req, res, next) {
 //    var spr_name = req.body.spr_name;
@@ -2183,23 +2181,22 @@ router.post('/used_res/update', function(req, res, next) {
             });
     }
 });
-/*
-// Удалить ФАКТ
-router.get('/plan_fact_delete/:spr_name/:plan_rf/:sd_rf/:item_rf', function(req, res, next) {
-    var spr_name = req.params.spr_name;
-    var plan_rf = req.params.plan_rf;
+
+// Удалить ИСПОЛЬЗУЕМЫЕ РЕСУРСЫ
+router.get('/used_res_delete/:sd_rf/:item_rf/:dt/:smena', function(req, res, next) {
     var sd_rf = req.params.sd_rf;
     var item_rf = req.params.item_rf;
-    db.none("DELETE FROM plan_fact WHERE plan_rf=$1 AND sd_rf=$2 AND item_rf=$3", [plan_rf, sd_rf, item_rf])
+    var dt = req.params.dt;
+    var smena = req.params.smena;
+    db.none("DELETE FROM used_res WHERE sd_rf=$1 AND item_rf=$2 AND dt=$3 AND smena=$4", [sd_rf, item_rf, dt, smena])
         .then(function () {
-            res.redirect('/plan2/plan_fact_s/'+spr_name); // Обновление списка
+            res.redirect('/plan2/used_res_s/'); // Обновление списка
         })
         .catch(function (error) {
-            res.send(error);
+            res.send('ОШИБКА: '+error);
         });
 });
 
-*/
 
 
 
