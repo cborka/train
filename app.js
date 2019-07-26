@@ -19,6 +19,7 @@ var planRouter = require('./routes/plan');
 var plan2Router = require('./routes/plan2');
 var reportsRouter = require('./routes/reports');
 var testRouter = require('./routes/test');
+var docsRouter = require('./routes/docs');
 
 var app = express();
 
@@ -52,6 +53,7 @@ app.use('/plan', planRouter);
 app.use('/plan2', plan2Router);
 app.use('/reports',reportsRouter);
 app.use('/test', testRouter);
+app.use('/docs', docsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

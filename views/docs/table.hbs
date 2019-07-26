@@ -1,0 +1,55 @@
+<div id="tables" ></div>
+<br>
+<br>
+<div id="table_fields" ></div>
+<br>
+<br>
+<div id="table" ></div>
+
+
+<div id="hint" ></div>
+<div id="erro" ></div>
+
+
+
+
+<script>
+
+
+    // Показать таблицу
+    var set_table = function (reply)
+    {
+        document.getElementById("table").innerHTML = reply;
+    };
+    function get_table(t_rf)
+    {
+        doQuery ("/docs/get_table", set_table, "&t_rf=" + encodeURIComponent(t_rf));
+    }
+
+
+    // Показать поля таблицы
+    var set_table_fields = function (reply)
+    {
+        document.getElementById("table_fields").innerHTML = reply;
+    };
+    function get_table_fields(t_rf)
+    {
+        doQuery ("/docs/get_table_fields", set_table_fields, "&t_rf=" + encodeURIComponent(t_rf));
+    }
+
+
+
+    // Показать список таблиц
+    var set_tables = function (reply)
+    {
+        document.getElementById("tables").innerHTML = reply;
+    };
+    function get_tables()
+    {
+        doQuery ("/docs/get_tables", set_tables);
+    }
+
+
+    get_tables();
+
+</script>
