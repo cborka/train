@@ -2079,7 +2079,7 @@ router.get('/used_res_s', function(req, res, next) {
         " FROM ((used_res pp " +
         "   LEFT JOIN item_list sd ON sd_rf = sd.item_id) " +
         "   LEFT JOIN item_list item ON item_rf = item.item_id) " +
-        " ORDER BY pp.dt DESC, pp.smena, sd.item_name, item.item_name ")
+        " ORDER BY pp.dt DESC, pp.smena DESC, sd.item_name, item.item_name ")
         .then(function (data) {
             for (var i = 0; i < data.length; i++) {
                 data[i].num_fact = Math.round(data[i].num_fact * 1000) / 1000

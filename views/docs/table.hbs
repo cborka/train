@@ -1,10 +1,12 @@
-<div id="tables" ></div>
+<div id="tables" title="Список таблиц из table_s"></div>
 <br>
 <br>
-<div id="table_fields" ></div>
+<div id="table_fields" title="Поля выбранной таблицы"></div>
 <br>
 <br>
-<div id="table" ></div>
+<div id="t_name" title="Название выбранной таблиц"></div>
+<br>
+<div id="table" title="Содержимое выбранной таблицы"></div>
 
 
 <div id="hint" ></div>
@@ -16,16 +18,74 @@
 <script>
 
 
+
+
+
+    function save_row(t) {
+        r = t.parentNode.parentNode; // текущая строка
+
+        alert(t.parentNode.nextSibling.nodeValue);
+
+//        if ( confirm("Сохранить строку "+r.cells[1].innerHTML+" ?") ) alert('x');
+
+        // здесь удалить из Базы Данных
+//            doQuery ("/plan2/armprihod_delete_row", check_save_row,
+//                    "&doc_id=" + encodeURIComponent(document.getElementById("doc_id").value)+
+//                    "&old_arm_name=" + encodeURIComponent(r.cells[3].innerHTML)
+//            );
+    }
+    function check_save_row(reply)
+    {
+        if (reply.substr(0,1) == '+') // Строка сохранена в базе данных
+        {
+            // r.innerHTML = '';
+        }
+        document.getElementById("hint").innerHTML=reply;
+    }
+
+
+
+    function delete_row(t) {
+        r = t.parentNode.parentNode; // текущая строка
+
+        if ( confirm("Удалить строку "+r.cells[1].innerHTML+" ?") ) alert('x');
+
+        // здесь удалить из Базы Данных
+//            doQuery ("/plan2/armprihod_delete_row", check_delete_row,
+//                    "&doc_id=" + encodeURIComponent(document.getElementById("doc_id").value)+
+//                    "&old_arm_name=" + encodeURIComponent(r.cells[3].innerHTML)
+//            );
+    }
+    function check_delete_row(reply)
+    {
+        if (reply.substr(0,1) == '+') // Строка успешно удалена из базы данных
+        {
+            r.innerHTML = '';
+        }
+//        document.getElementById("hint").innerHTML=reply;
+    }
+
+
+
+
+
+
+
+
     // Показать таблицу
     var set_table = function (reply)
     {
         document.getElementById("table").innerHTML = reply;
     };
-    function get_table(t_rf)
+    function get_table(t_rf, t_name, t_label)
     {
-        doQuery ("/docs/get_table", set_table, "&t_rf=" + encodeURIComponent(t_rf));
+        document.getElementById("t_name").innerHTML = t_name;
+        doQuery ("/docs/get_table", set_table,
+                "&t_rf=" + encodeURIComponent(t_rf) +
+                "&t_name=" + encodeURIComponent(t_name) +
+                "&t_label=" + encodeURIComponent(t_label)
+        );
     }
-
 
     // Показать поля таблицы
     var set_table_fields = function (reply)
@@ -37,8 +97,6 @@
         doQuery ("/docs/get_table_fields", set_table_fields, "&t_rf=" + encodeURIComponent(t_rf));
     }
 
-
-
     // Показать список таблиц
     var set_tables = function (reply)
     {
@@ -49,7 +107,6 @@
         doQuery ("/docs/get_tables", set_tables);
     }
 
-
-    get_tables();
+    get_tables();   // Показать список таблиц
 
 </script>
