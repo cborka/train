@@ -428,6 +428,7 @@ div.xyz {
 /* ============== В Ы Д Е Л Е Н И Е ============= */
 
 .pink {color: #ee008c;}
+.magenta {color: magenta;}
 .yellow {color: coral}
 .red {color: red;}
 .green {color: green;}
@@ -439,6 +440,7 @@ div.xyz {
 .grey {color: grey;}
 .black {color: black;}
 .darkcyan {color: darkcyan;}
+.cyan {color: cyan;}
 
 
 .whiteinblack {color: white; background-color: black}

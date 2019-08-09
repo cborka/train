@@ -194,12 +194,13 @@ router.post('/get_table', function(req, res, next) {
                     var result = '';
 
                     // Название таблицы
-                    result = result + '<h2 id="table_label">'+t_label+'</h2>';
-                    result = result + '<div id="table_name">'+t_name+'</div>';
+//                    result = result + '<h2 id="table_label">'+t_label+'</h2>';
+//                    result = result + '[<span id="table_name">'+t_name+'</span>]';
 
                     // Таблица
                     result = result + '<table class="svod w100">';
-                    result = result + '<caption><b>'+t_label+'</b><br><br></caption>';
+                    // Заголовок таблицы
+                    result = result + '<caption><h3>'+t_label+'</h3></caption>';
 
                     // Шапка таблицы
                     result = result + '<thead><tr>';
@@ -213,6 +214,7 @@ router.post('/get_table', function(req, res, next) {
 
                         result = result + '<tr>';
 
+                        // Поля таблицы
                         for (var j = 0; j < data.f_names.length; j++) {
 
                             if (data.f_types[j] == 'INTEGER' || data.f_types[j] == 'NUMERIC') // Выравнивание, числа вправо
@@ -230,10 +232,11 @@ router.post('/get_table', function(req, res, next) {
   //                              result = result + '<td class="report left">' + data2[i][data.f_names[j]] + '</td>';
                         }
 
+                        //Поле кнопок
                         result = result + '<td><button type="button" onclick="delete_row(this)" >Удалить строку</button>';
                         result = result + '<button type="button" onclick="save_row(this)" xdisabled >Сохранить строку</button></td>';
 
-                        // Сохранение старых значений ключевых полей
+                        // Поля для сохранения старых значений ключевых полей
                         for (var ii = 0; ii < data.t_pk_f.length; ii++)
                         {
                             result = result + '<td class="report">' + data2[i][data.f_names[data.t_pk_fn[ii]]] + '</td>';
@@ -257,11 +260,12 @@ router.post('/get_table', function(req, res, next) {
 
                     result = result +'</table>';
                     result = result + '<div id="t_info" style="Xdisplay:none">';
-                    result = result + '<br> Имена полей: <span id="f_labels">'+data.f_names+'</span>';
-                    result = result + '<br> Метки полей: <span id="f_labels">'+ data.f_labels+'</span>';
-                    result = result + '<br> Поля первичного ключа: <span id="t_pk_f">'+ data.t_pk_f+'</span>';
-                    result = result + '<br> Номера полей первичного ключа: <span id="t_pk_fn">'+ data.t_pk_fn+'</span>';
-                    result = result + '<br> Номер поля кнопок: <span id="t_btn_fn">'+ data.f_names.length+'</span>, за ним идут поля старых значений ПК';
+                    result = result + '<br> Имена полей: <span id="f_names" class="darkcyan"> '+data.f_names+'</span>';
+                    result = result + '<br> Метки полей: <span id="f_labels" class="darkcyan">'+ data.f_labels+'</span>';
+                    result = result + '<br> Типы полей: <span id="f_types" class="indigo">'+ data.f_types+'</span>';
+                    result = result + '<br> Поля первичного ключа: <span id="t_pk_f" class="darkcyan">'+ data.t_pk_f+'</span>';
+                    result = result + '<br> Номера полей первичного ключа: <span id="t_pk_fn" class="darkcyan">'+ data.t_pk_fn+'</span>';
+                    result = result + '<br> Номер поля кнопок: <span id="t_btn_fn" class="darkcyan">'+ data.f_names.length+'</span>, за ним идут поля старых значений ПК';
                     result = result + '<br> тест на глобальность переменной: '+ global_test;
 
                     result = result + '</div>';
@@ -303,6 +307,7 @@ function get_sel(data) {
 
     if (data[0].f_table_name == 'table_s') global_test = 'Присвоено значение!!! '+data[0].f_table_name;
 
+    // Цикл по полям таблицы
     for (var i = 0; i < data.length; i++) {
 
         ret = ret + ' t.'+ data[i].f_name;
@@ -402,6 +407,24 @@ function get_sel(data) {
 
 
 
+//
+// Любая таблица БД, показать
+//
+router.post('/save_row', function(req, res, next) {
+    var s_record = req.body.s_record;
+    var f_names = req.body.f_names;
+    var f_types = req.body.f_types;
+    var s_pkey_num = req.body.s_pkey_num;
+
+    var a_values = s_record.split('|');
+    var a_names = f_names.split(',');
+    var a_types = f_types.split(',');
+
+    res.send("Поле 3: "+a_values[2]+ ', Имя: ' + a_names[2]+ ', Тип: ' + a_types[2]);
+
+
+//    res.send("Запись: "+s_record+ '<br> Имена полей: ' + f_names+ '<br> Типы полей: ' + f_types+ '<br> Ключевых полей: ' + s_pkey_num);
+});
 
 
 
