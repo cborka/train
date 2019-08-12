@@ -68,9 +68,13 @@
 
         //
             doQuery ("/docs/save_row", check_save_row,
+                    "&t_name=" + encodeURIComponent(document.getElementById("t_name").innerHTML)+
                     "&s_record=" + encodeURIComponent(s_record)+
                     "&f_names=" + encodeURIComponent(document.getElementById("f_names").innerHTML)+
+                    "&f_sprs=" + encodeURIComponent(document.getElementById("f_sprs").innerHTML)+
+                    "&f_groups=" + encodeURIComponent(document.getElementById("f_groups").innerHTML)+
                     "&f_types=" + encodeURIComponent(document.getElementById("f_types").innerHTML)+
+                    "&f_pkey=" + encodeURIComponent(document.getElementById("t_pk_f").innerHTML)+
                     "&s_pkey_num=" + encodeURIComponent(s_pkey_num)
             );
     }
