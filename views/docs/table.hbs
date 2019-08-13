@@ -16,13 +16,7 @@
 
 <script>
 
-    var s_values = "";
-    var s_labels = "";
-    var s_names = "";
-    var s_pkey = "";
-    var s_pkey_num = "";
-    var s_old_pkey = "";
-    var s_types = "";
+    var pk_length = "";
     var r_length = 0;
 
     //
@@ -31,51 +25,33 @@
     function save_row(t) {
         var r = t.parentNode.parentNode; // текущая строка
 
-//        var fc = document.getElementById("f_names").innerHTML.split(','); // Массив имен полей таблицы
-        r_length = +document.getElementById("f_names").innerHTML.split(',').length; // Кол-во полей таблицы, следующее поле - кнопки, следующие поля - старые значения ключевых полей
+        // Кол-во полей таблицы, следующее поле - кнопки, следующие поля - старые значения ключевых полей
+        r_length = +document.getElementById("f_names").innerHTML.split(',').length;
 
-        s_pkey = document.getElementById("t_pk_f").innerHTML;
-        s_pkey_num = s_pkey.split(',').length;
+//        s_pkey = document.getElementById("t_pk_f").innerHTML;
+        pk_length = document.getElementById("t_pk_f").innerHTML.split(',').length;
 
 //        for (var ii = 0; ii < r.cells.length; ii++){
 
         s_record = "";
-//        for (var ii = 0; ii < r_length; ii++){
-//            s_record = s_record + r.cells[ii].innerHTML + '|';
-//        }
+        for (var ii = 0; ii < r_length+1+pk_length; ii++){
 
-//        for (var ii = 0; ii < r.cells.length; ii++){
-        for (var ii = 0; ii < r_length+1+s_pkey_num; ii++){
-            if (ii != r_length)
+            if (ii != r_length) // Пропускаю поле с кнопками
                 s_record = s_record + r.cells[ii].innerHTML + '|';
         }
 
-
-
-//        var x = r.cells[2].innerHTML;
-        s_old_pkey = "";
-        for (var ii = r_length+1; ii < r_length + s_pkey_num+1; ii++){
-            s_old_pkey = s_old_pkey + r.cells[ii].innerHTML + '|';
-        }
-
-//        erro(s_record + '+++|' + s_old_pkey);
         erro(s_record);
-
-
-//        alert(t.parentNode.nextSibling.nodeValue);
 
 //        if ( confirm("Сохранить строку "+r.cells[1].innerHTML+" ?") ) alert('x');
 
-        //
-            doQuery ("/docs/save_row", check_save_row,
+            doQuery ("/docs/update_row", check_save_row,
                     "&t_name=" + encodeURIComponent(document.getElementById("t_name").innerHTML)+
                     "&s_record=" + encodeURIComponent(s_record)+
                     "&f_names=" + encodeURIComponent(document.getElementById("f_names").innerHTML)+
                     "&f_sprs=" + encodeURIComponent(document.getElementById("f_sprs").innerHTML)+
                     "&f_groups=" + encodeURIComponent(document.getElementById("f_groups").innerHTML)+
                     "&f_types=" + encodeURIComponent(document.getElementById("f_types").innerHTML)+
-                    "&f_pkey=" + encodeURIComponent(document.getElementById("t_pk_f").innerHTML)+
-                    "&s_pkey_num=" + encodeURIComponent(s_pkey_num)
+                    "&f_pkey=" + encodeURIComponent(document.getElementById("t_pk_fn").innerHTML)
             );
     }
     function check_save_row(reply)
@@ -87,21 +63,69 @@
         document.getElementById("hint").innerHTML=reply;
     }
 
+    //
+    // Вставить строку
+    //
+    function insert_row(t) {
+        var r = t.parentNode.parentNode; // текущая строка
+
+        // Кол-во полей таблицы, следующее поле - кнопки, следующие поля - старые значения ключевых полей
+        r_length = +document.getElementById("f_names").innerHTML.split(',').length;
+        pk_length = document.getElementById("t_pk_f").innerHTML.split(',').length;
+
+        s_record = "";
+        for (var ii = 0; ii < r_length+1+pk_length; ii++){
+
+            if (ii != r_length) // Пропускаю поле с кнопками
+                s_record = s_record + r.cells[ii].innerHTML + '|';
+        }
+
+        doQuery ("/docs/insert_row", check_insert_row,
+                "&t_name=" + encodeURIComponent(document.getElementById("t_name").innerHTML)+
+                "&s_record=" + encodeURIComponent(s_record)+
+                "&f_names=" + encodeURIComponent(document.getElementById("f_names").innerHTML)+
+                "&f_sprs=" + encodeURIComponent(document.getElementById("f_sprs").innerHTML)+
+                "&f_groups=" + encodeURIComponent(document.getElementById("f_groups").innerHTML)+
+                "&f_types=" + encodeURIComponent(document.getElementById("f_types").innerHTML)+
+                "&f_pkey=" + encodeURIComponent(document.getElementById("t_pk_fn").innerHTML)
+        );
+    }
+    function check_insert_row(reply)
+    {
+        if (reply.substr(0,1) == '+') // Строка сохранена в базе данных
+        {
+            // r.innerHTML = '';
+        }
+        document.getElementById("hint").innerHTML=reply;
+    }
 
 
     //
     // Удалить строку
     //
     function delete_row(t) {
-        r = t.parentNode.parentNode; // текущая строка
+        var r = t.parentNode.parentNode; // текущая строка
 
-        if ( confirm("Удалить строку "+r.cells[1].innerHTML+" ?") ) alert('x');
+        // Кол-во полей таблицы, следующее поле - кнопки, следующие поля - старые значения ключевых полей
+        r_length = +document.getElementById("f_names").innerHTML.split(',').length;
+        pk_length = document.getElementById("t_pk_f").innerHTML.split(',').length;
 
-        // здесь удалить из Базы Данных
-//            doQuery ("/plan2/armprihod_delete_row", check_delete_row,
-//                    "&doc_id=" + encodeURIComponent(document.getElementById("doc_id").value)+
-//                    "&old_arm_name=" + encodeURIComponent(r.cells[3].innerHTML)
-//            );
+        s_record = "";
+        for (var ii = 0; ii < r_length+1+pk_length; ii++){
+
+            if (ii != r_length) // Пропускаю поле с кнопками
+                s_record = s_record + r.cells[ii].innerHTML + '|';
+        }
+
+        doQuery ("/docs/delete_row", check_delete_row,
+                "&t_name=" + encodeURIComponent(document.getElementById("t_name").innerHTML)+
+                "&s_record=" + encodeURIComponent(s_record)+
+                "&f_names=" + encodeURIComponent(document.getElementById("f_names").innerHTML)+
+                "&f_sprs=" + encodeURIComponent(document.getElementById("f_sprs").innerHTML)+
+                "&f_groups=" + encodeURIComponent(document.getElementById("f_groups").innerHTML)+
+                "&f_types=" + encodeURIComponent(document.getElementById("f_types").innerHTML)+
+                "&f_pkey=" + encodeURIComponent(document.getElementById("t_pk_fn").innerHTML)
+        );
     }
     function check_delete_row(reply)
     {
@@ -109,20 +133,83 @@
         {
             r.innerHTML = '';
         }
-//        document.getElementById("hint").innerHTML=reply;
+        document.getElementById("hint").innerHTML=reply;
+    }
+
+//=====================================================================
+
+    var gcell; // текущая редактируемая ячейка таблицы
+    var si;    // текущий список для выбора
+    var sprs = [];
+
+    // Открыть список для выбора значения
+    function cell_ondblclick(f)
+    {
+ //       alert(f.innerHTML);
+//        if (gcell != null)
+//            gcell.contentEditable = false;
+        gcell = f;                          // Запоминаем изменяемую текущую ячейку
+        gcell.contentEditable = true;
+
+        gcell.focus();
+        select_tc_text(gcell);             // Выделяем текст в ячейке
+//        save_row_btn.disabled = false; // Активируем кнопку сохранения строки
+
+        // При потере фокуса снимаем выделение
+        gcell.onblur = function () { window.getSelection().removeAllRanges(); gcell.contentEditable = false; };
+
+
+/*
+        si.style.visibility = 'visible';    // Делаем список видимым
+        si.focus();                         // Переходим в список
+
+        gcell = f;                          // Запоминаем изменяемую текущую ячейку
+        si.value = gcell.innerHTML;         // Перемещаемся в списке к значению изменяемой ячейки
+
+        c = getCoords(gcell);               // Находим координаты изменяемой ячейки
+        si.style.top = c.top + 5 + 'px';    // Накладываем список на ячейку
+        si.style.left = c.left + 5 + 'px';
+
+        */
     }
 
 
+    function get_spr(n, spr_name) {
+//        doQuery ("/common/get_spr_names/"+spr_name, set_spr);
+
+        document.getElementById("si"+n).innerHTML = ' <option value="'+n+'">'+spr_name+'</option>';
+    }
+
+    var set_spr = function (reply)
+    {
+        document.getElementById("si"+n).innerHTML = reply;
+        document.getElementById("si"+n).value = 'x';
+    };
 
 
 
 
-
+    //=====================================================================
 
     // Показать таблицу
     var set_table = function (reply)
     {
-        document.getElementById("table").innerHTML = reply;
+        document.getElementById("table").innerHTML = reply;  // Сама таблица
+
+
+        // Списки для выбора
+        sprs = document.getElementById("f_spr_names").innerHTML.split(',');
+
+        for (var ii = 0; ii < sprs.length; ii++){
+
+            if (sprs[ii] != '') {
+                get_spr(ii, sprs[ii]);
+
+            }
+        }
+
+
+
     };
     function get_table(t_rf, t_name, t_label)
     {

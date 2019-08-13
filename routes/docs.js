@@ -42,7 +42,7 @@ router.get('/get_tables', function(req, res, next) {
                 '<td class="report left">Метка</td>' +
                 '<td class="report left">Описание</td>' +
                 '<td class="report left">Действия</td>' +
-                '</tr></thead>>';
+                '</tr></thead>';
 
             // Строки данных
             for (var i = 0; i < data.length; i++) {
@@ -164,6 +164,8 @@ router.post('/get_table', function(req, res, next) {
     var f_default = [];
     var f_info = [];
 
+    var s_sprs = ''; //Справочники для выбора значения полей из списков
+
 //    var t_name = 'table_name';
 
 //    f_no.length=0; // Очистка массива
@@ -202,11 +204,17 @@ router.post('/get_table', function(req, res, next) {
                     // Заголовок таблицы
                     result = result + '<caption><h3>'+t_label+'</h3></caption>';
 
+  //                  result = result + '<br><button type="button green" onclick="insert_row(this)" >Вставить новую строку2</button>';
+
                     // Шапка таблицы
-                    result = result + '<thead><tr>';
+                    result = result + '<thead>';
+
+//                    result = result + '<tr><td class=""><button type="button" onclick="insert_row(this)" >Вставить новую строку</button></td></tr>';
+                    result = result + '<tr>';
                     for (var j = 0; j < data.f_names.length; j++) {
                             result = result + '<td class="report left">' + data.f_labels[j] + '</td>';
                     }
+//                    result = result + '<td class="report left"><button type="button" onclick="insert_row(this)" >Вставить новую строку1</button></td>';
                     result = result + '</tr></thead>';
 
                     // Строки данных таблицы
@@ -223,7 +231,7 @@ router.post('/get_table', function(req, res, next) {
                                 fld_align = 'left';
 
                             // [data.f_names[j]] здесь имя поля data.f_names[j] взято как индекс массива, хотя в явном виде оно (имя поля) пишется через точку
-                            result = result + '<td class="report '+ fld_align +'" contenteditable >' + data2[i][data.f_names[j]] + '</td>';
+                            result = result + '<td class="report '+ fld_align +'" ondblclick="cell_edit(this)" >' + data2[i][data.f_names[j]] + '</td>';
 
 
  //                           if (data.f_types[j] == 'INTEGER' || data.f_types[j] == 'NUMERIC') // Выравнивание, числа вправо
@@ -233,8 +241,11 @@ router.post('/get_table', function(req, res, next) {
                         }
 
                         //Поле кнопок
-                        result = result + '<td><button type="button" onclick="delete_row(this)" >Удалить строку</button>';
-                        result = result + '<button type="button" onclick="save_row(this)" xdisabled >Сохранить строку</button></td>';
+                        result = result + '<td>';
+                        result = result + '<button type="button" onclick="delete_row(this)" >Удалить строку</button>';
+                        result = result + '<button type="button" onclick="save_row(this)" xdisabled >Сохранить строку</button>';
+                        result = result + '<button type="button" onclick="insert_row(this)" xdisabled >Вставить строку</button></td>';
+                        result = result + '</td>';
 
                         // Поля для сохранения старых значений ключевых полей
                         for (var ii = 0; ii < data.t_pk_f.length; ii++)
@@ -243,6 +254,7 @@ router.post('/get_table', function(req, res, next) {
                         }
 
 
+                        /*
                         // Информация для отладки
 
                         // Первичный ключ, названия полей, номера полей и значение ПК
@@ -254,11 +266,24 @@ router.post('/get_table', function(req, res, next) {
 
                         }
                         result = result + '</td>';
+                        */
 
                         result = result + '</tr>';
                     }
-
                     result = result +'</table>';
+                    result = result + '<br><button type="button green" onclick="insert_row(this)" >Вставить новую строку2</button><br>';
+
+                    // Справочники
+                    for (var j = 0; j < data.f_names.length; j++) {
+                        if (data.f_spr_names[j] != '') {
+                            result = result + // 'si'+ j+ ' '+ data.f_spr_names[j] + '<br>';
+                                   '<select class="xy td" size="10" name="si'+j+'" title="" id="si'+j+'" ondblclick="setval(this)" ><option value="x">xx</option></select><br>';
+                        }
+                    }
+
+
+
+
                     result = result + '<div id="t_info" style="Xdisplay:none">';
                     result = result + '<br> Имена таблицы: <span id="t_name" class="darkcyan"> '+t_name+'</span>';
                     result = result + '<br> Имена полей: <span id="f_names" class="darkcyan"> '+data.f_names+'</span>';
@@ -266,6 +291,7 @@ router.post('/get_table', function(req, res, next) {
                     result = result + '<br> Типы полей: <span id="f_types" class="indigo">'+ data.f_types+'</span><br>';
 
                     result = result + '<br> Cправочники: <span id="f_sprs" class="indigo">'+ data.f_sprs+'</span>';
+                    result = result + '<br> Cправочники: <span id="f_spr_names" class="indigo">'+ data.f_spr_names+'</span>';
                     result = result + '<br> Группы: <span id="f_groups" class="indigo">'+ data.f_groups+'</span><br>';
 
                     result = result + '<br> Поля первичного ключа: <span id="t_pk_f" class="darkcyan">'+ data.t_pk_f+'</span>';
@@ -302,6 +328,7 @@ function get_sel(data) {
     var f_labels = [];
     var digits10 = ['1','2','3','4','5','6','7','8','9'];
     var f_sprs = [];
+    var f_spr_names = [];
     var f_groups = [];
 
     var t_pk_f = [];    // Поля первичного ключа
@@ -324,6 +351,7 @@ function get_sel(data) {
         f_types.push(data[i].f_type_name);
         f_labels.push(data[i].f_label);
         f_sprs.push(data[i].f_spr_rf);
+        f_spr_names.push('');
         f_groups.push(data[i].f_group_rf);
 
 
@@ -392,6 +420,7 @@ function get_sel(data) {
             f_labels.push(data[i].f_label);
 
             f_sprs.push(data[i].f_spr_rf);
+            f_spr_names.push(data[i].f_spr_name);
             f_groups.push(data[i].f_group_rf);
 
         }
@@ -406,6 +435,7 @@ function get_sel(data) {
     data.f_types = f_types;
     data.f_labels = f_labels;
     data.f_sprs = f_sprs;
+    data.f_spr_names = f_spr_names;
     data.f_groups = f_groups;
     data.t_pk_f = t_pk_f;
     data.t_pk_fn = t_pk_fn;
@@ -424,9 +454,9 @@ function get_sel(data) {
 
 
 //
-// Сохранить строку таблицы БД
+// Вставить строку в таблицу БД
 //
-router.post('/save_row', function(req, res, next) {
+router.post('/insert_row', function(req, res, next) {
     var t_name = req.body.t_name;
     var s_record = req.body.s_record;
     var f_names = req.body.f_names;
@@ -434,7 +464,6 @@ router.post('/save_row', function(req, res, next) {
     var f_groups = req.body.f_groups;
     var f_types = req.body.f_types;
     var f_pkey = req.body.f_pkey;
-    var s_pkey_num = req.body.s_pkey_num; // Кол-во полей в первичном ключе
 
     var a_values = s_record.split('|');
     var a_sprs = f_sprs.split(',');
@@ -447,7 +476,6 @@ router.post('/save_row', function(req, res, next) {
     var s_values = '';
 
     var comma = ', ';
-
 
     // Сформировать INSERT
     for (var i = 0; i < a_names.length; i++) {
@@ -467,6 +495,70 @@ router.post('/save_row', function(req, res, next) {
             else {
                 s_values =
                     s_values +
+                    '(SELECT item_id FROM item_list WHERE spr_rf = ' + a_sprs[i] + " AND item_name = '" + a_values[i+1].replace(/'/g, "''") +"')"
+                    + comma;
+            }
+
+            i = i + 1; // Пропускаю поле-название, т.к. уже использовал
+        }
+        else {
+            var kav =  (a_types[i] == 'VARCHAR' || a_types[i] == 'TEXT')?"'":"";
+
+            s_values = s_values + kav+ a_values[i].replace(/'/g, "''") + kav + comma;
+        }
+    }
+    var sql = 'INSERT INTO ' + t_name + '( '+  s_fields + ') VALUES ( ' + s_values + ')';
+
+    res.send('INSERT='+sql);
+
+
+//    res.send("Запись: "+s_record+ '<br> Имена полей: ' + f_names+ '<br> Типы полей: ' + f_types+ '<br> Ключевых полей: ' + s_pkey_num);
+});
+
+
+
+//
+// Сохранить строку таблицы БД
+//
+router.post('/update_row', function(req, res, next) {
+    var t_name = req.body.t_name;
+    var s_record = req.body.s_record;
+    var f_names = req.body.f_names;
+    var f_sprs = req.body.f_sprs;
+    var f_groups = req.body.f_groups;
+    var f_types = req.body.f_types;
+    var f_pkey = req.body.f_pkey;         // Номера полей первичного ключа
+
+    var a_values = s_record.split('|');
+    var a_sprs = f_sprs.split(',');
+    var a_groups = f_groups.split(',');
+    var a_names = f_names.split(',');
+    var a_types = f_types.split(',');
+    var a_pkey = f_pkey.split(',');
+
+    var s_set = '';
+    var s_where = '';
+
+    var comma = ', ';
+
+
+    // Сформировать UPDATE
+
+    // Сформировать SET
+    for (var i = 0; i < a_names.length; i++) {
+
+        if (i == a_names.length-1) comma = '';
+
+        // Поля-ссылки
+        rf = a_names[i].slice(-3);
+        // Если поле-ссылка, то следующее - поле-название по которому нужно найти значение текущего поля
+        if (rf == '_rf') {
+
+            if (a_values[i+1].trim() == '') {
+                s_set = s_set + a_names[i] + ' = 1' + comma;
+            }
+            else {
+                s_set = s_set + a_names[i] + ' = ' +
                     '(SELECT item_id FROM item_list WHERE spr_rf = ' + a_sprs[i] + " AND item_name = '" + a_values[i+1] +"')"
                     + comma;
             }
@@ -476,27 +568,76 @@ router.post('/save_row', function(req, res, next) {
         else {
             var kav =  (a_types[i] == 'VARCHAR' || a_types[i] == 'TEXT')?"'":"";
 
-            s_values = s_values + kav+ a_values[i] + kav + comma;
+            s_set = s_set + a_names[i] + ' = ' + kav + a_values[i].replace(/'/g, "''") +kav + comma;
         }
-
-
     }
-    var sql = 'INSERT INTO ' + t_name + '( '+  s_fields + ') VALUES ( ' + s_values + ')';
+
+    // Сформировать WHERE
+    comma = ' AND ';
+    var fn = a_names.length; // Кол-во полей таблицы, дальше начинаются старые ключевые поля
+    for (var i = 0; i < a_pkey.length; i++) {
+
+        var ii = a_pkey[i]; // Номер поля
+
+        if (i == a_pkey.length-1) comma = '';
+
+            var kav =  (a_types[i] == 'VARCHAR' || a_types[i] == 'TEXT')?"'":"";
+
+        s_where = s_where + a_names[ii] + ' = ' + kav + a_values[i+fn].replace(/'/g, "''") + kav + comma;
+    }
+
+    var sql = 'UPDATE ' + t_name + ' SET ' + s_set + ' WHERE ' + s_where;
 
 
-
-    res.send("Поле 3: "+a_values[2]+ ', Имя: ' + a_names[2]+ ', Тип: ' + a_types[2]+', pk='+f_pkey+', INSERT='+sql);
-
+    res.send('UPDATE='+sql);
 
 
 //    res.send("Запись: "+s_record+ '<br> Имена полей: ' + f_names+ '<br> Типы полей: ' + f_types+ '<br> Ключевых полей: ' + s_pkey_num);
 });
 
+//
+// Удалить строку из таблицы БД
+//
+router.post('/delete_row', function(req, res, next) {
+    var t_name = req.body.t_name;
+    var s_record = req.body.s_record;
+    var f_names = req.body.f_names;
+    var f_sprs = req.body.f_sprs;
+    var f_groups = req.body.f_groups;
+    var f_types = req.body.f_types;
+    var f_pkey = req.body.f_pkey;         // Номера полей первичного ключа
+
+    var a_values = s_record.split('|');
+    var a_names = f_names.split(',');
+    var a_types = f_types.split(',');
+    var a_pkey = f_pkey.split(',');
+
+    var s_where = '';
+
+    var comma = ' AND ';
+
+    // Сформировать DELETE
+
+    // Сформировать WHERE
+    var fn = a_names.length; // Кол-во полей таблицы, дальше начинаются старые ключевые поля
+    for (var i = 0; i < a_pkey.length; i++) {
+
+        var ii = a_pkey[i]; // Номер поля
+
+        if (i == a_pkey.length-1) comma = '';
+
+        var kav =  (a_types[i] == 'VARCHAR' || a_types[i] == 'TEXT')?"'":"";
+
+        s_where = s_where + a_names[ii] + ' = ' + kav + a_values[i+fn].replace(/'/g, "''") + kav + comma;
+    }
+
+    var sql = 'DELETE FROM ' + t_name + ' WHERE ' + s_where;
+
+    res.send('DELETE='+sql);
 
 
-
-
-
+//    res.send("Запись: "+s_record+ '<br> Имена полей: ' + f_names+ '<br> Типы полей: ' + f_types+ '<br> Ключевых полей: ' + s_pkey_num);
+});
 
 
 
