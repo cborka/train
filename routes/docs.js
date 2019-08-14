@@ -195,21 +195,22 @@ router.post('/get_table', function(req, res, next) {
                 .then (function (data2) {
                     var result = '';
 
-                    // Название таблицы
-//                    result = result + '<h2 id="table_label">'+t_label+'</h2>';
-//                    result = result + '[<span id="table_name">'+t_name+'</span>]';
-
                     // Таблица
-                    result = result + '<table class="svod w100">';
+                    result = result + '<table class="grid w100" id="anytable">';
+/*
+                    for (var j = 0; j < data.f_names.length; j++) {
+                        if (data.f_types[j] == 'INTEGER')  result = result + '<col width="50">';
+                        else if (data.f_types[j] == 'NUMERIC')  result = result + '<col width="70">';
+                        else if (data.f_types[j] == 'VARCHAR')  result = result + '<col width="200">';
+                        else if (data.f_types[j] == 'TEXT')  result = result + '<col width="300">';
+                        else  result = result + '<col width="30">';
+                    }
+*/
                     // Заголовок таблицы
                     result = result + '<caption><h3>'+t_label+'</h3></caption>';
 
-  //                  result = result + '<br><button type="button green" onclick="insert_row(this)" >Вставить новую строку2</button>';
-
                     // Шапка таблицы
                     result = result + '<thead>';
-
-//                    result = result + '<tr><td class=""><button type="button" onclick="insert_row(this)" >Вставить новую строку</button></td></tr>';
                     result = result + '<tr>';
                     for (var j = 0; j < data.f_names.length; j++) {
                             result = result + '<td class="report left">' + data.f_labels[j] + '</td>';
@@ -230,14 +231,19 @@ router.post('/get_table', function(req, res, next) {
                             else
                                 fld_align = 'left';
 
+                            // Обработчики событий
+                            if (data.f_names[j].slice(-5) == '_namexxx') {
+                                var onevent = ' onfocus="list_focus(this)" ondblclick="select_val(' + j + ', this)" ';
+                            }
+                            else {
+                                onevent = 'onfocus="num_focus(this)" onclick="cell_edit(this)" ';
+//                                onevent = ' ondblclick="cell_edit(this)" ';
+                            }
+
+
                             // [data.f_names[j]] здесь имя поля data.f_names[j] взято как индекс массива, хотя в явном виде оно (имя поля) пишется через точку
-                            result = result + '<td class="report '+ fld_align +'" ondblclick="cell_edit(this)" >' + data2[i][data.f_names[j]] + '</td>';
+                            result = result + '<td class="report '+ fld_align +'"  '+onevent+' >' + data2[i][data.f_names[j]] + '</td>';
 
-
- //                           if (data.f_types[j] == 'INTEGER' || data.f_types[j] == 'NUMERIC') // Выравнивание, числа вправо
-  //                              result = result + '<td class="report right" contenteditable >' + data2[i][data.f_names[j]] + '</td>';
-  //                          else
-  //                              result = result + '<td class="report left">' + data2[i][data.f_names[j]] + '</td>';
                         }
 
                         //Поле кнопок
@@ -253,34 +259,19 @@ router.post('/get_table', function(req, res, next) {
                             result = result + '<td class="report">' + data2[i][data.f_names[data.t_pk_fn[ii]]] + '</td>';
                         }
 
-
-                        /*
-                        // Информация для отладки
-
-                        // Первичный ключ, названия полей, номера полей и значение ПК
-                        result = result + '<td>';
-                        for (var ii = 0; ii < data.t_pk_f.length; ii++)
-                        {
-//                            result = result + data.t_pk_f.length;
-                            result = result  + 'ПК['+ data.t_pk_fn[ii]+ ']: ' + data.t_pk_f[ii] +' = ' + data2[i][data.f_names[data.t_pk_fn[ii]]] + ', ';
-
-                        }
-                        result = result + '</td>';
-                        */
-
                         result = result + '</tr>';
                     }
                     result = result +'</table>';
                     result = result + '<br><button type="button green" onclick="insert_row(this)" >Вставить новую строку2</button><br>';
-
+/*
                     // Справочники
                     for (var j = 0; j < data.f_names.length; j++) {
                         if (data.f_spr_names[j] != '') {
                             result = result + // 'si'+ j+ ' '+ data.f_spr_names[j] + '<br>';
-                                   '<select class="xy td" size="10" name="si'+j+'" title="" id="si'+j+'" ondblclick="setval(this)" ><option value="x">xx</option></select><br>';
+                                   '<select class="xy td" size="1" name="si'+j+'" title="" id="si'+j+'" ondblclick="setval(this)" ><option value="x">xx</option></select><br>';
                         }
                     }
-
+*/
 
 
 
@@ -290,9 +281,13 @@ router.post('/get_table', function(req, res, next) {
                     result = result + '<br> Метки полей: <span id="f_labels" class="darkcyan">'+ data.f_labels+'</span>';
                     result = result + '<br> Типы полей: <span id="f_types" class="indigo">'+ data.f_types+'</span><br>';
 
-                    result = result + '<br> Cправочники: <span id="f_sprs" class="indigo">'+ data.f_sprs+'</span>';
+                    result = result + '<br> Коды справочников: <span id="f_sprs" class="indigo">'+ data.f_sprs+'</span>';
                     result = result + '<br> Cправочники: <span id="f_spr_names" class="indigo">'+ data.f_spr_names+'</span>';
                     result = result + '<br> Группы: <span id="f_groups" class="indigo">'+ data.f_groups+'</span><br>';
+
+                    result = result + '<br> Размер поля: <span id="f_length" class="indigo">'+ data.f_length+'</span>>';
+                    result = result + '<br> Точность: <span id="f_prec" class="indigo">'+ data.f_prec+'</span><br>';
+
 
                     result = result + '<br> Поля первичного ключа: <span id="t_pk_f" class="darkcyan">'+ data.t_pk_f+'</span>';
                     result = result + '<br> Номера полей первичного ключа: <span id="t_pk_fn" class="darkcyan">'+ data.t_pk_fn+'</span>';
@@ -330,6 +325,8 @@ function get_sel(data) {
     var f_sprs = [];
     var f_spr_names = [];
     var f_groups = [];
+    var f_length = [];
+    var f_prec = [];
 
     var t_pk_f = [];    // Поля первичного ключа
     var t_pk_fn = [];   // Номера полей первичного ключа как они показаны в таблице на экране
@@ -353,6 +350,8 @@ function get_sel(data) {
         f_sprs.push(data[i].f_spr_rf);
         f_spr_names.push('');
         f_groups.push(data[i].f_group_rf);
+        f_length.push(data[i].f_length);
+        f_prec.push(data[i].f_prec);
 
 
         // ВАЖНО!!!
@@ -423,6 +422,9 @@ function get_sel(data) {
             f_spr_names.push(data[i].f_spr_name);
             f_groups.push(data[i].f_group_rf);
 
+            f_length.push(data[i].f_length);
+            f_prec.push(data[i].f_prec);
+
         }
 
         if (i != data.length-1)
@@ -443,6 +445,8 @@ function get_sel(data) {
     data.t_u_fn = t_u_fn;
     data.t_d_f = t_d_f;
     data.t_d_fn = t_d_fn;
+    data.f_length = f_length;
+    data.f_prec = f_prec;
 
     ret = ret + ' FROM '+ sk +  data[0].f_table_name + ' t ' + lj + ' ORDER BY 1, 2, 3';
 
@@ -641,6 +645,59 @@ router.post('/delete_row', function(req, res, next) {
 
 
 
+// Сформировать и возвратить список для выбора из справочника :spr
+//
+router.post('/get_spr_n', function(req, res, next) {
+    var n = req.body.n;
+    var spr = req.body.spr_name;
 
+    db.any(
+        "SELECT item_name " +
+        "  FROM item_list " +
+        "  WHERE spr_rf = " +
+        "    (SELECT item_id FROM item_list WHERE spr_rf = 3 AND item_name = $1)" +
+        "    AND item_flag = 1 " +
+        "  ORDER BY 1 ", [spr])
+        .then (function (data) {
+            var result = n + '    <option value=""></option>';
+            for (var i = 0; i < data.length; i++) {
+                result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
+            }
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send('get_spr_names: ОШИБКА: ' +error);
+        });
+});
+
+router.post('/get_datalist_n', function(req, res, next) {
+    var n = req.body.n;
+    var spr = req.body.spr_name;
+
+    db.any(
+        "SELECT item_name " +
+        "  FROM item_list " +
+        "  WHERE spr_rf = " +
+        "    (SELECT item_id FROM item_list WHERE spr_rf = 3 AND item_name = $1)" +
+        "    AND item_flag = 1 " +
+        "  ORDER BY 1 ", [spr])
+        .then (function (data) {
+            var result = '<datalist id="lst'+n+'"> <option value=" ">';
+            for (var i = 0; i < data.length; i++) {
+                result = result + ' <option value="'+data[i].item_name+'">';
+            }
+            result = '</datalist>';
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send('get_datalist_n: ОШИБКА: ' +error);
+        });
+});
+/*
+<datalist id="<идентификатор>">
+    <option value="Текст1">
+    <option value="Текст2">
+</datalist>
+*/
 
 module.exports = router;

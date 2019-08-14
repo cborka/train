@@ -213,6 +213,12 @@ thead {
 }
 
 
+table.grid {
+//    table-layout: fixed;
+
+
+}
+
 /*
 ** Таблицы - сводный листок
 */
@@ -395,7 +401,7 @@ td.list {
   white-space:nowrap;
 }
 table.list10 {
-    font-size: 15px;
+    font-size: var(--table-font-size, medium);;
 }
 /* Таблицы-отчёты */
 table.report, thead.report {
@@ -408,6 +414,17 @@ td.report {
 }
 
 
+input.cell2 {
+    xborder: 0;
+    width: 100%;
+    xheight: 95%;
+    xpadding: 0;
+    xmargin: 0;
+    font-size: var(--table-font-size, medium);
+
+
+}
+
 tr:hover {
   background: #eee; /* Цвет фона при наведении */
 }
@@ -415,6 +432,9 @@ tr:hover {
 tr.reports:hover {
   background: Window  /* Цвет фона при наведении */
 }
+
+
+
 .xy {
     position: absolute;
 }
