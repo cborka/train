@@ -214,9 +214,20 @@ thead {
 
 
 table.grid {
-//    table-layout: fixed;
-
-
+    table-layout: fixed;
+}
+textarea.grid {
+  width: 100%;
+  xheight: 100%;
+  xborder: 0;
+  xrows: 1;
+  font-size: var(--table-font-size, medium);
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+  xposition:absolute;
+  xtop:0;
+  xbottom:0;
+  xleft:0;
+  xright:0;
 }
 
 /*

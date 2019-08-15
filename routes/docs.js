@@ -197,15 +197,26 @@ router.post('/get_table', function(req, res, next) {
 
                     // Таблица
                     result = result + '<table class="grid w100" id="anytable">';
-/*
+
                     for (var j = 0; j < data.f_names.length; j++) {
-                        if (data.f_types[j] == 'INTEGER')  result = result + '<col width="50">';
+                        var len = (data.f_length[j] / data.r_length) * 90;
+                        len = (data.f_length[j]) * 5;
+
+                        result = result + '<col width="'+len+'">';
+//                        result = result + '<col width="'+data.f_length[j]+'%">';
+/*
+                        if (data.f_types[j] == 'INTEGER')  result = result + '<col width="'+len+'%">';
                         else if (data.f_types[j] == 'NUMERIC')  result = result + '<col width="70">';
                         else if (data.f_types[j] == 'VARCHAR')  result = result + '<col width="200">';
                         else if (data.f_types[j] == 'TEXT')  result = result + '<col width="300">';
                         else  result = result + '<col width="30">';
-                    }
 */
+                    }
+                    result = result + '<col width="200">'; // Поле кнопок
+                    result = result + '<col width="35">'; // Поля ключей
+//                    result = result + '<col width="3%">'; //
+//                    result = result + '<col width="2%">'; //
+//
                     // Заголовок таблицы
                     result = result + '<caption><h3>'+t_label+'</h3></caption>';
 
@@ -242,7 +253,7 @@ router.post('/get_table', function(req, res, next) {
 
 
                             // [data.f_names[j]] здесь имя поля data.f_names[j] взято как индекс массива, хотя в явном виде оно (имя поля) пишется через точку
-                            result = result + '<td class="report '+ fld_align +'"  '+onevent+' >' + data2[i][data.f_names[j]] + '</td>';
+                            result = result + '<td class="report '+ fld_align +'"  '+onevent+' contenteditable>' + data2[i][data.f_names[j]] + '</td>';
 
                         }
 
@@ -263,6 +274,7 @@ router.post('/get_table', function(req, res, next) {
                     }
                     result = result +'</table>';
                     result = result + '<br><button type="button green" onclick="insert_row(this)" >Вставить новую строку2</button><br>';
+
 /*
                     // Справочники
                     for (var j = 0; j < data.f_names.length; j++) {
@@ -326,6 +338,7 @@ function get_sel(data) {
     var f_spr_names = [];
     var f_groups = [];
     var f_length = [];
+    var r_length = 0;
     var f_prec = [];
 
     var t_pk_f = [];    // Поля первичного ключа
@@ -343,6 +356,9 @@ function get_sel(data) {
 
         ret = ret + ' t.'+ data[i].f_name;
 
+        data[i].f_length = (data[i].f_length == 0)?80:data[i].f_length;
+        data[i].f_length = (data[i].f_length < 20)?20:data[i].f_length;
+
         // Формирование массивов свойств полей таблицы
         f_names.push(data[i].f_name);
         f_types.push(data[i].f_type_name);
@@ -352,6 +368,8 @@ function get_sel(data) {
         f_groups.push(data[i].f_group_rf);
         f_length.push(data[i].f_length);
         f_prec.push(data[i].f_prec);
+
+        r_length += data[i].f_length;
 
 
         // ВАЖНО!!!
@@ -425,6 +443,9 @@ function get_sel(data) {
             f_length.push(data[i].f_length);
             f_prec.push(data[i].f_prec);
 
+            // Ширина для кода из справочника, вообще-то код это предыдущее поле, но тут находим сумму и порядок суммирования может быть любым
+            r_length += 20;
+
         }
 
         if (i != data.length-1)
@@ -445,6 +466,7 @@ function get_sel(data) {
     data.t_u_fn = t_u_fn;
     data.t_d_f = t_d_f;
     data.t_d_fn = t_d_fn;
+    data.r_length = r_length;
     data.f_length = f_length;
     data.f_prec = f_prec;
 
@@ -686,7 +708,7 @@ router.post('/get_datalist_n', function(req, res, next) {
             for (var i = 0; i < data.length; i++) {
                 result = result + ' <option value="'+data[i].item_name+'">';
             }
-            result = '</datalist>';
+            result = result +'</datalist>';
             res.send(result);
         })
         .catch(function (error) {

@@ -155,11 +155,11 @@
     var si;    // текущий список для выбора
     var sprs = [];
 
-    function cell_edit(f) {
+    function xcell_edit(f) {
         gcell = f;                          // Запоминаем изменяемую текущую ячейку
         var v = gcell.innerHTML;
         var col_no = gcell.cellIndex;
-        alert( gcell.cellIndex + ' : ' + gcell.parentNode.rowIndex );
+//        alert( gcell.cellIndex + ' : ' + gcell.parentNode.rowIndex );
 
 
 //        if (a_names[j].slice(-5) == '_namexxx') {
@@ -182,29 +182,56 @@
 
     }
 
-    function xcell_edit(f)
+    function cell_edit(f)
     {
 //        alert(f.innerHTML);
 //        if (gcell != null)
 //            gcell.contentEditable = false;
         gcell = f;                          // Запоминаем изменяемую текущую ячейку
-        gcell.contentEditable = true;
+///        gcell.contentEditable = true;
 
-        gcell.focus();
-//        select_tc_text(gcell);             // Выделяем текст в ячейке
+///        gcell.focus();
+  //      select_tc_text(gcell);             // Выделяем текст в ячейке
 //        save_row_btn.disabled = false; // Активируем кнопку сохранения строки
 
         // При потере фокуса снимаем выделение
-//        gcell.onblur = function () { window.getSelection().removeAllRanges(); gcell.contentEditable = false; };
+ //       gcell.onblur = function () {
+ //           window.getSelection().removeAllRanges();
+///            gcell.contentEditable = false;
+ //       };
     }
+
     // При получении фокуса на ячейку которую редактируем вручную
     function num_focus(t)
     {
+        var col_no = t.cellIndex;
+        var v = t.innerHTML;
+
+        gcell = t;
+
 //        select_tc_text(t);             // Выделяем текст в ячейке
 //        save_row_btn.disabled = false; // Активируем кнопку сохранения строки
 
         // При потере фокуса снимаем выделение
-//        t.onblur = function () { window.getSelection().removeAllRanges(); };
+        t.onblur = function () { window.getSelection().removeAllRanges(); };
+
+        if (a_types[col_no].slice(-5) == 'TEXT') {
+            //t.style.position = "relative";
+            t.innerHTML = '<textarea wrap="soft" class="grid" id="edit2">'+v+'</textarea>';
+        }
+        else if (a_names[col_no].slice(-5) == '_name') {
+            // показать список для выбора
+            t.innerHTML = '<input '+a_inp_types[col_no]+' class="cell2" id="edit2"  value="'+v+'" />';
+        }
+        else {
+            t.innerHTML = '<input '+a_inp_types[col_no]+' class="cell2" id="edit2"  value="'+v+'" />';
+        }
+
+        var ed = document.getElementById("edit2");
+        ed.focus();
+        ed.select();
+        ed.onblur = function() { t.innerHTML = ed.value; };
+
     }
 
 
@@ -223,20 +250,21 @@
     var set_spr_n = function (reply)
     {
         var n = reply.slice(0,3).trim();
-
+//alert(n);
         sprs[n] = document.getElementById("si"+n);
         sprs[n].innerHTML = reply.slice(3);
-        sprs[n].style.visibility = 'hidden';
-        // Скрыть список выбора арматуры при отмене и потере фокуса
+//        sprs[n].style.visibility = 'hidden';
+        // Скрыть список выбора при отмене и потере фокуса
         sprs[n].onabort = function () { this.style.visibility = 'hidden'; };
         sprs[n].onblur = function () { this.style.visibility = 'hidden'; };
-
+ //       alert(sprs[n]);
 //        document.getElementById("si"+n).value = 'x';
     };
 
     // Открыть список для выбора значения
     function select_val(n, t)
     {
+//        alert(sprs[n]);
         si = sprs[n];
         si.style.visibility = 'visible';    // Делаем список видимым
         si.focus();                         // Переходим в список
@@ -247,13 +275,15 @@
         c = getCoords(gcell);               // Находим координаты изменяемой ячейки
         si.style.top = c.top + 5 + 'px';    // Накладываем список на ячейку
         si.style.left = c.left + 5 + 'px';
+
+        si.width = t.width;
     }
 
 
     function get_datalist_n(n, spr_name) {
 //        doQuery ("/common/get_spr_names/"+spr_name, set_spr);
 
-        doQuery ("/docs/get_spr_n", set_datalist_n,
+        doQuery ("/docs/get_datalist_n", set_datalist_n,
                 "&n=" + encodeURIComponent(n) +
                 "&spr_name=" + encodeURIComponent(spr_name)
         );
@@ -265,6 +295,7 @@
     {
         var dls = document.getElementById("dls");
         dls.innerHTML += reply;
+ //       alert(dls.innerHTML);
     };
 
 
@@ -279,14 +310,16 @@
         // Списки для выбора
         sprs = document.getElementById("f_spr_names").innerHTML.split(',');
 
+        dls.innerHTML = '';
         for (var ii = 0; ii < sprs.length; ii++){
 
             if (sprs[ii] != '') {
                 get_datalist_n(ii, sprs[ii]);
+                get_spr_n(ii, sprs[ii]);
 
             }
         }
-alert(dls.innerHTML);
+
 //        var el = document.getElementById("anytable");
 
 //        el.style.tableLayout = "fixed";
@@ -296,25 +329,33 @@ alert(dls.innerHTML);
 
 //        table-layout: auto | fixed table-layout: auto | fixed
 
-
-        a_names = document.getElementById("a_names").innerHTML.split(',');
+        a_names = document.getElementById("f_names").innerHTML.split(',');
         a_types = document.getElementById("f_types").innerHTML.split(',');
         a_sprs = document.getElementById("f_sprs").innerHTML.split(',');
         a_prec = document.getElementById("f_prec").innerHTML.split(',');
 
 //    <input type="button|checkbox|file|hidden|image|password|radio|reset|submit|text">
+ //       alert(a_types.length);
         for (var i = 0; i < a_types.length; i++){
+//            alert(a_types[i]+a_names[i]+i+a_names[i].slice(-5));
             if (a_types[i] == 'INTEGER')  a_inp_types[i] = ' type="number" ';
-            else if (data.f_types[j] == 'NUMERIC')  a_inp_types[i] = ' type="number" step="0.001" ';
-            else if (data.f_types[j] == 'VARCHAR')  {
-                if (a_names[j].slice(-5) == '_name')
-                    a_inp_types[i] = ' list="lst'+i+'"';
-                else
-                    a_inp_types[i] = ' type="text" ';}
-            else if (data.f_types[j] == 'TEXT')  a_inp_types[i] = ' type="text" ';
-            else  a_inp_types[i] = ' type="text" ';
+            else if (a_types[i] == 'NUMERIC')  a_inp_types[i] = ' type="number" step="0.001" ';
+            else if (a_types[i] == 'VARCHAR')  {
+                 if (a_names[i].slice(-5) == '_name')
+                      a_inp_types[i] = ' list="lst'+i+'" ';
+                 else
+                      a_inp_types[i] = ' type="text" ';
+            }
+            else if (a_types[i] == 'TEXT')  a_inp_types[i] = ' type="text" ';
+            else  a_inp_types[i] = ' ztype="text" ';
         }
 
+        //Для отладки
+        var s = '';
+        for (var i = 0; i < a_types.length; i++){
+            s = s + a_inp_types[i] + '<br>';
+        }
+       //alert(s);
 
 
     };
