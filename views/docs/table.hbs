@@ -24,6 +24,7 @@
 
 <script>
 
+    var tbl;
     var pk_length = "";
     var r_length = 0;
     var a_names = [];
@@ -79,7 +80,7 @@
     //
     // Вставить строку
     //
-    function insert_row(t) {
+    function sql_insert_row(t) {
         var r = t.parentNode.parentNode; // текущая строка
 
         // Кол-во полей таблицы, следующее поле - кнопки, следующие поля - старые значения ключевых полей
@@ -116,7 +117,7 @@
     //
     // Удалить строку
     //
-    function delete_row(t) {
+    function sql_delete_row(t) {
         var r = t.parentNode.parentNode; // текущая строка
 
         // Кол-во полей таблицы, следующее поле - кнопки, следующие поля - старые значения ключевых полей
@@ -207,6 +208,18 @@
         var col_no = t.cellIndex;
         var v = t.innerHTML;
 
+        var y = t.parentNode.rowIndex;
+        var x = t.cellIndex;
+        var rows = tbl.rows.length;
+        var row = tbl.rows[t.parentNode.rowIndex];
+        var cells = row.cells.length;
+
+//        alert( gcell.cellIndex + ' : ' + gcell.parentNode.rowIndex );
+
+      erro('x-'+tbl.rows[t.parentNode.rowIndex].cells[cells-1].innerHTML);
+//        tbl.rows[0].cells.length;
+//        erro(math.min(3,cells.length-1));
+//        t.contentEditable = true;
         gcell = t;
 
 //        select_tc_text(t);             // Выделяем текст в ячейке
@@ -232,10 +245,95 @@
         ed.select();
         ed.onblur = function() { t.innerHTML = ed.value; };
 
+
+        ed.onkeyup = onk;
+        function onk(f) {
+            switch(f.keyCode) {
+                case 13:
+                    erro('Enter');
+                    break;
+                case 16:
+                    erro('Shift');
+                    break;
+                case 38:  // Стрелка вверх
+                    if (y > 1)  tbl.rows[y-1].cells[x].focus();
+                    else        erro('Это первая строка');
+                    break;
+                case 40:  // Стрелка вниз
+                    if (y < rows-1)  tbl.rows[y+1].cells[x].focus();
+                    else           erro(y + '- это последняя строка');
+                    break;
+                case 39:  // Стрелка вправо не обрабатывается и правильно
+                    if (x < cells-1)  tbl.rows[y-1].cells[x].focus();
+                    else        erro(x + '- это последняя ячейка в строке');
+                    break;
+                case 45:  // Стрелка вниз
+                    erro('Ins');
+                    // Создаем строку таблицы и вставляем ее перед текущей
+                    ed.blur();
+                    var row = tbl.insertRow(y);
+                    erro('Inse');
+                    row.innerHTML = tbl.rows[y+1].innerHTML;
+                    erro('Inser');
+                    row.cells[1].innerHTML = y;
+
+                    tbl.rows[y].cells[x].focus();
+//                    var row = document.createElement("TR");
+//                    tbl.appendChild(row);
+//                    row.innerHTML = tbl.rows[rows-1].innerHTML;
+//                    alert(tbl.rows[rows-1].innerHTML);
+
+//                    row = tbl.rows[rows].cloneNode('yes');
+
+//                    var tr = document.createElement("TR");
+//                    row.appendChild(tr);
+//                    tr.innerHTML = 'новая строка';
+
+           //         tbl.rows.push(tbl.rows[rows].cloneNode('yes'));
+                    erro('Insert');
+                    break;
+
+                default:
+                    erro(f.keyCode);
+            }
+        }
+
+
+
+    }
+    // Создаем строку таблицы и добавляем ее
+    function insert_row(t) {
+        var y = t.parentNode.parentNode.rowIndex;
+        var x = t.parentNode.cellIndex;
+
+        erro('Ins');
+        // Создаем строку таблицы и вставляем ее перед текущей
+        var row = tbl.insertRow(y);
+        erro('Inse');
+        row.innerHTML = tbl.rows[y+1].innerHTML;
+        erro('Inser');
+        row.cells[1].innerHTML = y;
+
+        tbl.rows[y].cells[x].focus();
+    }
+    // Создаем строку таблицы и добавляем ее
+    function append_row(t) {
+        var row = document.createElement("TR");
+        row.innerHTML = tbl.rows[tbl.rows.length-1].innerHTML;
+
+        row.cells[0].innerHTML = '';
+        row.cells[1].innerHTML = '';
+
+        tbl.appendChild(row);
+    }
+
+    function delete_row(t) {
+        var y = t.parentNode.parentNode.rowIndex;
+        tbl.deleteRow(y);
     }
 
 
-    //
+        //
     function get_spr_n(n, spr_name) {
 //        doQuery ("/common/get_spr_names/"+spr_name, set_spr);
 
@@ -320,12 +418,12 @@
             }
         }
 
-//        var el = document.getElementById("anytable");
+//        var el = document.getElementById("tbl");
 
 //        el.style.tableLayout = "fixed";
 //        el.style.borderColor = red;
 //        alert("sss");
-//        var el = document.getElementById("anytable").style.tableLayout = fixed;
+//        var el = document.getElementById("tbl").style.tableLayout = fixed;
 
 //        table-layout: auto | fixed table-layout: auto | fixed
 
@@ -334,6 +432,8 @@
         a_sprs = document.getElementById("f_sprs").innerHTML.split(',');
         a_prec = document.getElementById("f_prec").innerHTML.split(',');
 
+
+        // Определяют тип элемента для редактирования ячейки
 //    <input type="button|checkbox|file|hidden|image|password|radio|reset|submit|text">
  //       alert(a_types.length);
         for (var i = 0; i < a_types.length; i++){
@@ -349,6 +449,8 @@
             else if (a_types[i] == 'TEXT')  a_inp_types[i] = ' type="text" ';
             else  a_inp_types[i] = ' ztype="text" ';
         }
+
+        tbl =  document.getElementById("tbl");
 
         //Для отладки
         var s = '';

@@ -196,7 +196,7 @@ router.post('/get_table', function(req, res, next) {
                     var result = '';
 
                     // Таблица
-                    result = result + '<table class="grid w100" id="anytable">';
+                    result = result + '<table class="grid w100" id="tbl">';
 
                     for (var j = 0; j < data.f_names.length; j++) {
                         var len = (data.f_length[j] / data.r_length) * 90;
@@ -254,6 +254,7 @@ router.post('/get_table', function(req, res, next) {
 
                             // [data.f_names[j]] здесь имя поля data.f_names[j] взято как индекс массива, хотя в явном виде оно (имя поля) пишется через точку
                             result = result + '<td class="report '+ fld_align +'"  '+onevent+' contenteditable>' + data2[i][data.f_names[j]] + '</td>';
+//                            result = result + '<td class="report '+ fld_align +'"  '+onevent+' >' + data2[i][data.f_names[j]] + '</td>';
 
                         }
 
@@ -273,7 +274,7 @@ router.post('/get_table', function(req, res, next) {
                         result = result + '</tr>';
                     }
                     result = result +'</table>';
-                    result = result + '<br><button type="button green" onclick="insert_row(this)" >Вставить новую строку2</button><br>';
+                    result = result + '<br><button type="button green" onclick="append_row(this)" >Добавить строку</button><br>';
 
 /*
                     // Справочники
