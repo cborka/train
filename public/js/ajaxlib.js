@@ -3,6 +3,11 @@ function show_msg(element_id, message)
   document.getElementById(element_id).innerHTML = message;
 }
 
+function hint(message)
+{
+  show_msg("hint", message);
+}
+
 function erro(message)
 {
   show_msg("erro", message);

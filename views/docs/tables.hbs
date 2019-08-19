@@ -37,6 +37,10 @@
     // Сохранить строку
     //
     function save_row(t) {
+
+        if (!confirm("Сохранить изменения строки в Базе Данных?"))
+            return;
+
         var r = t.parentNode.parentNode; // текущая строка
 
         // Кол-во полей таблицы, следующее поле - кнопки, следующие поля - старые значения ключевых полей
@@ -72,9 +76,10 @@
     {
         if (reply.substr(0,1) == '+') // Строка сохранена в базе данных
         {
-            // r.innerHTML = '';
+            document.getElementById("hint").innerHTML=reply;
         }
-        document.getElementById("hint").innerHTML=reply;
+        else
+          erro(reply);
     }
 
     //
@@ -202,6 +207,11 @@
  //       };
     }
 
+    function row_focus(t) {
+ //       erro(t.rowIndex+' row_focus');
+
+    }
+
     // При получении фокуса на ячейку которую редактируем вручную
     function num_focus(t)
     {
@@ -214,6 +224,9 @@
         var row = tbl.rows[t.parentNode.rowIndex];
         var cells = row.cells.length;
 
+        tbl.rows[y].onfocus = function() { erro('ffffffffffffffffffff'); };
+        tbl.rows[y].focus();
+        tbl.rows[y].on = function() { erro('xxxxxxxxxxxxxxxxxxxxxxx'); };
 //        alert( gcell.cellIndex + ' : ' + gcell.parentNode.rowIndex );
 
       erro('x-'+tbl.rows[t.parentNode.rowIndex].cells[cells-1].innerHTML);
@@ -243,7 +256,38 @@
         var ed = document.getElementById("edit2");
         ed.focus();
         ed.select();
-        ed.onblur = function() { t.innerHTML = ed.value; };
+        ed.onblur = function() {
+            ed.value = ed.value.trim();
+            t.innerHTML = ed.value;
+
+
+            if (a_names[col_no].slice(-5) == '_name') {
+                var dl = document.getElementById("lst"+x);
+
+                function dlmap(dl) {
+                    var res = [];
+
+                    for (var i=0; i<dl.options.length; i++){
+                        res[i] =  dl.options[i].value;
+                    }
+
+                    return res;
+                }
+                var idx = dlmap(dl).indexOf(ed.value);
+
+                if (+idx == -1)
+                {
+                    hint('Названия "'+ed.value+'" нет в списке. Попробуйте ещё раз.');
+                    t.focus();
+                    return;
+                }
+                else
+                    hint('Это справочник ' +a_sprs[x] +' значение '+ ed.value+' dlen='+dl.options[1].value+';;'+idx);
+            }
+
+
+
+        };
 
 
         ed.onkeyup = onk;
@@ -267,7 +311,7 @@
                     if (x < cells-1)  tbl.rows[y-1].cells[x].focus();
                     else        erro(x + '- это последняя ячейка в строке');
                     break;
-                case 45:  // Стрелка вниз
+                case 45:  // Insert
                     erro('Ins');
                     // Создаем строку таблицы и вставляем ее перед текущей
                     ed.blur();
@@ -292,13 +336,15 @@
            //         tbl.rows.push(tbl.rows[rows].cloneNode('yes'));
                     erro('Insert');
                     break;
+                case 27: // Escape
+                    ed.value = v;
+                    erro('Escape');
+                    break;
 
                 default:
                     erro(f.keyCode);
             }
         }
-
-
 
     }
     // Создаем строку таблицы и добавляем ее
@@ -309,14 +355,13 @@
         erro('Ins');
         // Создаем строку таблицы и вставляем ее перед текущей
         var row = tbl.insertRow(y);
-        erro('Inse');
         row.innerHTML = tbl.rows[y+1].innerHTML;
-        erro('Inser');
         row.cells[1].innerHTML = y;
 
         tbl.rows[y].cells[x].focus();
     }
-    // Создаем строку таблицы и добавляем ее
+
+    // Создаем строку таблицы и добавляем ее в конец таблицы
     function append_row(t) {
         var row = document.createElement("TR");
         row.innerHTML = tbl.rows[tbl.rows.length-1].innerHTML;

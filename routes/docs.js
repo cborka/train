@@ -16,12 +16,32 @@ router.get('/common', function(req, res, next) {
 
 });
 
+
+//
+// Документ
+//
+router.get('/doc/:doc_name', function(req, res, next) {
+    var data = {};
+    data.doc_name = req.params.doc_name;
+    res.render('docs/doc.hbs', data); // Показ формы
+});
+
+router.post('/init_doc', function(req, res, next) {
+    var doc_name = req.body.doc_name;
+    var result = "<H2>Документ "+doc_name+"</H2>";
+
+    // Здесь будет SQL-запрос к таблицам, содержащим инфу о документе
+
+    result += '<div id="table1" title="Таблица 1">Здесь будет таблица 1</div>';
+
+    res.send(result);
+});
 //
 // Список таблиц БД
 //
 router.get('/tables', function(req, res, next) {
 
-    res.render('docs/table'); // Показ формы
+    res.render('docs/tables'); // Показ формы
 //    res.render('/reports/inform_any', {data: data}); // Показ формы
 });
 
@@ -142,6 +162,7 @@ router.post('/get_table_fields', function(req, res, next) {
 // Любая таблица БД, показать
 //
 router.post('/get_table', function(req, res, next) {
+    var t_no = '1';
     var t_rf = req.body.t_rf;
     var t_name = req.body.t_name;
     var t_label = req.body.t_label;
@@ -196,8 +217,9 @@ router.post('/get_table', function(req, res, next) {
                     var result = '';
 
                     // Таблица
-                    result = result + '<table class="grid w100" id="tbl">';
+                    result = result + '<table class="grid w100" id="tbl'+t_no+'">';
 
+                    // Настройка ширины колонок таблицы
                     for (var j = 0; j < data.f_names.length; j++) {
                         var len = (data.f_length[j] / data.r_length) * 90;
                         len = (data.f_length[j]) * 5;
@@ -232,7 +254,7 @@ router.post('/get_table', function(req, res, next) {
                     // Строки данных таблицы
                     for (var i = 0; i < data2.length; i++) {
 
-                        result = result + '<tr>';
+                        result = result + '<tr onclick="row_focus(this)" contenteditable >';
 
                         // Поля таблицы
                         for (var j = 0; j < data.f_names.length; j++) {
@@ -274,7 +296,7 @@ router.post('/get_table', function(req, res, next) {
                         result = result + '</tr>';
                     }
                     result = result +'</table>';
-                    result = result + '<br><button type="button green" onclick="append_row(this)" >Добавить строку</button><br>';
+                    result = result + '<br><button type="button green" onclick="append_row(this, '+t_no+')" >Добавить строку</button><br>';
 
 /*
                     // Справочники
@@ -288,24 +310,23 @@ router.post('/get_table', function(req, res, next) {
 
 
 
-                    result = result + '<div id="t_info" style="Xdisplay:none">';
-                    result = result + '<br> Имена таблицы: <span id="t_name" class="darkcyan"> '+t_name+'</span>';
-                    result = result + '<br> Имена полей: <span id="f_names" class="darkcyan"> '+data.f_names+'</span>';
-                    result = result + '<br> Метки полей: <span id="f_labels" class="darkcyan">'+ data.f_labels+'</span>';
-                    result = result + '<br> Типы полей: <span id="f_types" class="indigo">'+ data.f_types+'</span><br>';
+                    result = result + '<div id="t_info'+t_no+'" style="display:none">';
+                    result = result + '<br> Имя таблицы: <span id="t_name'+t_no+'" class="darkcyan"> '+t_name+'</span>';
+                    result = result + '<br> Имена полей: <span id="f_names'+t_no+'" class="darkcyan"> '+data.f_names+'</span>';
+                    result = result + '<br> Метки полей: <span id="f_labels'+t_no+'" class="darkcyan">'+ data.f_labels+'</span>';
+                    result = result + '<br> Типы полей: <span id="f_types'+t_no+'" class="indigo">'+ data.f_types+'</span><br>';
 
-                    result = result + '<br> Коды справочников: <span id="f_sprs" class="indigo">'+ data.f_sprs+'</span>';
-                    result = result + '<br> Cправочники: <span id="f_spr_names" class="indigo">'+ data.f_spr_names+'</span>';
-                    result = result + '<br> Группы: <span id="f_groups" class="indigo">'+ data.f_groups+'</span><br>';
+                    result = result + '<br> Коды справочников: <span id="f_sprs'+t_no+'" class="indigo">'+ data.f_sprs+'</span>';
+                    result = result + '<br> Cправочники: <span id="f_spr_names'+t_no+'" class="indigo">'+ data.f_spr_names+'</span>';
+                    result = result + '<br> Группы: <span id="f_groups'+t_no+'" class="indigo">'+ data.f_groups+'</span><br>';
 
-                    result = result + '<br> Размер поля: <span id="f_length" class="indigo">'+ data.f_length+'</span>>';
-                    result = result + '<br> Точность: <span id="f_prec" class="indigo">'+ data.f_prec+'</span><br>';
+                    result = result + '<br> Размер поля: <span id="f_length'+t_no+'" class="indigo">'+ data.f_length+'</span>>';
+                    result = result + '<br> Точность: <span id="f_prec'+t_no+'" class="indigo">'+ data.f_prec+'</span><br>';
 
 
-                    result = result + '<br> Поля первичного ключа: <span id="t_pk_f" class="darkcyan">'+ data.t_pk_f+'</span>';
-                    result = result + '<br> Номера полей первичного ключа: <span id="t_pk_fn" class="darkcyan">'+ data.t_pk_fn+'</span>';
-                    result = result + '<br> Номер поля кнопок: <span id="t_btn_fn" class="darkcyan">'+ data.f_names.length+'</span>, за ним идут поля старых значений ПК';
-                    result = result + '<br> тест на глобальность переменной: '+ global_test;
+                    result = result + '<br> Поля первичного ключа: <span id="t_pk_f'+t_no+'" class="darkcyan">'+ data.t_pk_f+'</span>';
+                    result = result + '<br> Номера полей первичного ключа: <span id="t_pk_fn'+t_no+'" class="darkcyan">'+ data.t_pk_fn+'</span>';
+                    result = result + '<br> Номер поля кнопок: <span id="t_btn_fn'+t_no+'" class="darkcyan">'+ data.f_names.length+'</span>, за ним идут поля старых значений ПК';
 
                     result = result + '</div>';
 
@@ -539,6 +560,8 @@ router.post('/insert_row', function(req, res, next) {
     res.send('INSERT='+sql);
 
 
+
+
 //    res.send("Запись: "+s_record+ '<br> Имена полей: ' + f_names+ '<br> Типы полей: ' + f_types+ '<br> Ключевых полей: ' + s_pkey_num);
 });
 
@@ -616,7 +639,15 @@ router.post('/update_row', function(req, res, next) {
     var sql = 'UPDATE ' + t_name + ' SET ' + s_set + ' WHERE ' + s_where;
 
 
-    res.send('UPDATE='+sql);
+//    res.send('UPDATE='+sql);
+
+    db.none(sql)
+       .then (function (data) {
+           res.send('+ Изменения строки сохранены в Базе Данных');
+       })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
 
 
 //    res.send("Запись: "+s_record+ '<br> Имена полей: ' + f_names+ '<br> Типы полей: ' + f_types+ '<br> Ключевых полей: ' + s_pkey_num);
@@ -705,7 +736,7 @@ router.post('/get_datalist_n', function(req, res, next) {
         "    AND item_flag = 1 " +
         "  ORDER BY 1 ", [spr])
         .then (function (data) {
-            var result = '<datalist id="lst'+n+'"> <option value=" ">';
+            var result = '<datalist id="lst'+n+'"> <option value="">';
             for (var i = 0; i < data.length; i++) {
                 result = result + ' <option value="'+data[i].item_name+'">';
             }
