@@ -4,9 +4,6 @@ var router = express.Router();
 var fs = require('fs');
 var db = require("../db");
 
-var global_test = 'xxx';
-
-
 //
 // Common
 //
@@ -33,6 +30,7 @@ router.post('/init_doc', function(req, res, next) {
     // Здесь будет SQL-запрос к таблицам, содержащим инфу о документе
 
     result += '<div id="table1" title="Таблица 1">Здесь будет таблица 1</div>';
+    result += '<div id="table2" title="Таблица 2">Здесь будет таблица 2</div>';
 
     res.send(result);
 });
@@ -162,7 +160,7 @@ router.post('/get_table_fields', function(req, res, next) {
 // Любая таблица БД, показать
 //
 router.post('/get_table', function(req, res, next) {
-    var t_no = '1';
+    var t_no = req.body.t_no; //'1';
     var t_rf = req.body.t_rf;
     var t_name = req.body.t_name;
     var t_label = req.body.t_label;
@@ -214,7 +212,7 @@ router.post('/get_table', function(req, res, next) {
 
             db.any(sel)
                 .then (function (data2) {
-                    var result = '';
+                    var result = '<!-- '+t_no+'  -->';
 
                     // Таблица
                     result = result + '<table class="grid w100" id="tbl'+t_no+'">';
@@ -310,7 +308,7 @@ router.post('/get_table', function(req, res, next) {
 
 
 
-                    result = result + '<div id="t_info'+t_no+'" style="display:none">';
+                    result = result + '<div id="t_info'+t_no+'" style="xdisplay:none">';
                     result = result + '<br> Имя таблицы: <span id="t_name'+t_no+'" class="darkcyan"> '+t_name+'</span>';
                     result = result + '<br> Имена полей: <span id="f_names'+t_no+'" class="darkcyan"> '+data.f_names+'</span>';
                     result = result + '<br> Метки полей: <span id="f_labels'+t_no+'" class="darkcyan">'+ data.f_labels+'</span>';
@@ -329,6 +327,7 @@ router.post('/get_table', function(req, res, next) {
                     result = result + '<br> Номер поля кнопок: <span id="t_btn_fn'+t_no+'" class="darkcyan">'+ data.f_names.length+'</span>, за ним идут поля старых значений ПК';
 
                     result = result + '</div>';
+                    result = result + '<div id="dls'+t_no+'"></div>';
 
                     res.send(result);
                 })
@@ -713,7 +712,8 @@ router.post('/get_spr_n', function(req, res, next) {
         "    AND item_flag = 1 " +
         "  ORDER BY 1 ", [spr])
         .then (function (data) {
-            var result = n + '    <option value=""></option>';
+            var result = '<!-- '+n+'      -->';
+            result =  result + ' <option value=""></option>';
             for (var i = 0; i < data.length; i++) {
                 result = result + ' <option value="'+data[i].item_name+'">'+data[i].item_name+'</option>';
             }
@@ -736,7 +736,8 @@ router.post('/get_datalist_n', function(req, res, next) {
         "    AND item_flag = 1 " +
         "  ORDER BY 1 ", [spr])
         .then (function (data) {
-            var result = '<datalist id="lst'+n+'"> <option value="">';
+            var result = '<!-- '+n+'      -->';
+            result = result + '<datalist id="lst'+n+'"> <option value="">';
             for (var i = 0; i < data.length; i++) {
                 result = result + ' <option value="'+data[i].item_name+'">';
             }
