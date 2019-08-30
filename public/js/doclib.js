@@ -15,7 +15,7 @@ var set_init_doc = function (reply)
 
 //    get_table(1, t_rf, t_name, t_label);
     get_table(1, 1148, 'table_s', 'Таблицы БД');
-    get_table(2, 1150, 'table_f', 'Поля таблиц БД');
+//    get_table(2, 1150, 'table_f', 'Поля таблиц БД');
 
 
 };
@@ -26,7 +26,7 @@ function init_doc(doc_name)
     );
 }
 
-
+/*
 // Инициализация таблицы (нет такой процедуры)
 var set_init_table = function (reply)
 {
@@ -39,31 +39,23 @@ function init_table(table_id, table_name)
         "&table_name=" + encodeURIComponent(table_name)
     );
 }
-
+*/
 
 // Показать таблицу
 var set_table = function (reply)
 {
-//    var t_no = '1'; // Здесь нужно получить реальный номер таблицы в документе
-    var t_no = reply.slice(4, 8).trim();
+    var t_no = reply.slice(4, 8).trim(); // Номер таблицы в документе
 
-//    alert('['+ss+']');
+    // Здесь сама таблица и параметры в невидимых тэгах f_spr_names, f_names и т.д.
+    document.getElementById("table"+t_no).innerHTML = reply;
 
-
-    document.getElementById("table"+t_no).innerHTML = reply;  // Сама таблица
-
-//return;
-    // Списки для выбора
+    // Списки для выбора значения поля
     sprs = document.getElementById("f_spr_names"+t_no).innerHTML.split(',');
 
-//    alert(sprs+sprs.length);
-
-//    var dls = document.getElementById('dls'+t_no+'x'+ii);
-//    dls.innerHTML = '';
     for (var ii = 0; ii < sprs.length; ii++){
 
         if (sprs[ii] != '') {
-//            alert(sprs[ii]);
+//            Здесь пока не решил что использовать из этих двух
             get_datalist_n(t_no+'x'+ii, sprs[ii]);
             get_spr_n(t_no+'x'+ii, sprs[ii]);
 
@@ -84,14 +76,11 @@ var set_table = function (reply)
     a_sprs[t_no] = document.getElementById("f_sprs"+t_no).innerHTML.split(',');
     a_prec[t_no] = document.getElementById("f_prec"+t_no).innerHTML.split(',');
 
-    // Здесь просто заполняем массив чем-нибудь, чтобы не был пустым
+    // Здесь просто заполняем массив чем-нибудь, чтобы не был пустым, иначе значение не присваивается в нужное место массива
     a_inp_types[t_no] = document.getElementById("f_types"+t_no).innerHTML.split(',');
 
-//    alert('x');
-//    alert(a_types[t_no]);
-
-    // Определяют тип элемента для редактирования ячейки
-//    <input type="button|checkbox|file|hidden|image|password|radio|reset|submit|text">
+    // Определяют тип элемента для редактирования ячейки в зависимости от типа данный поля
+    //    <input type="button|checkbox|file|hidden|image|password|radio|reset|submit|text">
     //       alert(a_types.length);
     for (var i = 0; i < a_types[t_no].length; i++){
 //            alert(a_types[i]+a_names[i]+i+a_names[i].slice(-5));
@@ -107,8 +96,9 @@ var set_table = function (reply)
         else if (a_types[t_no][i] == 'TEXT')  a_inp_types[t_no][i] = ' type="text" ';
         else  a_inp_types[t_no][i] = ' ztype="text" ';
     }
-//    alert('xxx');
-    tbl =  document.getElementById("tbl"+t_no);
+
+
+    tbl =  document.getElementById("tbl"+t_no); // а это зачем?
 
     //Для отладки
     var s = '';
@@ -131,42 +121,37 @@ function get_table(t_no, t_rf, t_name, t_label)
     );
 }
 
-
+// Получение списка datalist
 function get_datalist_n(n, spr_name) {
-//        doQuery ("/common/get_spr_names/"+spr_name, set_spr);
 
     doQuery ("/docs/get_datalist_n", set_datalist_n,
-        "&n=" + encodeURIComponent(n) +
+        "&n=" + encodeURIComponent(n) +   // В n уже есть номер таблицы и номер поля в таблице n = t_no+'x'+i
         "&spr_name=" + encodeURIComponent(spr_name)
     );
 
 //        document.getElementById("si"+n).innerHTML = ' <option value="'+n+'">'+spr_name+'</option>';
 }
-
 var set_datalist_n = function (reply)
 {
-    var n = reply.slice(4, 10).trim();
+    var n = reply.slice(4, 10).trim(); // '<!-- '+n+'      -->'
     var dls = document.getElementById('dls'+n);
     dls.innerHTML += reply;
     //       alert(dls.innerHTML);
 };
 
 
-
+// Получение списка <option value=""></option>
 function get_spr_n(n, spr_name) {
-//        doQuery ("/common/get_spr_names/"+spr_name, set_spr);
 
     doQuery ("/docs/get_spr_n", set_spr_n,
         "&n=" + encodeURIComponent(n) +
         "&spr_name=" + encodeURIComponent(spr_name)
     );
-
 //        document.getElementById("si"+n).innerHTML = ' <option value="'+n+'">'+spr_name+'</option>';
 }
-
 var set_spr_n = function (reply)
 {
-    var n = reply.slice(0,3).trim();
+//    var n = reply.slice(0,3).trim();
     var n = reply.slice(4, 10).trim();
 //alert(n);
     sprs[n] = document.getElementById("si"+n);
@@ -178,3 +163,163 @@ var set_spr_n = function (reply)
     //       alert(sprs[n]);
 //        document.getElementById("si"+n).value = 'x';
 };
+
+
+
+
+// ========================================================================
+function row_focus(t) {
+    //       erro(t.rowIndex+' row_focus');
+    alert('asdf222');
+}
+function xcell_edit(f)
+{
+    alert('asdf111');
+    var gcell = f;                          // Запоминаем изменяемую текущую ячейку
+}
+
+
+
+// При получении фокуса на ячейку которую редактируем вручную
+function xnum_focus(t)
+{
+//    alert('asdf');
+    var col_no = t.cellIndex;
+    var v = t.innerHTML;
+    var tb = t.parentNode.parentNode.parentElement.id;
+
+    var y = t.parentNode.rowIndex;
+    var x = t.cellIndex;
+    var rows = tbl.rows.length;
+    var row = tbl.rows[t.parentNode.rowIndex];
+    var cells = row.cells.length;
+
+    alert(tb);
+
+    return;
+    /*
+
+
+    tbl.rows[y].onfocus = function() { erro('ffffffffffffffffffff'); };
+    tbl.rows[y].focus();
+    tbl.rows[y].on = function() { erro('xxxxxxxxxxxxxxxxxxxxxxx'); };
+//        alert( gcell.cellIndex + ' : ' + gcell.parentNode.rowIndex );
+
+    erro('x-'+tbl.rows[t.parentNode.rowIndex].cells[cells-1].innerHTML);
+//        tbl.rows[0].cells.length;
+//        erro(math.min(3,cells.length-1));
+//        t.contentEditable = true;
+    gcell = t;
+
+//        select_tc_text(t);             // Выделяем текст в ячейке
+//        save_row_btn.disabled = false; // Активируем кнопку сохранения строки
+
+    // При потере фокуса снимаем выделение
+    t.onblur = function () { window.getSelection().removeAllRanges(); };
+
+    if (a_types[col_no].slice(-5) == 'TEXT') {
+        //t.style.position = "relative";
+        t.innerHTML = '<textarea wrap="soft" class="grid" id="edit2">'+v+'</textarea>';
+    }
+    else if (a_names[col_no].slice(-5) == '_name') {
+        // показать список для выбора
+        t.innerHTML = '<input '+a_inp_types[col_no]+' class="cell2" id="edit2"  value="'+v+'" />';
+    }
+    else {
+        t.innerHTML = '<input '+a_inp_types[col_no]+' class="cell2" id="edit2"  value="'+v+'" />';
+    }
+
+    var ed = document.getElementById("edit2");
+    ed.focus();
+    ed.select();
+    ed.onblur = function() {
+        ed.value = ed.value.trim();
+        t.innerHTML = ed.value;
+
+
+        if (a_names[col_no].slice(-5) == '_name') {
+            var dl = document.getElementById("lst"+x);
+
+            function dlmap(dl) {
+                var res = [];
+
+                for (var i=0; i<dl.options.length; i++){
+                    res[i] =  dl.options[i].value;
+                }
+
+                return res;
+            }
+            var idx = dlmap(dl).indexOf(ed.value);
+
+            if (+idx == -1)
+            {
+                hint('Названия "'+ed.value+'" нет в списке. Попробуйте ещё раз.');
+                t.focus();
+                return;
+            }
+            else
+                hint('Это справочник ' +a_sprs[x] +' значение '+ ed.value+' dlen='+dl.options[1].value+';;'+idx);
+        }
+
+
+
+    };
+
+
+    ed.onkeyup = onk;
+    function onk(f) {
+        switch(f.keyCode) {
+            case 13:
+                erro('Enter');
+                break;
+            case 16:
+                erro('Shift');
+                break;
+            case 38:  // Стрелка вверх
+                if (y > 1)  tbl.rows[y-1].cells[x].focus();
+                else        erro('Это первая строка');
+                break;
+            case 40:  // Стрелка вниз
+                if (y < rows-1)  tbl.rows[y+1].cells[x].focus();
+                else           erro(y + '- это последняя строка');
+                break;
+            case 39:  // Стрелка вправо не обрабатывается и правильно
+                if (x < cells-1)  tbl.rows[y-1].cells[x].focus();
+                else        erro(x + '- это последняя ячейка в строке');
+                break;
+            case 45:  // Insert
+                erro('Ins');
+                // Создаем строку таблицы и вставляем ее перед текущей
+                ed.blur();
+                var row = tbl.insertRow(y);
+                erro('Inse');
+                row.innerHTML = tbl.rows[y+1].innerHTML;
+                erro('Inser');
+                row.cells[1].innerHTML = y;
+
+                tbl.rows[y].cells[x].focus();
+//                    var row = document.createElement("TR");
+//                    tbl.appendChild(row);
+//                    row.innerHTML = tbl.rows[rows-1].innerHTML;
+//                    alert(tbl.rows[rows-1].innerHTML);
+
+//                    row = tbl.rows[rows].cloneNode('yes');
+
+//                    var tr = document.createElement("TR");
+//                    row.appendChild(tr);
+//                    tr.innerHTML = 'новая строка';
+
+                //         tbl.rows.push(tbl.rows[rows].cloneNode('yes'));
+                erro('Insert');
+                break;
+            case 27: // Escape
+                ed.value = v;
+                erro('Escape');
+                break;
+
+            default:
+                erro(f.keyCode);
+        }
+    }
+*/
+}

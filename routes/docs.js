@@ -252,7 +252,8 @@ router.post('/get_table', function(req, res, next) {
                     // Строки данных таблицы
                     for (var i = 0; i < data2.length; i++) {
 
-                        result = result + '<tr onclick="row_focus(this)" contenteditable >';
+//                        result = result + '<tr onclick="row_focus(this)" contenteditable >';
+                        result = result + '<tr  >';
 
                         // Поля таблицы
                         for (var j = 0; j < data.f_names.length; j++) {
@@ -267,7 +268,7 @@ router.post('/get_table', function(req, res, next) {
                                 var onevent = ' onfocus="list_focus(this)" ondblclick="select_val(' + j + ', this)" ';
                             }
                             else {
-                                onevent = 'onfocus="num_focus(this)" onclick="cell_edit(this)" ';
+                                onevent = 'onfocus="xnum_focus(this)" onclick="xcell_edit(this)" ';
 //                                onevent = ' ondblclick="cell_edit(this)" ';
                             }
 

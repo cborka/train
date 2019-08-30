@@ -5,12 +5,31 @@
 <div id="hint" class="green"></div>
 <div id="erro" class="red" ></div>
 
+<!--
+<table class="grid w100" id="tbl">
+    <tr>
+        <td class="report" onfocus="xnum_focus(this)" onclick="xcell_edit(this)" contenteditable>111</td>
+        <td class="report" onfocus="xnum_focus(this)" onclick="xcell_edit(this)" contenteditable>222</td>
+    </tr>
+
+</table>
+-->
+
 <script>
 
     // Описание открываемого документа, в дальнейшем оно будет получаться из соответствующих таблиц БД
     var table_names = ['table_s'];
     var table_ids = [1148];
 
-    init_doc(777, "{{doc_name}}");
+
+
+    // При получении фокуса на ячейку которую редактируем вручную
+//    function xznum_focus(t) {
+//        alert('asdfxz');
+//    }
+
+
+
+        init_doc(777, "{{doc_name}}");
 
 </script>
