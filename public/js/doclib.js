@@ -1,4 +1,4 @@
-var tbl = [];
+var tbls = [];
 var pk_length = [""];
 var r_length = [0];
 var a_names = [[]];
@@ -15,7 +15,7 @@ var set_init_doc = function (reply)
 
 //    get_table(1, t_rf, t_name, t_label);
     get_table(1, 1148, 'table_s', 'Таблицы БД');
-//    get_table(2, 1150, 'table_f', 'Поля таблиц БД');
+    get_table(2, 1150, 'table_f', 'Поля таблиц БД');
 
 
 };
@@ -136,7 +136,7 @@ var set_datalist_n = function (reply)
     var n = reply.slice(4, 10).trim(); // '<!-- '+n+'      -->'
     var dls = document.getElementById('dls'+n);
     dls.innerHTML += reply;
-    //       alert(dls.innerHTML);
+//           alert('dls'+n+'='+dls.innerHTML);
 };
 
 
@@ -186,140 +186,155 @@ function xnum_focus(t)
 //    alert('asdf');
     var col_no = t.cellIndex;
     var v = t.innerHTML;
-    var tb = t.parentNode.parentNode.parentElement.id;
+    var t_no = t.parentNode.parentNode.parentElement.id.slice(3); // Номер таблицы в документе, tbl1.slice(3) = 1
 
-    var y = t.parentNode.rowIndex;
-    var x = t.cellIndex;
-    var rows = tbl.rows.length;
-    var row = tbl.rows[t.parentNode.rowIndex];
-    var cells = row.cells.length;
+    var tbl =  document.getElementById("tbl"+t_no);  // Редактируемая таблица
 
-    alert(tb);
+    // Координаты ячейки в таблице
+    var y = +t.parentNode.rowIndex;
+    var x = +t.cellIndex;
 
-    return;
-    /*
+    var rows = tbl.rows.length;    // Кол-во строк
+    var row = tbl.rows[y];         // Текущая строка
+    var cells = row.cells.length;  // Кол-во колонок
+
+//    hint(t_no+','+v);
+
+//    return;
 
 
-    tbl.rows[y].onfocus = function() { erro('ffffffffffffffffffff'); };
-    tbl.rows[y].focus();
-    tbl.rows[y].on = function() { erro('xxxxxxxxxxxxxxxxxxxxxxx'); };
+//    tbl.rows[y].onfocus = function() { erro('ffffffffffffffffffff'); };
+//    tbl.rows[y].focus();
+//    tbl.rows[y].on = function() { erro('xxxxxxxxxxxxxxxxxxxxxxx'); };
 //        alert( gcell.cellIndex + ' : ' + gcell.parentNode.rowIndex );
+//    alert('cells='+cells);
 
-    erro('x-'+tbl.rows[t.parentNode.rowIndex].cells[cells-1].innerHTML);
-//        tbl.rows[0].cells.length;
-//        erro(math.min(3,cells.length-1));
-//        t.contentEditable = true;
-    gcell = t;
+    erro('x-');
+        erro('x-'+tbl.rows[y].cells[cells-1].innerHTML);
 
-//        select_tc_text(t);             // Выделяем текст в ячейке
-//        save_row_btn.disabled = false; // Активируем кнопку сохранения строки
+ //        tbl.rows[0].cells.length;
+ //        erro(math.min(3,cells.length-1));
+ //        t.contentEditable = true;
+//    alert('3');
 
-    // При потере фокуса снимаем выделение
-    t.onblur = function () { window.getSelection().removeAllRanges(); };
+     gcell = t;
+//    alert('4');
 
-    if (a_types[col_no].slice(-5) == 'TEXT') {
-        //t.style.position = "relative";
-        t.innerHTML = '<textarea wrap="soft" class="grid" id="edit2">'+v+'</textarea>';
-    }
-    else if (a_names[col_no].slice(-5) == '_name') {
-        // показать список для выбора
-        t.innerHTML = '<input '+a_inp_types[col_no]+' class="cell2" id="edit2"  value="'+v+'" />';
-    }
-    else {
-        t.innerHTML = '<input '+a_inp_types[col_no]+' class="cell2" id="edit2"  value="'+v+'" />';
-    }
+ //        select_tc_text(t);             // Выделяем текст в ячейке
+ //        save_row_btn.disabled = false; // Активируем кнопку сохранения строки
+//    alert('5');
+     // При потере фокуса снимаем выделение
+     t.onblur = function () { window.getSelection().removeAllRanges(); };
+//    erro('onblur-');
+//    alert(a_types[t_no][col_no]);
+     if (a_types[t_no][col_no] == 'TEXT') {
+         //t.style.position = "relative";
+         t.innerHTML = '<textarea wrap="soft" class="grid" id="edit2">'+v+'</textarea>';
+//         t.innerHTML = 'textarea';
+     }
+     else if (a_names[t_no][col_no].slice(-5) == '_name') {
+         // показать список для выбора
+         t.innerHTML = '<input '+a_inp_types[t_no][col_no]+' class="cell2" id="edit2"  value="'+v+'" />';
+     }
+     else {
+         t.innerHTML = '<input '+a_inp_types[t_no][col_no]+' class="cell2" id="edit2"  value="'+v+'" />';
+     }
+//return;
+     var ed = document.getElementById("edit2");
+     ed.focus();
+     ed.select();
+     ed.onblur = function() {
+          t.innerHTML = ed.value.trim();
 
-    var ed = document.getElementById("edit2");
-    ed.focus();
-    ed.select();
-    ed.onblur = function() {
-        ed.value = ed.value.trim();
-        t.innerHTML = ed.value;
+         if (a_names[t_no][col_no].slice(-5) == '_name') {
 
+//            alert("lst"+t_no+'x'+x);
 
-        if (a_names[col_no].slice(-5) == '_name') {
-            var dl = document.getElementById("lst"+x);
+             var dl = document.getElementById("lst"+t_no+'x'+x);
+//             alert(dl);
 
-            function dlmap(dl) {
-                var res = [];
+             function dlmap(dl) {
+                 var res = [];
 
-                for (var i=0; i<dl.options.length; i++){
-                    res[i] =  dl.options[i].value;
-                }
+                 for (var i=0; i<dl.options.length; i++){
+                     res[i] =  dl.options[i].value;
+                 }
 
-                return res;
-            }
-            var idx = dlmap(dl).indexOf(ed.value);
+                 return res;
+             }
+             var idx = dlmap(dl).indexOf(ed.value);
 
-            if (+idx == -1)
-            {
-                hint('Названия "'+ed.value+'" нет в списке. Попробуйте ещё раз.');
-                t.focus();
-                return;
-            }
-            else
-                hint('Это справочник ' +a_sprs[x] +' значение '+ ed.value+' dlen='+dl.options[1].value+';;'+idx);
-        }
+             if (+idx == -1)
+             {
+                 hint('Названия "'+ed.value+'" нет в списке. Попробуйте ещё раз.');
+                 t.focus();
+         //        return false;
+             }
+             else hint('');
+//             else  hint('Это справочник ' +a_sprs[t_no][x] +' значение '+ ed.value+' dlen='+dl.options[1].value+';;'+idx);
+         }
 
 
 
-    };
+     };
+//  return;
 
+     ed.onkeyup = onk;
+     function onk(f) {
+         switch(f.keyCode) {
+             case 13:
+                 erro('Enter');
+                 break;
+             case 16:
+                 erro('Shift');
+                 break;
+             case 38:  // Стрелка вверх
+                 if (y > 1)  tbl.rows[y-1].cells[x].focus();
+                 else        erro('Это первая строка');
+                 break;
+             case 40:  // Стрелка вниз
+                 if (y < rows-1)  tbl.rows[y+1].cells[x].focus();
+                 else           erro(y + '- это последняя строка');
+                 break;
+             case 39:  // Стрелка вправо не обрабатывается и правильно
+                 if (x < cells-1)  tbl.rows[y-1].cells[x].focus();
+                 else        erro(x + '- это последняя ячейка в строке');
+                 break;
+/*
+             case 45:  // Insert
+                 erro('Ins');
+                 // Создаем строку таблицы и вставляем ее перед текущей
+                 ed.blur();
+                 var row = tbl.insertRow(y);
+                 erro('Inse');
+                 row.innerHTML = tbl.rows[y+1].innerHTML;
+                 erro('Inser');
+                 row.cells[1].innerHTML = y;
 
-    ed.onkeyup = onk;
-    function onk(f) {
-        switch(f.keyCode) {
-            case 13:
-                erro('Enter');
-                break;
-            case 16:
-                erro('Shift');
-                break;
-            case 38:  // Стрелка вверх
-                if (y > 1)  tbl.rows[y-1].cells[x].focus();
-                else        erro('Это первая строка');
-                break;
-            case 40:  // Стрелка вниз
-                if (y < rows-1)  tbl.rows[y+1].cells[x].focus();
-                else           erro(y + '- это последняя строка');
-                break;
-            case 39:  // Стрелка вправо не обрабатывается и правильно
-                if (x < cells-1)  tbl.rows[y-1].cells[x].focus();
-                else        erro(x + '- это последняя ячейка в строке');
-                break;
-            case 45:  // Insert
-                erro('Ins');
-                // Создаем строку таблицы и вставляем ее перед текущей
-                ed.blur();
-                var row = tbl.insertRow(y);
-                erro('Inse');
-                row.innerHTML = tbl.rows[y+1].innerHTML;
-                erro('Inser');
-                row.cells[1].innerHTML = y;
+                 tbl.rows[y].cells[x].focus();
+ //                    var row = document.createElement("TR");
+ //                    tbl.appendChild(row);
+ //                    row.innerHTML = tbl.rows[rows-1].innerHTML;
+ //                    alert(tbl.rows[rows-1].innerHTML);
 
-                tbl.rows[y].cells[x].focus();
-//                    var row = document.createElement("TR");
-//                    tbl.appendChild(row);
-//                    row.innerHTML = tbl.rows[rows-1].innerHTML;
-//                    alert(tbl.rows[rows-1].innerHTML);
+ //                    row = tbl.rows[rows].cloneNode('yes');
 
-//                    row = tbl.rows[rows].cloneNode('yes');
+ //                    var tr = document.createElement("TR");
+ //                    row.appendChild(tr);
+ //                    tr.innerHTML = 'новая строка';
 
-//                    var tr = document.createElement("TR");
-//                    row.appendChild(tr);
-//                    tr.innerHTML = 'новая строка';
-
-                //         tbl.rows.push(tbl.rows[rows].cloneNode('yes'));
-                erro('Insert');
-                break;
-            case 27: // Escape
-                ed.value = v;
-                erro('Escape');
-                break;
-
-            default:
-                erro(f.keyCode);
-        }
-    }
+                 //         tbl.rows.push(tbl.rows[rows].cloneNode('yes'));
+                 erro('Insert');
+                 break;
 */
+             case 27: // Escape
+                 ed.value = v;
+                 erro('Escape');
+                 break;
+
+             default:
+                 erro('Кнопка '+f.keyCode);
+         }
+     }
+
 }

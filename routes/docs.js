@@ -268,7 +268,8 @@ router.post('/get_table', function(req, res, next) {
                                 var onevent = ' onfocus="list_focus(this)" ondblclick="select_val(' + j + ', this)" ';
                             }
                             else {
-                                onevent = 'onfocus="xnum_focus(this)" onclick="xcell_edit(this)" ';
+                                onevent = 'onfocus="xnum_focus(this)" ';
+//                                onevent = 'onfocus="xnum_focus(this)" onclick="xcell_edit(this)" ';
 //                                onevent = ' ondblclick="cell_edit(this)" ';
                             }
 
@@ -297,15 +298,17 @@ router.post('/get_table', function(req, res, next) {
                     result = result +'</table>';
                     result = result + '<br><button type="button green" onclick="append_row(this, '+t_no+')" >Добавить строку</button><br>';
 
-/*
+
                     // Справочники
                     for (var j = 0; j < data.f_names.length; j++) {
                         if (data.f_spr_names[j] != '') {
                             result = result + // 'si'+ j+ ' '+ data.f_spr_names[j] + '<br>';
-                                   '<select class="xy td" size="1" name="si'+j+'" title="" id="si'+j+'" ondblclick="setval(this)" ><option value="x">xx</option></select><br>';
+                                   '<select class="xy td" size="1" name="si'+t_no+'x'+j+'" title="" id="si'+t_no+'x'+j+'" ondblclick="setval(this)" ><option value="x">'+t_no+'x'+j+'</option></select><br>';
+                            result = result +
+                                '<span id="dls'+t_no+'x'+j+'">dls'+t_no+'x'+j+'</span><br>';
                         }
                     }
-*/
+
 
 
 

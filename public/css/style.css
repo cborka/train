@@ -36,6 +36,7 @@ body {
   color: #333;
   padding: 3px;
   margin: auto;
+
 }
 
 
@@ -444,6 +445,22 @@ tr.reports:hover {
   background: Window  /* Цвет фона при наведении */
 }
 
+div.erro {
+  position: fixed;
+  xtop: 82px; /* Расстояние от верхнего края */
+  left: 0; /* Расстояние от левого края */
+  bottom: 0;
+  xright: 0;
+  background: lightgray
+ }
+div.hint {
+  position: fixed;
+  xtop: 82px; /* Расстояние от верхнего края */
+  left: 0; /* Расстояние от левого края */
+  bottom: 32px;
+  xright: 0;
+
+}
 
 
 .xy {
