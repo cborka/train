@@ -300,41 +300,64 @@ function xnum_focus(t)
                  if (x < cells-1)  tbl.rows[y-1].cells[x].focus();
                  else        erro(x + '- это последняя ячейка в строке');
                  break;
-/*
              case 45:  // Insert
-                 erro('Ins');
                  // Создаем строку таблицы и вставляем ее перед текущей
                  ed.blur();
                  var row = tbl.insertRow(y);
-                 erro('Inse');
                  row.innerHTML = tbl.rows[y+1].innerHTML;
-                 erro('Inser');
                  row.cells[1].innerHTML = y;
 
-                 tbl.rows[y].cells[x].focus();
- //                    var row = document.createElement("TR");
- //                    tbl.appendChild(row);
- //                    row.innerHTML = tbl.rows[rows-1].innerHTML;
- //                    alert(tbl.rows[rows-1].innerHTML);
+                 tbl.rows[y+1].cells[x].focus();
 
- //                    row = tbl.rows[rows].cloneNode('yes');
-
- //                    var tr = document.createElement("TR");
- //                    row.appendChild(tr);
- //                    tr.innerHTML = 'новая строка';
-
-                 //         tbl.rows.push(tbl.rows[rows].cloneNode('yes'));
-                 erro('Insert');
+//                 erro('Insert');
                  break;
-*/
              case 27: // Escape
                  ed.value = v;
-                 erro('Escape');
+//                 erro('Escape');
                  break;
 
              default:
                  erro('Кнопка '+f.keyCode);
          }
      }
+}
 
+// Создаем строку таблицы и добавляем ее
+function insert_row(b) {
+    var t = b.parentNode;
+    var t_no = t.parentNode.parentNode.parentElement.id.slice(3); // Номер таблицы в документе, tbl1.slice(3) = 1
+    var tbl =  document.getElementById("tbl"+t_no);  // Редактируемая таблица
+
+    var y = t.parentNode.rowIndex;
+
+    // Создаем строку таблицы и вставляем ее перед текущей
+    var row = tbl.insertRow(y);
+    row.innerHTML = tbl.rows[y+1].innerHTML;
+    row.cells[1].innerHTML = y;
+
+//    tbl.rows[y].cells[2].focus();
+}
+
+// Создаем строку таблицы и добавляем ее в конец таблицы
+function append_row(b, n) {
+//  n - Номер таблицы в документе
+    var tbl =  document.getElementById("tbl"+n);  // Редактируемая таблица
+    erro('App');
+    var row = document.createElement("TR");
+    row.innerHTML = tbl.rows[tbl.rows.length-1].innerHTML;
+
+    row.cells[0].innerHTML = '';
+    row.cells[1].innerHTML = '';
+
+    tbl.appendChild(row);
+}
+
+function delete_row(b) {
+    var t = b.parentNode;
+    var t_no = t.parentNode.parentNode.parentElement.id.slice(3); // Номер таблицы в документе, tbl1.slice(3) = 1
+    var tbl =  document.getElementById("tbl"+t_no);  // Редактируемая таблица
+
+    var y = t.parentNode.rowIndex;
+
+    tbl.deleteRow(y);
 }

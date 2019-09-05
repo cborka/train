@@ -282,9 +282,9 @@ router.post('/get_table', function(req, res, next) {
 
                         //Поле кнопок
                         result = result + '<td>';
-                        result = result + '<button type="button" onclick="delete_row(this)" >Удалить строку</button>';
-                        result = result + '<button type="button" onclick="save_row(this)" xdisabled >Сохранить строку</button>';
-                        result = result + '<button type="button" onclick="insert_row(this)" xdisabled >Вставить строку</button></td>';
+                        result = result + '<button type="button" title="Удалить строку" onclick="delete_row(this)" >У</button>';
+                        result = result + '<button type="button" title="Сохранить строку" onclick="save_row(this)" xdisabled >С</button>';
+                        result = result + '<button type="button" title="Вставить строку" onclick="insert_row(this)" xdisabled >В</button></td>';
                         result = result + '</td>';
 
                         // Поля для сохранения старых значений ключевых полей
