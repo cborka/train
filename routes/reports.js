@@ -863,6 +863,30 @@ router.get('/get_puls_otgr', function(req, res, next) {
 
 
 //
+// На сколько дней хватит места на складе ЖБИ
+//
+router.post('/get_help', function(req, res, next) {
+    var filename = req.body.hlp;
+    var text = '';
+
+    // Считываем содержание файла в память
+    fs.readFile('W:\\bor\\x321help\\'+filename, function (err, logData) {
+
+        if (err) {
+            text = 'get_help: ОШИБКА чтения файла ' + filename+'<br>';
+        }
+        else {
+            text = logData.toString(); // logData это объект типа Buffer, переводим в строку
+        }
+
+        res.send(text);
+    });
+});
+
+
+
+
+//
 // Рандомная страница, содержимое зависит от переданного в неё GET-параметра
 //
 router.get('/inform_any', function(req, res, next) {
