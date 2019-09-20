@@ -30,7 +30,7 @@ router.post('/init_doc', function(req, res, next) {
     // Здесь будет SQL-запрос к таблицам, содержащим инфу о документе
 
     result += '<div id="table1" title="Таблица 1">Здесь будет таблица 1</div>';
-    result += '<div id="table2" title="Таблица 2">Здесь будет таблица 2</div>';
+//    result += '<div id="table2" title="Таблица 2">Здесь будет таблица 2</div>';
 
     res.send(result);
 });
@@ -232,7 +232,7 @@ router.post('/get_table', function(req, res, next) {
                         else  result = result + '<col width="30">';
 */
                     }
-                    result = result + '<col width="200">'; // Поле кнопок
+                    result = result + '<col width="100">'; // Поле кнопок
                     result = result + '<col width="35">'; // Поля ключей
 //                    result = result + '<col width="3%">'; //
 //                    result = result + '<col width="2%">'; //

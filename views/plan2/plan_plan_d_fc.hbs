@@ -7,7 +7,7 @@
     <table class="form">
         <tr>
             <td><label>План-месяц:</label></td>
-            <td><select width="100%" size="1" name='plan_name' id='plan_name' value="{{plan_name}}" onchange="change_plan_name()"></select>
+            <td><select width="100%" size="1" name='plan_name' id='plan_name' value="{{plan_name}}" onchange="on_change_plan_name()"></select>
                 <input id="plan_name2" type="text" name="plan_name2" readonly value="{{plan_name}}" hidden >
                 <input id="plan_rf" type="text" name="plan_rf" readonly value={{plan_rf}} hidden >
                 <input id="old_plan_rf" type="text" name="old_plan_rf" readonly value={{plan_rf}} hidden >
@@ -447,16 +447,20 @@
 //        alert(plan_name);
         paint_num_days ();
         get_sd_params();
+        get_hours();
     }
     function on_change_sd_name() {
         sd_name = document.getElementById("sd_name").value;
         document.getElementById("sd_name2").value = document.getElementById("sd_name").value;
         get_sd_params();
+        get_hours();
     }
 
     function on_change_item_name() {
         item_name = document.getElementById("item_name").value;
+        get_form_fc_params();
     }
+
 
 
 
@@ -813,8 +817,9 @@
         dte.setDate(dte.getDate() + 1);
 
         // тут сделать все проверки
-        if (form_num == '')
-            alert('Не указано количество форм');
+        if (form_num == '') {
+//            alert('Не указано количество форм');
+        }
 
 //        alert('fc_num='+fc_num+',form_num='+form_num+',form_fc_num='+form_fc_num+',form_time='+form_time);
 
@@ -928,8 +933,9 @@
         dte.setDate(dte.getDate() + 1);
 
         // тут сделать все проверки
-        if (form_num == '')
-            alert('Не указано количество форм');
+        if (form_num == '') {
+//            alert('Не указано количество форм');
+        }
 
         i = 0;
         fc_one = form_num * form_fc_num;
@@ -1060,6 +1066,7 @@
     };
     function get_sd_params()
     {
+//        alert('get_sd_fc_params');
         doQuery ("/plan2/get_plan_plan_d_sd_params", set_sd_params,
                 "&plan_name=" + encodeURIComponent(document.getElementById("plan_name").value)+
                 "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value)
@@ -1200,7 +1207,10 @@
         // 467|ПДН-14|1.0|12.00|
         // (data.form_rf+'|'+data.form_name+'|'+data.form_fc_num+'|'+data.forming_time);
 
+//        alert(reply);
+
         form_fc_params_exists = (reply.substr(0, 6) != 'ОШИБКА');
+
 
         var arr_fc = reply.split('|');
         document.getElementById("form_name").value = arr_fc[1];
@@ -1211,8 +1221,9 @@
     };
     function get_form_fc_params()
     {
+//        alert('get_form_fc_params'+document.getElementById("item_name").value);
         doQuery ("/plan2/get_plan_plan_d_form_fc_params", set_form_fc_params,
-                "&fc_rf=" + encodeURIComponent(document.getElementById("item_rf").value)
+                "&fc_name=" + encodeURIComponent(document.getElementById("item_name").value)
         );
     }
 
@@ -1235,9 +1246,10 @@
     function get_sd_form_params()
     {
 //        alert(document.getElementById("form_name").value + ','+document.getElementById("sd_rf").value);
+//        alert('get_sd_form_params');
         doQuery ("/plan2/get_plan_plan_d_sd_form_params", set_sd_form_params,
                 "&form_name=" + encodeURIComponent(document.getElementById("form_name").value)+
-                "&sd_rf=" + encodeURIComponent(document.getElementById("sd_rf").value)
+                "&sd_name=" + encodeURIComponent(document.getElementById("sd_name").value)
         );
     }
 

@@ -1806,12 +1806,12 @@ router.post('/get_plan_plan_d_sd_params', function(req, res, next) {
 
 // Получение параметров ФОРМА-ЖБИ
 router.post('/get_plan_plan_d_form_fc_params', function(req, res, next) {
-    var fc_rf = req.body.fc_rf;
+    var fc_name = req.body.fc_name;
     db.one(
         "SELECT ff.form_rf, frm.item_name AS form_name, ff.fc_num AS form_fc_num, ff.forming_time " +
         " FROM (form_fc ff " +
         "   LEFT JOIN item_list frm ON ff.form_rf = frm.item_id) " +
-        " WHERE ff.fc_rf = $1", [fc_rf])
+        " WHERE ff.fc_rf = (SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$1)", [fc_name])
         .then(function (data) {
 
             data.form_fc_num = Math.round(data.form_fc_num * 1000) / 1000;
@@ -1827,13 +1827,13 @@ router.post('/get_plan_plan_d_form_fc_params', function(req, res, next) {
 // Получение параметров ПРОЛЕТ-ФОРМА
 router.post('/get_plan_plan_d_sd_form_params', function(req, res, next) {
     var form_name = req.body.form_name;
-    var sd_rf = req.body.sd_rf;
+    var sd_name = req.body.sd_name;
     db.one(
         "SELECT form_num AS sd_form_num, form_num_max AS sd_form_num_max " +
         " FROM sd_form  " +
-        " WHERE sd_rf = $2" +
+        " WHERE sd_rf = (SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$2)" +
         "   AND form_rf = (SELECT item_id FROM item_list WHERE spr_rf = 464 AND item_name=$1)",
-        [form_name, sd_rf])
+        [form_name, sd_name])
         .then(function (data) {
 
 //            data.sd_form_num = Math.round(data.sd_form_num * 1000) / 1000;
