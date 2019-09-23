@@ -424,7 +424,7 @@ router.post('/load_doc', function(req, res, next) {
   var id1c = req.body.id1c;
 
   db.one(
-    "SELECT count(*) AS cnt FROM docs_1c WHERE id1c = $1 AND doc_name = $2", [id1c, table_name])
+    "SELECT count(*) AS cnt FROM docs_1c WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER) AND doc_name = $2", [id1c, table_name])
     .then(function (data) {
       if (data.cnt == '0')
       {
@@ -434,7 +434,7 @@ router.post('/load_doc', function(req, res, next) {
             res.send('load_doc: Вставлена строка ('+id1c+','+table_name+') в таблицу docs_1c, cnt = '+ data.cnt +' <br>');
           })
           .catch(function (error) {
-            res.send('load_doc: ОШИБКА INSERT SQL: '+error);
+            res.send('load_doc: ОШИБКА INSERT SQL:: '+error);
           });
       }
       else {
