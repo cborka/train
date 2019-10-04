@@ -566,7 +566,7 @@ router.get('/get_sv_plan', function(req, res, next) {
         "SELECT SUM(fc.fc_v * pp.num_plan) AS sumv " +
         " FROM plan_plan pp " +
         " LEFT JOIN fc_s fc ON pp.item_rf = fc.fc_rf " +
-        "   AND plan_rf = 844") //749
+        "   AND plan_rf = current_plan()") //749
         .then (function (data) {
             var result = '';
             data.sumv = Math.round(data.sumv * 1000) / 1000 ;
@@ -583,7 +583,7 @@ router.get('/get_sv_form', function(req, res, next) {
         "SELECT SUM(fc.fc_v * pp.num_fact) AS sumv " +
         " FROM plan_plan pp " +
         " LEFT JOIN fc_s fc ON pp.item_rf = fc.fc_rf " +
-        "   AND plan_rf = 844")
+        "   AND plan_rf = current_plan()")
         .then (function (data) {
             var result = '';
 
@@ -602,7 +602,7 @@ router.get('/get_sv_prihod', function(req, res, next) {
         " FROM ((fcprihod_h ph " +
         "   LEFT JOIN fcprihod p ON ph.doc_id = p.doc_rf ) " +
         "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
-        "   WHERE dt >= '2019-07-01' " +
+        "   WHERE dt >= current_plan_begin() " + //'2019-07-01'
         "   AND fc_v IS NOT NULL ")
         .then (function (data) {
             var result = '';
@@ -622,7 +622,7 @@ router.get('/get_sv_prihod_pdn14', function(req, res, next) {
         " FROM ((fcprihod_h ph " +
         "   LEFT JOIN fcprihod p ON ph.doc_id = p.doc_rf ) " +
         "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
-        "   WHERE dt >= '2019-07-01' " +
+        "   WHERE dt >= current_plan_begin() " +
         "   AND p.fc_rf = 13 ")
         .then (function (data) {
             var result = '';
@@ -642,7 +642,7 @@ router.get('/get_sv_prihod_pdnav', function(req, res, next) {
         " FROM ((fcprihod_h ph " +
         "   LEFT JOIN fcprihod p ON ph.doc_id = p.doc_rf ) " +
         "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
-        "   WHERE dt >= '2019-07-01' " +
+        "   WHERE dt >= current_plan_begin() " +
         "   AND p.fc_rf = 279 ")
         .then (function (data) {
             var result = '';
@@ -664,7 +664,7 @@ router.get('/get_sv_rashod', function(req, res, next) {
         " FROM ((fcrashod_h ph " +
         "   LEFT JOIN fcrashod p ON ph.doc_id = p.doc_rf ) " +
         "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
-        "   WHERE dt >= '2019-07-01' " +
+        "   WHERE dt >= current_plan_begin() " +
         "   AND fc_v IS NOT NULL ")
         .then (function (data) {
             var result = '';
@@ -684,7 +684,7 @@ router.get('/get_sv_rashod_pdn14', function(req, res, next) {
         " FROM ((fcrashod_h ph " +
         "   LEFT JOIN fcrashod p ON ph.doc_id = p.doc_rf ) " +
         "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
-        "   WHERE dt >= '2019-07-01' " +
+        "   WHERE dt >= current_plan_begin() " +
         "   AND p.fc_rf = 13 ")
         .then (function (data) {
             var result = '';
@@ -704,7 +704,7 @@ router.get('/get_sv_rashod_pdnav', function(req, res, next) {
         " FROM ((fcrashod_h ph " +
         "   LEFT JOIN fcrashod p ON ph.doc_id = p.doc_rf ) " +
         "   LEFT JOIN fc_s fc ON p.fc_rf = fc.fc_rf ) " +
-        "   WHERE dt >= '2019-07-01' " +
+        "   WHERE dt >= current_plan_begin() " +
         "   AND p.fc_rf = 279 ")
         .then (function (data) {
             var result = '';

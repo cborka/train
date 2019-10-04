@@ -209,6 +209,8 @@ router.post('/load_string_fcrashod', function(req, res, next) {
   var fc_name = req.body.fc_name;
   var fc_num = req.body.fc_num;
 
+  id1c = id1c.trim();
+
   db.none(
     "INSERT INTO fcrashod_1c(id1c, dt, sklad_name, cust_name, fc_name, fc_num, string_no) VALUES ($1, $2, $3, $4, $5, $6, $7) ",
     [id1c, dt, sklad_name, cust_name, fc_name, fc_num, string_no] )
@@ -233,6 +235,8 @@ router.post('/load_string_fcprihod', function(req, res, next) {
   var fc_name = req.body.fc_name;
   var fc_num = req.body.fc_num;
 
+  id1c = id1c.trim();
+
   db.none(
     "INSERT INTO fcprihod_1c(id1c, dt, sd_name, fc_name, fc_num, string_no) VALUES ($1, $2, $3, $4, $5, $6) ",
     [id1c, dt, sd_name, fc_name, fc_num, string_no] )
@@ -256,6 +260,8 @@ router.post('/load_string_fcformovka', function(req, res, next) {
   var sd_name = req.body.sd_name;
   var fc_name = req.body.fc_name;
   var fc_num = req.body.fc_num;
+
+  id1c = id1c.trim();
 
   db.none(
     "INSERT INTO fcformovka_1c(id1c, dt, sd_name, fc_name, fc_num, string_no) VALUES ($1, $2, $3, $4, $5, $6) ",
@@ -282,6 +288,8 @@ router.post('/load_string_armrashod_1c', function(req, res, next) {
   var arm_name = req.body.arm_name;
   var arm_num = str2num(req.body.arm_num.trim().replace(',','.'));
 
+  id1c = id1c.trim();
+
   db.none(
     "INSERT INTO armrashod_1c (id1c, dt, sklad_name, sd_name, arm_name, arm_num, string_no) VALUES ($1, $2, $3, $4, $5, $6, $7) ",
     [id1c, dt, sklad_name, sd_name, arm_name, arm_num, string_no] )
@@ -305,6 +313,8 @@ router.post('/load_string_betrashod_1c', function(req, res, next) {
   var sd_name = req.body.sd_name;
   var bet_name = req.body.bet_name;
   var bet_num = str2num(req.body.bet_num.trim().replace(',','.'));
+
+  id1c = id1c.trim();
 
   db.none(
     "INSERT INTO betrashod_1c (id1c, dt, sd_name, bet_name, bet_num, string_no) VALUES ($1, $2, $3, $4, $5, $6) ",
@@ -392,8 +402,10 @@ router.post('/clear_doc2', function(req, res, next) {
   var table_name = req.body.table_name;
   var id1c = req.body.id1c;
 
+  id1c = id1c.trim();
+
   db.one(
-    "SELECT count(*) AS cnt FROM " + table_name+ " WHERE id1c = $1", [id1c])
+    "SELECT count(*) AS cnt FROM " + table_name+ " WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER)", [id1c])
     .then(function (data) {
       if (data.cnt == '0')
       {
@@ -401,7 +413,7 @@ router.post('/clear_doc2', function(req, res, next) {
       }
       else {
         db.none(
-          " DELETE FROM " + table_name +" WHERE id1c = $1 ", [id1c] )
+          " DELETE FROM " + table_name +" WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER)", [id1c] )
           .then (function (data2) {
             res.send('Очищено '+data.cnt+' строк документа ('+id1c+') из таблицы '+ table_name + '<br>');
           })
@@ -423,6 +435,8 @@ router.post('/load_doc', function(req, res, next) {
   var table_name = req.body.table_name;
   var id1c = req.body.id1c;
 
+  id1c = id1c.trim();
+
   db.one(
     "SELECT count(*) AS cnt FROM docs_1c WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER) AND doc_name = $2", [id1c, table_name])
     .then(function (data) {
@@ -439,7 +453,7 @@ router.post('/load_doc', function(req, res, next) {
       }
       else {
         db.none(
-          " UPDATE docs_1c SET dt = now() WHERE id1c = $1 AND doc_name = $2", [id1c, table_name] )
+          " UPDATE docs_1c SET dt = now() WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER) AND doc_name = $2", [id1c, table_name] )
           .then (function (data2) {
             res.send('load_doc: Обновлена строка документа '+id1c+', '+table_name+' таблицы docs_1c, cnt = '+ data.cnt +' <br>');
           })
