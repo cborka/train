@@ -1,16 +1,177 @@
 'use strict';
 
 
-//document.getElementById('eee').innerHTML = '<br>ddddddddddd';
-//alert(document.getElementById("eee").innerHTML);
-//alert(document.getElementById("eee").innerHTML);
+// document.getElementById('eee').innerHTML = '<br>ddddddddddd';
+// alert(document.getElementById("eee").innerHTML);
+// alert(document.getElementById("eee").innerHTML);
 
-function echo2(message) {
-    document.getElementById('eee').innerHTML += '<br>' + message;
+function echo2 (message) {
+  document.getElementById('eee').innerHTML += '<br>' + message;
+}
+
+let op1 = +prompt('op1 =', 0);
+let op2 = +prompt('op2 =', 0);
+
+alert(+op1 + +op2);
+
+
+/*
+let ladder = {
+    step: 0,
+    up() {
+        this.step++;
+        return this;
+    },
+    down() {
+        this.step--;
+        return this;
+    },
+    showStep: function() { // показывает текущую ступеньку
+        alert( this.step );
+        return this;
+    }
+};
+
+//ladder.up().up().up().down().showStep();
+*/
+
+/*
+function Calc() {
+    this.op1 = 1;
+    this.op2 = 1;
+
+    this.read =  function() {
+        this.op1 = prompt('op1 =', this.op1);
+        this.op2 = prompt('op2 =', this.op2);
+    };
+
+    this.sum = function() {return (+this.op1 + +this.op2)};
+    this.mul = function() {return (+this.op1 * +this.op2)};
+
+}
+
+let clc = new Calc();
+
+clc.read();
+echo2(clc.sum());
+echo2(clc.mul());
+*/
+
+/*
+function Accumulator(start_value) {
+    this.value = +start_value;
+
+    this.read = function() {
+        this.value += +prompt('Добавить ', 1);
+    }
 }
 
 
-function ask(question, yes, no) {
+let accumulator = new Accumulator(1); // начальное значение 1
+
+accumulator.read(); // прибавит ввод prompt к текущему значению
+accumulator.read(); // прибавит ввод prompt к текущему значению
+
+alert(accumulator.value); // выведет сумму этих значений
+*/
+
+/*
+let calc = {
+    op1: 1,
+    op2: 1,
+
+    read: function() {
+        this.op1 = prompt('op1 =', this.op1);
+        this.op2 = prompt('op2 =', this.op2);
+        },
+
+    sum: function() {return (+this.op1 + +this.op2)},
+    mul: function() {return (+this.op1 * +this.op2)}
+
+};
+
+//prompt('op1 =', calc.op1);
+//prompt('op2 =', calc.op2);
+alert(33);
+calc.read();
+alert(55);
+alert(calc.sum());
+alert(calc.mul());
+*/
+
+/*
+Создайте пустой объект user.
+    Добавьте свойство name со значением John.
+    Добавьте свойство surname со значением Smith.
+    Измените значение свойства name на Pete.
+    Удалите свойство name из объекта.
+
+
+let user = {};
+user.name = 'John';
+user.surname = 'Smith';
+user.name = 'Pete';
+delete user.namel
+*/
+/*
+Напишите функцию isEmpty(obj), которая возвращает true, если у объекта нет свойств, иначе false.
+
+    Должно работать так:
+
+
+function isEmptyMy(obj) {
+    let c = +0;
+    for (let prop in obj) c++;
+
+    return c == +0;
+}
+function isEmpty(obj) {
+    for (let prop in obj)
+        return false;
+
+    return true;
+}
+
+let schedule = {};
+// alert( isEmpty(schedule) ); // true
+schedule["8:30"] = "get up";
+// alert( isEmpty(schedule) ); // false
+
+
+let salaries = {
+    John: 100,
+    Ann: 160,
+    Pete: 130
+};
+
+function ssum(sal) {
+    let sum = +0;
+    for (let key in sal) sum += +sal[key];
+    return +sum;
+}
+// alert(ssum(salaries));
+
+let menu = {
+    width: 200,
+    height: 300,
+    title: "My menu"
+};
+for (let key in menu) {
+    if (typeof (menu[key]) == "number")
+        menu[key] *= 2;
+}
+
+alert (menu['width']);
+*/
+
+
+//let id = Symbol("id");
+//alert(id.toString());
+
+
+
+/*
+function ask (question, yes, no) {
     if (confirm(question)) yes()
     else no();
 }
@@ -30,7 +191,7 @@ ask(
     () => alert("Вы согласились."),
     () => alert("Вы отменили выполнение.")
 );
-
+*/
 
 /*
 function min(a, b) {

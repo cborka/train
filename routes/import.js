@@ -6,6 +6,8 @@ var db = require("../db");
 
 // Каталог в котором появляются файлы с информацией (текстовые файлы с разделителями)
 var dir = '\\\\10.0.0.10\\обменпризводство';
+
+const DIR = '\\\\10.0.0.10\\обменпризводство';
 //var archive_dir = '\\\\10.0.0.33\\Common\\x321\\loaded_files';
 
 
@@ -561,6 +563,53 @@ router.post('/load_fcrashod', function(req, res, next) {
 });
 
 */
+
+
+//=====================================================================
+//            ЗАГРУЗКА ДАННЫХ ИЗ ФАЙЛОВ. ВАРИАНТ 2.
+//=====================================================================
+
+
+//
+// Импорт данных, ГЛАВНАЯ СТРАНИЦА
+//
+router.get('/from1c2', function(req, res, next) {
+    var data = { };
+    res.render('import/from1c2', data);
+});
+
+//
+// Возвратить список файлов с загружаемыми данными
+//
+router.get('/1c8filenames2', function(req, res, next) {
+
+    fs.readdir(DIR, function(err, data) {
+        var s = '';
+
+        if (err) {
+            s = 'ОШИБКА чтения из каталога.';
+            res.send('from1c: '+s+'<br>');
+            return;
+        }
+
+        // Цикл по файлам каталога
+        for (var i = 0; i < data.length; i++) {
+            if ((data[i].substring(17) == 'приход БСУ.txt')
+                || (data[i].substring(17) == 'ХХХХХ.txt')
+            )
+//      if (data[i].slice(-4) == '.txt')
+            {
+                s = s + data[i] + '\n';
+//                break;
+            }
+
+            if (i > 7) break;
+        }
+
+        res.send(s);
+    });
+
+});
 
 
 

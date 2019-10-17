@@ -1,0 +1,56 @@
+<h1> Импорт данных из файлов формируемых в 1С</h1>
+Версия 2
+<h2> Список файлов </h2>
+<button type="button" onclick="auto_on()">Включить автозагрузку</button>
+<button type="button" onclick="auto_off()">Выключить автозагрузку</button>
+<div id="auto" ></div>
+<br>
+<button type="button" onclick="get_filenames()">Получить имена файлов</button>
+<!-- <button type="button" onclick="save_log()">Сохранить журнал загрузки</button> -->
+
+<div id="filenames" ></div>
+
+Процесс загрузки
+<div id="loads" >123</div>
+
+
+<script>
+    'use strict';
+
+    let timerId;
+
+    function get_date() {
+        return(new Date().toString().substr(0, 24));
+    }
+
+    //
+    // Получить имена файлов
+    //
+//    let filenames = '{}';
+
+    function get_filenames()
+    {
+//        save_log();
+        document.getElementById("loads").innerHTML = '';
+        doQuery ("/import/1c8filenames2", set_filenames);
+    }
+    var set_filenames = function (reply)
+    {
+        if (reply.trim() != '')
+        {
+            let filenames = reply.split('\n');
+
+            for (let i = 0; i < filenames.length; i++) {
+                if (filenames[i] != '')
+                  document.getElementById("filenames").innerHTML += get_date() + ' Загружаю: ' + filenames[i]+'<br>';
+            }
+
+//            setTimeout(load_files, 2000);
+//            load_files();
+        }
+//        else
+//          document.getElementById("filenames").innerHTML += get_date() + ' Пусто <br>';
+    };
+
+
+</script>
