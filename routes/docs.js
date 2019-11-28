@@ -759,4 +759,48 @@ router.post('/get_datalist_n', function(req, res, next) {
 </datalist>
 */
 
+
+router.get('/get_tables_json', function(req, res, next) {
+    db.any(
+        "SELECT table_rf, item_name AS table_name, t_info" +
+        " FROM table_s t LEFT JOIN item_list i ON t.table_rf = i.item_id" +
+        " ORDER BY 2")
+        .then (function (data) {
+
+            var result = '{';
+            result += '"tableName": "table_s"';
+
+            result += ', "fieldNames": ["table_rf", "table_name", "t_info"]';
+
+            result += ', "data": [';
+
+            // Строки данных
+            for (var i = 0; i < data.length; i++) {
+                result +=
+                    '{' +
+                    '"id": ' + data[i].table_rf + ',' +
+                    '"name": "' + data[i].table_name + '",' +
+                    '"info": "' + data[i].t_label + '"' +
+                    '}';
+                if (i < data.length-1)
+                    result += ',';
+            }
+
+            result = result +']}';
+
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send("ОШИБКА: "+error);
+        });
+});
+
+
+
+
+
+
+
+
+
 module.exports = router;

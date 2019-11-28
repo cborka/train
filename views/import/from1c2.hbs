@@ -36,13 +36,19 @@
     }
     var set_filenames = function (reply)
     {
+        document.getElementById("loads").innerHTML = reply;
+        exit;
+
+
         if (reply.trim() != '')
         {
             let filenames = reply.split('\n');
 
             for (let i = 0; i < filenames.length; i++) {
-                if (filenames[i] != '')
-                  document.getElementById("filenames").innerHTML += get_date() + ' Загружаю: ' + filenames[i]+'<br>';
+                if (filenames[i] != '') {
+                    document.getElementById("loads").innerHTML += get_date() + ' Загружаю: ' + filenames[i] + '<br>';
+                    load_file2(filenames[i]);
+                }
             }
 
 //            setTimeout(load_files, 2000);
@@ -52,5 +58,41 @@
 //          document.getElementById("filenames").innerHTML += get_date() + ' Пусто <br>';
     };
 
+
+
+    function load_file2(filename)
+    {
+        if(filename == '')
+            return;
+
+        document.getElementById("loads").innerHTML += 'Загрузка файла: ' + filename + '<br>';
+
+        // Тут проверка что за файл и как и куда его загружать
+        if (filename.substring(17) == 'отгрузка ЖБИ.txt')
+        {
+//            doQuery ("/import/get_data", load_data_fcrashod, '&filename=' + encodeURIComponent(filename));
+        }
+        else if (filename.substring(17) == 'сдача ЖБИ.txt')
+        {
+//            doQuery ("/import/get_data", load_data_fcprihod, '&filename=' + encodeURIComponent(filename));
+        }
+        else if (filename.substring(17) == 'формовка ЖБИ.txt')
+        {
+//            doQuery ("/import/get_data", load_data_fcformovka, '&filename=' + encodeURIComponent(filename));
+        }
+        else if (filename.substring(17) == 'арматура в пролет.txt')
+        {
+//            doQuery ("/import/get_data", load_data_armrashod, '&filename=' + encodeURIComponent(filename));
+        }
+        else if (filename.substring(17) == 'выдача бетона.txt')
+        {
+//            doQuery ("/import/get_data", load_data_betrashod, '&filename=' + encodeURIComponent(filename));
+        }
+        else if (filename.substring(17) == 'приход БСУ.txt')
+        {
+//            doQuery ("/import/get_data", load_data_betrashod, '&filename=' + encodeURIComponent(filename));
+        }
+
+    }
 
 </script>
