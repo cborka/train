@@ -23,11 +23,11 @@ function str2num(str) {
             ret = ret + s;
     }
 
-/*    for (var i = 0; i < str.length; i++) {
-        let s = str[i];
-        if ('0123456789.'.includes(s))
-            ret += s;
-    }*/
+    /*    for (var i = 0; i < str.length; i++) {
+            let s = str[i];
+            if ('0123456789.'.includes(s))
+                ret += s;
+        }*/
     return (ret);
 }
 
@@ -615,54 +615,87 @@ router.get('/from1c2', function (req, res, next) {
 //
 // Возвратить список файлов с загружаемыми данными
 //
+router.get('/1c8filenames2x', function (req, res, next) {
+ //   res.send('1c8filenames2');
+
+    try {
+        let data = fs.readdirSync(DIR);
+//        console.log('data='+data)
+
+        for (let i = 0; i < data.length; i++) {
+            if ((data[i].substring(17) === 'приход БСУ.txt')
+                || (data[i].substring(17) === 'ХХХХХ.txt')
+            ) {
+//                res.send('1c8filenames2');
+//                return;
+
+                let txt = fs.readFileSync(DIR + '\\' + data[i]);
+                res.send(data[1] + '\n<br>' + txt);
+                return;
+            }
+        }
+    }
+    catch (e) {
+        res.send('ОШИБКА чтения каталога '+DIR+': '+e.toString());
+    }
+
+});
+
 router.get('/1c8filenames2', function (req, res, next) {
-//    res.send('x==>'+DIR+'<==x');
+
     fs.readdir(DIR, function (err, data) {
-        let s = '';
         let txt = '';
 
         if (err) {
-            s = 'ОШИБКА чтения из каталога.'+DIR;
-            res.send('from1c: ' + s + '<br>');
+            res.send('ОШИБКА чтения из каталога ' + DIR+' :'+ err);
             return;
         }
 
         // Цикл по файлам каталога
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
             if ((data[i].substring(17) === 'приход БСУ.txt')
                 || (data[i].substring(17) === 'ХХХХХ.txt')
             ) {
-                s = s + data[i] + '<br>';
-
                 txt = fs.readFileSync(DIR + '\\' + data[i]);
 
-                s += txt.toString() + '<br><br>';
-
-
+//                    load_file(data[i], txt.toString());
                 db.one(
-                    "SELECT load_bsuprihod AS result FROM load_bsuprihod($1, $2)", [data[i], txt.toString()])
-                    .then(function (data) {
-                        if (data.result === '0') {
-//                            res.send('Не удалось вставить данные из файла ' + data[i] + '<br>');
+                    "SELECT load_from_file AS result FROM load_from_file($1, $2)", [data[i], txt.toString()])
+                    .then(function (data2) {
+                        if (data2.result === '0') {
+                            res.send('Не удалось вставить данные из файла ' + data[i] + '<br>');
                         } else {
+                            res.send(data2.result + '<br>');
 //                            res.send('Добавлены данные из файла ' + data[i] + '<br>');
                         }
                     })
                     .catch(function (error) {
-
-                        res.send('1c8filenames2: ОШИБКА SELECT SQL: ' + error);
+                        res.send('ОШИБКА: load_file: ' + error);
                     });
-
-
-//                break;
-            }
-
-            if (i > 7) break;
+                return; // Обрабатываем по одному нужному файлу
+              }
         }
+    })
 
-        res.send(s);
-    });
 });
+
+
+function load_file(fileName, fileContent) {
+    db.one(
+        "SELECT load_bsuprihod AS result FROM load_bsuprihod($1, $2)", [fileName, fileContent])
+        .then(function (data) {
+            if (data.result === '0') {
+//                            res.send('Не удалось вставить данные из файла ' + data[i] + '<br>');
+            } else {
+//                            res.send('Добавлены данные из файла ' + data[i] + '<br>');
+            }
+            res.send(data);
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА: load_file: ' + error);
+        });
+
+}
 
 
 module.exports = router;

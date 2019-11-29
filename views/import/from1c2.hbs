@@ -3,15 +3,15 @@
 <h2> Список файлов </h2>
 <button type="button" onclick="auto_on()">Включить автозагрузку</button>
 <button type="button" onclick="auto_off()">Выключить автозагрузку</button>
-<div id="auto" ></div>
+<div id="auto"></div>
 <br>
 <button type="button" onclick="get_filenames()">Получить имена файлов</button>
 <!-- <button type="button" onclick="save_log()">Сохранить журнал загрузки</button> -->
 
-<div id="filenames" ></div>
+<div id="filenames"></div>
 
 Процесс загрузки
-<div id="loads" >123</div>
+<div id="loads">123</div>
 
 
 <script>
@@ -20,28 +20,38 @@
     let timerId;
 
     function get_date() {
-        return(new Date().toString().substr(0, 24));
+        return (new Date().toString().substr(0, 24));
     }
 
-    //
-    // Получить имена файлов
-    //
-//    let filenames = '{}';
 
-    function get_filenames()
-    {
-//        save_log();
+    function auto_on() {
+
+        document.getElementById("auto").innerHTML = 'Автозагрузка включена<br>';
+        timerId = setInterval(get_filenames, 3000);
+    }
+
+    function auto_off() {
+        clearInterval(timerId);
+        document.getElementById("auto").innerHTML = 'Автозагрузка выключена<br>';
         document.getElementById("loads").innerHTML = '';
-        doQuery ("/import/1c8filenames2", set_filenames);
+        document.getElementById("filenames").innerHTML = '';
+
     }
-    var set_filenames = function (reply)
-    {
-        document.getElementById("loads").innerHTML = reply;
+
+
+    // Получить имена файлов
+    function get_filenames() {
+//        save_log();
+//        document.getElementById("loads").innerHTML = '';
+        doQuery("/import/1c8filenames2", set_filenames);
+    }
+
+    var set_filenames = function (reply) {
+        document.getElementById("loads").innerHTML += reply;
         exit;
 
 
-        if (reply.trim() != '')
-        {
+        if (reply.trim() != '') {
             let filenames = reply.split('\n');
 
             for (let i = 0; i < filenames.length; i++) {
@@ -59,37 +69,24 @@
     };
 
 
-
-    function load_file2(filename)
-    {
-        if(filename == '')
+    function load_file2(filename) {
+        if (filename == '')
             return;
 
         document.getElementById("loads").innerHTML += 'Загрузка файла: ' + filename + '<br>';
 
         // Тут проверка что за файл и как и куда его загружать
-        if (filename.substring(17) == 'отгрузка ЖБИ.txt')
-        {
+        if (filename.substring(17) == 'отгрузка ЖБИ.txt') {
 //            doQuery ("/import/get_data", load_data_fcrashod, '&filename=' + encodeURIComponent(filename));
-        }
-        else if (filename.substring(17) == 'сдача ЖБИ.txt')
-        {
+        } else if (filename.substring(17) == 'сдача ЖБИ.txt') {
 //            doQuery ("/import/get_data", load_data_fcprihod, '&filename=' + encodeURIComponent(filename));
-        }
-        else if (filename.substring(17) == 'формовка ЖБИ.txt')
-        {
+        } else if (filename.substring(17) == 'формовка ЖБИ.txt') {
 //            doQuery ("/import/get_data", load_data_fcformovka, '&filename=' + encodeURIComponent(filename));
-        }
-        else if (filename.substring(17) == 'арматура в пролет.txt')
-        {
+        } else if (filename.substring(17) == 'арматура в пролет.txt') {
 //            doQuery ("/import/get_data", load_data_armrashod, '&filename=' + encodeURIComponent(filename));
-        }
-        else if (filename.substring(17) == 'выдача бетона.txt')
-        {
+        } else if (filename.substring(17) == 'выдача бетона.txt') {
 //            doQuery ("/import/get_data", load_data_betrashod, '&filename=' + encodeURIComponent(filename));
-        }
-        else if (filename.substring(17) == 'приход БСУ.txt')
-        {
+        } else if (filename.substring(17) == 'приход БСУ.txt') {
 //            doQuery ("/import/get_data", load_data_betrashod, '&filename=' + encodeURIComponent(filename));
         }
 
