@@ -9,6 +9,8 @@ var dir = '\\\\10.0.0.10\\обменпризводство';
 
 const DIR = '\\\\10.0.0.10\\обменпризводство';
 
+const DIR2 = 'c:\\cborka\\import_files';
+
 //var archive_dir = '\\\\10.0.0.33\\Common\\x321\\loaded_files';
 
 
@@ -602,6 +604,32 @@ router.post('/load_fcrashod', function(req, res, next) {
 333606	27.11.2019 5:48:05	БСУ №2	1	ХД3	0	0	Пролет №3
 333606	27.11.2019 5:48:05	БСУ №2	1	В27.5ПДН(М350)	2378.08	1.023	Пролет №3
 
+// Заказ - шапка
+333606
+27.11.2019 5:48:05
+БСУ №2
+1
+В27.5ПДН(М350)
+2378.08
+1.023
+Пролет №3
+
+// Заказ - шапка
+pk doc_id
+u order_no 333606
+u date 27.11.2019
+bsu_rf БСУ №2
+usel_no 1
+sd2_rf Пролет №3
+
+//Замес (Заказ - табличная часть)
+pk doc_id
+pk time  5:48:05
+pk mat_rf (материал, бетон) В27.5ПДН(М350)
+mat_w
+mat_v
+
+
 */
 
 //
@@ -615,33 +643,9 @@ router.get('/from1c2', function (req, res, next) {
 //
 // Возвратить список файлов с загружаемыми данными
 //
-router.get('/1c8filenames2x', function (req, res, next) {
- //   res.send('1c8filenames2');
-
-    try {
-        let data = fs.readdirSync(DIR);
-//        console.log('data='+data)
-
-        for (let i = 0; i < data.length; i++) {
-            if ((data[i].substring(17) === 'приход БСУ.txt')
-                || (data[i].substring(17) === 'ХХХХХ.txt')
-            ) {
-//                res.send('1c8filenames2');
-//                return;
-
-                let txt = fs.readFileSync(DIR + '\\' + data[i]);
-                res.send(data[1] + '\n<br>' + txt);
-                return;
-            }
-        }
-    }
-    catch (e) {
-        res.send('ОШИБКА чтения каталога '+DIR+': '+e.toString());
-    }
-
-});
-
 router.get('/1c8filenames2', function (req, res, next) {
+
+    let DIR = DIR2;
 
     fs.readdir(DIR, function (err, data) {
         let txt = '';
@@ -654,7 +658,7 @@ router.get('/1c8filenames2', function (req, res, next) {
         // Цикл по файлам каталога
         for (let i = 0; i < data.length; i++) {
             if ((data[i].substring(17) === 'приход БСУ.txt')
-                || (data[i].substring(17) === 'ХХХХХ.txt')
+             || (data[i].substring(0, 2) === '20')
             ) {
                 txt = fs.readFileSync(DIR + '\\' + data[i]);
 
@@ -662,7 +666,7 @@ router.get('/1c8filenames2', function (req, res, next) {
                 db.one(
                     "SELECT load_from_file AS result FROM load_from_file($1, $2)", [data[i], txt.toString()])
                     .then(function (data2) {
-                        if (data2.result === '0') {
+                        if (data2.result[0] === 'О') { // Ошибка
                             res.send('Не удалось вставить данные из файла ' + data[i] + '<br>');
                         } else {
                             res.send(data2.result + '<br>');
