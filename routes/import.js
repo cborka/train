@@ -3,6 +3,7 @@ var router = express.Router();
 
 var fs = require('fs');
 var db = require("../db");
+var iconv = require('iconv-lite');
 
 // Каталог в котором появляются файлы с информацией (текстовые файлы с разделителями)
 var dir = '\\\\10.0.0.10\\обменпризводство';
@@ -643,12 +644,14 @@ router.get('/from1c2', function (req, res, next) {
 //
 // Возвратить список файлов с загружаемыми данными
 //
-router.get('/1c8filenames2', function (req, res, next) {
+router.post('/1c8filenames2', function (req, res, next) {
+    let DIR = req.body.dir;
 
-    let DIR = DIR2;
+//    let DIR = DIR2;
+//    let DIR = '\\\\10.0.2.55\\ExportData';
 
     fs.readdir(DIR, function (err, data) {
-        let txt = '';
+//        let txt = '';
 
         if (err) {
             res.send('ОШИБКА чтения из каталога ' + DIR+' :'+ err);
@@ -658,27 +661,40 @@ router.get('/1c8filenames2', function (req, res, next) {
         // Цикл по файлам каталога
         for (let i = 0; i < data.length; i++) {
             if ((data[i].substring(17) === 'приход БСУ.txt')
-             || (data[i].substring(0, 2) === '20')
+             || (data[i].substring(0, 5) === '2019.')
             ) {
-                txt = fs.readFileSync(DIR + '\\' + data[i]);
+                let txt = fs.readFileSync(DIR + '\\' + data[i]);
 
-//                    load_file(data[i], txt.toString());
+                // Если файл из программы БСУ, то надо перекодировать
+                if (data[i].substring(0, 5) === '2019.')
+                   txt = iconv.encode(iconv.decode(txt, "cp1251"), "utf8");
+
+//                res.send(DIR + '\\' + data[i] + '-' + data.length+'<br>' + message);
+//                load_file(data[i], txt.toString());
+//                console.log(txt.toString());
+
                 db.one(
                     "SELECT load_from_file AS result FROM load_from_file($1, $2)", [data[i], txt.toString()])
+//                    "SELECT load_from_file AS result FROM load_from_file($1, $2)", [data[i], message])
                     .then(function (data2) {
                         if (data2.result[0] === 'О') { // Ошибка
+                            fs.renameSync(DIR + '\\' + data[i], DIR + '\\333\\' + data[i]);
                             res.send('Не удалось вставить данные из файла ' + data[i] + '<br>');
                         } else {
-                            res.send(data2.result + '<br>');
+                            fs.renameSync(DIR + '\\' + data[i], DIR + '\\111\\' + data[i]);
+                            res.send(data2.result);
 //                            res.send('Добавлены данные из файла ' + data[i] + '<br>');
                         }
                     })
                     .catch(function (error) {
                         res.send('ОШИБКА: load_file: ' + error);
                     });
+
+
                 return; // Обрабатываем по одному нужному файлу
               }
         }
+        res.send('.'); // Каталог пуст
     })
 
 });

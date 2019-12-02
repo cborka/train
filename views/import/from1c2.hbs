@@ -1,5 +1,15 @@
 <h1> Импорт данных из файлов формируемых в 1С</h1>
 Версия 2
+
+Откуда грузим? (клик)
+<div onclick="set_dir('\\\\10.0.2.55\\ExportData')">БСУ</div>
+<div onclick="set_dir('B:\\')">D:\ExportData</div>
+<div onclick="set_dir('\\\\Server-1c\\ОбменПризводство')">Весовая</div>
+<div>VVVVV</div>
+<div><b><span id="dir">\\Server-1c\ОбменПризводство</span></b></div>
+
+
+
 <h2> Список файлов </h2>
 <button type="button" onclick="auto_on()">Включить автозагрузку</button>
 <button type="button" onclick="auto_off()">Выключить автозагрузку</button>
@@ -11,7 +21,7 @@
 <div id="filenames"></div>
 
 Процесс загрузки
-<div id="loads">123</div>
+<div id="loads"></div>
 
 
 <script>
@@ -27,7 +37,7 @@
     function auto_on() {
 
         document.getElementById("auto").innerHTML = 'Автозагрузка включена<br>';
-        timerId = setInterval(get_filenames, 3000);
+        timerId = setInterval(get_filenames, 15000);
     }
 
     function auto_off() {
@@ -43,7 +53,10 @@
     function get_filenames() {
 //        save_log();
 //        document.getElementById("loads").innerHTML = '';
-        doQuery("/import/1c8filenames2", set_filenames);
+        doQuery("/import/1c8filenames2",
+                set_filenames,
+                '&dir=' + encodeURIComponent(document.getElementById("dir").innerHTML)
+        );
     }
 
     var set_filenames = function (reply) {
@@ -67,6 +80,11 @@
 //        else
 //          document.getElementById("filenames").innerHTML += get_date() + ' Пусто <br>';
     };
+
+
+    function set_dir(e) {
+        document.getElementById("dir").innerHTML = e;
+    }
 
 
     function load_file2(filename) {
