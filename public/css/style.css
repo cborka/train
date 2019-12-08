@@ -131,7 +131,8 @@ div.main_menu {
 
 /* ВЕРХНЕЕ МЕНЮ */
 div.top_menu, .popup_menu {
-  padding: 5px;
+  padding: 0px;
+  padding-left: 5px;
   margin: auto;
   margin-bottom: 5px;
   font-size: 16px;
@@ -145,6 +146,7 @@ div.top_menu, .popup_menu {
   color: dimgrey;
 }
 .popup_menu {
+  padding: 5px;
   color: dimgrey;
   background: lavender;
   display: none;

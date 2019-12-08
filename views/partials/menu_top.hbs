@@ -25,7 +25,7 @@
 
     // Скрыть всплывающее меню при отмене и потере фокуса
 //    pm.onabort = function () { alert('esc');this.style.display = 'none'; };
-    pm.onmouseleave = function () { this.style.display = 'none'; };
+/*    pm.onmouseleave = function () { this.style.display = 'none'; };*/
 //    pm.onmousemove = function () { this.style.display = 'none'; };
 
 
@@ -75,6 +75,8 @@
         pm.style.top = c.top + tm.height;    // Размещаем в нужном месте
         pm.style.left = c.left + 5 + 'px';
 
+        pm.focus(true);
+
 //        setInterval(hide_pm, 5000);
 
          //  alert(reply);
@@ -98,11 +100,13 @@
 
 //        pm2.style.display = 'block';
 
-        pm2.style.top = coords.top + tm2.height;    // Размещаем в нужном месте
+        pm2.style.top = coords.top + tm2.height - 3;    // Размещаем в нужном месте
         pm2.style.left = coords.left + 1 +'px';
 
+//        pm2.focus(true);
+
     }
-    // Показать всплывающее меню
+    // Спрятать всплывающее меню
     function hide_pm2(mi) {
        document.getElementById(mi).style.display = 'none';
     }
