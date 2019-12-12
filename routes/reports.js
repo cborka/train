@@ -800,8 +800,9 @@ router.get('/get_puls_zakaz', function(req, res, next) {
 router.get('/get_puls_mat', function(req, res, next) {
     db.one(
         "SELECT " +
-        " (select MIN(days_num) from rep_mat_ost_daily3(18) where mat_name != 'Материал') AS arm_days," +
-        " (select MIN(days_num) from rep_mat_ost_daily3(4)  where mat_name != 'Материал') AS bet_days")
+       "(select MIN(days_num) from rep_mat_ost_daily3(18) where mat_name != 'Материал') AS arm_days"
+//       + ", (select MIN(days_num) from rep_mat_ost_daily3(4)  where mat_name != 'Материал') AS bet_days"
+         )
         .then (function (data) {
             var result = '\
             \
@@ -810,10 +811,10 @@ router.get('/get_puls_mat', function(req, res, next) {
                 '                <td class="svod_head1">На сколько дней осталось </td>' +
                 '                <td></td>' +
                 '            </tr>' +
-                '            <tr>' +
-                '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_bet_ost_daily" title="Показать по видам бетона" target="_blank">Бетон</a></td>' +
-                '                <td class="svod_digit" id="puls_t21">'+data.bet_days+'</td>' +
-                '            </tr>' +
+//                '            <tr>' +
+//                '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_bet_ost_daily" title="Показать по видам бетона" target="_blank">Бетон</a></td>' +
+//                '                <td class="svod_digit" id="puls_t21">'+data.bet_days+'</td>' +
+//                '            </tr>' +
                 '            <tr>' +
                 '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_arm_ost_daily" title="Показать по видам арматуры" target="_blank">Арматура</a></td>' +
                 '                <td class="svod_digit" id="puls_t22">'+data.arm_days+'</td>' +

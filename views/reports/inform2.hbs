@@ -172,10 +172,11 @@
 
         if (reply.substr(0, 6) == 'ОШИБКА') return;
 
-        var bet_days = +document.getElementById("puls_t21").innerHTML;
+//        var bet_days = +document.getElementById("puls_t21").innerHTML;
         var arm_days = +document.getElementById("puls_t22").innerHTML;
 
-        var min_days = Math.min(bet_days, arm_days);
+  //      var min_days = Math.min(bet_days, arm_days);
+        var min_days = arm_days;
 
         if (min_days >= 7)      d13.className = 'pfont0 green';
         else if (min_days >= 3) d13.className = 'pfont0 yellow';
