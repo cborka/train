@@ -409,7 +409,7 @@ router.get('/get_product_names', function(req, res, next) {
   db.any(
     "SELECT item_name " +
     "  FROM item_list " +
-    "  WHERE spr_rf = 9" + // ЖБИ
+    "  WHERE spr_rf != 3" + // Не название справочника
     "  ORDER BY 1 ")
     .then (function (data) {
       var result = '';
@@ -430,7 +430,8 @@ router.get('/get_component_names', function(req, res, next) {
   db.any(
     "SELECT item_name " +
     "  FROM item_list " +
-    "  WHERE spr_rf IN (18, 4) " + // Арматура, Бетон
+//          "  WHERE spr_rf IN (18, 4) " + // Арматура, Бетон
+      "  WHERE spr_rf != 3" + // Не название справочника
     "  ORDER BY spr_rf, item_name ")
     .then (function (data) {
       var result = '';
