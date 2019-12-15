@@ -20,6 +20,7 @@ function show_action()
 
   if (action == 'show_arm_ost_daily') get_arm_ost_daily();
 //  else if (action == 'show_bet_ost_daily') get_bet_ost_daily();
+  else if (action == 'show_mat_ost_daily') get_mat_ost_daily();
   else if (action == 'get_num_places_daily') get_num_places_daily();
   else if (action == 'get_help_plan') get_help_plan();
 
@@ -39,6 +40,11 @@ function get_arm_ost_daily()
 function get_bet_ost_daily()
 {
     doQuery ("/reports/get_mat_ost_daily", set_inform,'&mat=БЕТОН');
+}
+// Показать прогноз по ежедневным остаткам МАТЕРИАЛОВ (инертных)
+function get_mat_ost_daily()
+{
+    doQuery ("/reports/get_mat_ost_daily", set_inform,'&mat=МАТЕРИАЛЫ');
 }
 // Показать прогноз свободного места на складе ЖБИ
 function get_num_places_daily()

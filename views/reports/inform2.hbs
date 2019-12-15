@@ -9,30 +9,34 @@
 <button id="btnRefreshData" type="button" onclick="show_hide('puls_div13')">Обновить данные</button>
 -->
 <br>
-    <div class="left puls0">
-        <span class="pfont0" id="puls_h11" onclick="show_hide('puls_div11');">КОНТРОЛЬ</span>
-        <div class="puls1" id="puls_div11" style="display: none;">
-            <a href="/reports/svod" target="_blank">Показать ИТОГИ</a>
-        </div>
+<div class="left puls0">
+    <span class="pfont0" id="puls_h11" onclick="show_hide('puls_div11');">КОНТРОЛЬ</span>
+    <div class="puls1" id="puls_div11" style="display: none;">
+        <a href="/reports/svod" target="_blank">Показать ИТОГИ</a>
     </div>
+</div>
 
-    <div class="left puls0">
-        <span class="pfont0" id="puls_h12" onclick="get_puls_zakaz();">ЗАКАЗ</span>
-        <div class="puls1" id="puls_div12" style="display: none;">222</div>
-    </div>
+<div class="left puls0">
+    <span class="pfont0" id="puls_h12" onclick="get_puls_zakaz();">ЗАКАЗ</span>
+        <div class="puls1" id="puls_div12" style="display: none;" title="
+            Максимальня, 100%, эффективность показывает сколько кубов ЖБИ могли сделать на текущий момент
+            имея максимально возможное кол-во форм и работая круглосуточно с полной загрузкой.<br>
+            Эффективность - это сколько процентов от этого кол-ва сделали фактически на текущий день месяца.
+">222</div>
+</div>
 
-    <div class="left puls0">
-        <span class="pfont0" id="puls_h13" onclick="get_puls_mat();">МАТЕРИАЛЫ</span>
-        <div class="puls1" id="puls_div13" style="display: none;">333</div>
-    </div>
+<div class="left puls0">
+    <span class="pfont0" id="puls_h13" onclick="get_puls_mat();">МАТЕРИАЛЫ</span>
+    <div class="puls1" id="puls_div13" style="display: none;">333</div>
+</div>
 
-    <div class="left puls0">
-        <span class="pfont0" id="puls_h14" onclick="get_puls_otgr();">ОТГРУЗКА</span>
-        <div class="puls1" id="puls_div14" style="display: none;">444</div>
-    </div>
+<div class="left puls0">
+    <span class="pfont0" id="puls_h14" onclick="get_puls_otgr();">ОТГРУЗКА</span>
+    <div class="puls1" id="puls_div14" style="display: none;">444</div>
+</div>
 
-    <br>
-    <br>
+<br>
+<br>
 
 <!--
 <a href="/reports/inform_any?action=show_arm_ost_daily" target="_blank">Показать прогноз по ежедневным остаткам металла</a>
@@ -119,8 +123,7 @@
     var is_start = true;
 
     // Показать, спрятать таблицу
-    function show_hide(div_id)
-    {
+    function show_hide(div_id) {
         var dv = document.getElementById(div_id);
         if (dv.style.display != 'none')
             dv.style.display = 'none';
@@ -129,8 +132,7 @@
 
 
     //
-    var set_puls_zakaz = function (reply)
-    {
+    var set_puls_zakaz = function (reply) {
 //        document.getElementById("puls_div12").style.display = 'block';
 //        document.getElementById("puls_div12").innerHTML = reply;
 
@@ -146,24 +148,23 @@
 
         var min_days1 = +document.getElementById("mindays1").innerHTML;
 
-        if (min_days1 >= 20)      d14.className = 'pfont0 green';
+        if (min_days1 >= 20) d14.className = 'pfont0 green';
         else if (min_days1 >= 15) d14.className = 'pfont0 yellow';
-        else                    d14.className = 'pfont0 red';
+        else d14.className = 'pfont0 red';
     };
-    function get_puls_zakaz()
-    {
+
+    function get_puls_zakaz() {
         if (document.getElementById("puls_div12").style.display != 'none')
             document.getElementById("puls_div12").style.display = 'none';
         else
-          doQuery ("/reports/get_puls_zakaz", set_puls_zakaz);
+            doQuery("/reports/get_puls_zakaz", set_puls_zakaz);
     }
 
 
     // Прогноз ОСТАТКОВ МАТЕРАЛОВ на складе по дням начиная от сегодня (на сколько дней хватит)
-    var set_puls_mat = function (reply)
-    {
+    var set_puls_mat = function (reply) {
         if (is_start == false)
-          document.getElementById("puls_div13").style.display = 'block';
+            document.getElementById("puls_div13").style.display = 'block';
 
         // Заголовок, который надо будет раскрасить в зависимости от результатов запроса
         var d13 = document.getElementById("puls_h13");
@@ -172,31 +173,30 @@
 
         if (reply.substr(0, 6) == 'ОШИБКА') return;
 
-//        var bet_days = +document.getElementById("puls_t21").innerHTML;
+        var bet_days = +document.getElementById("puls_t21").innerHTML;
         var arm_days = +document.getElementById("puls_t22").innerHTML;
 
-  //      var min_days = Math.min(bet_days, arm_days);
-        var min_days = arm_days;
+        var min_days = Math.min(bet_days, arm_days);
+        //var min_days = arm_days;
 
-        if (min_days >= 7)      d13.className = 'pfont0 green';
+        if (min_days >= 7) d13.className = 'pfont0 green';
         else if (min_days >= 3) d13.className = 'pfont0 yellow';
-        else                    d13.className = 'pfont0 red';
+        else d13.className = 'pfont0 red';
 
     };
-    function get_puls_mat()
-    {
+
+    function get_puls_mat() {
         if (document.getElementById("puls_div13").style.display != 'none')
             document.getElementById("puls_div13").style.display = 'none';
         else
-            doQuery ("/reports/get_puls_mat", set_puls_mat);
+            doQuery("/reports/get_puls_mat", set_puls_mat);
     }
 
 
     // Прогноз МЕСТА НА СКЛАДЕ по дням начиная от сегодня (на сколько дней хватит)
-    var set_puls_otgr = function (reply)
-    {
+    var set_puls_otgr = function (reply) {
         if (is_start == false)
-          document.getElementById("puls_div14").style.display = 'block';
+            document.getElementById("puls_div14").style.display = 'block';
 
         // Заголовок, который надо будет раскрасить в зависимости от результатов запроса
         var d14 = document.getElementById("puls_h14");
@@ -207,19 +207,21 @@
 
         var min_days4 = +document.getElementById("mindays4").innerHTML;
 //alert('xxx');
-        if (min_days4 >= 7)      d14.className = 'pfont0 green';
+        if (min_days4 >= 7) d14.className = 'pfont0 green';
         else if (min_days4 >= 3) d14.className = 'pfont0 yellow';
-        else                    d14.className = 'pfont0 red';
+        else d14.className = 'pfont0 red';
     };
-    function get_puls_otgr()
-    {
+
+    function get_puls_otgr() {
         if (document.getElementById("puls_div14").style.display != 'none')
             document.getElementById("puls_div14").style.display = 'none';
         else
-            doQuery ("/reports/get_puls_otgr", set_puls_otgr);
+            doQuery("/reports/get_puls_otgr", set_puls_otgr);
     }
 
-    function is_not_start() {is_start = false}
+    function is_not_start() {
+        is_start = false
+    }
 
     get_puls_zakaz();
     get_puls_mat(); //document.getElementById("puls_div13").style.display = 'none';
