@@ -817,11 +817,11 @@ router.get('/get_puls_mat', function(req, res, next) {
                 '                <td class="svod_head1">На сколько дней осталось </td>' +
                 '                <td></td>' +
                 '            </tr>' +//                '            <tr>' +
-                '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_mat_ost_daily" title="Показать по видам материалов" target="_blank">Материал</a></td>' +
+                '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_mat_ost_daily" title="Показать по видам материалов" Xtarget="_blank">Материал</a></td>' +
                 '                <td class="svod_digit" id="puls_t21">'+data.bet_days+'</td>' +
                 '            </tr>' +
                 '            <tr>' +
-                '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_arm_ost_daily" title="Показать по видам арматуры" target="_blank">Арматура</a></td>' +
+                '                <td class="svod_label"><a class="darkcyan" href="/reports/inform_any?action=show_arm_ost_daily" title="Показать по видам арматуры" Xtarget="_blank">Арматура</a></td>' +
                 '                <td class="svod_digit" id="puls_t22">'+data.arm_days+'</td>' +
                 '            </tr>' +
                 '            <tr> <td id="sv_col2_error"></td> <td></td></tr>' +
