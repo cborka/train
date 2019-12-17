@@ -45,13 +45,11 @@
     <div style='overflow: auto;'>
        <h2>Формовка</h2>
        <button id="btnFormovkaOnOff" type="button"  onclick="formovka_auto_on()">Включить автообновление</button>
-       <button id="btnFormovkaChartOnOff" type="button"  onclick="formovka_chart_onoff()">Показать график</button>
     </div>
       <br>
     <div id="formovka" align="left" style='float: left; overflow: auto;'></div>
     </td>
-
-    <tr><td><canvas id="myChart" height="30px" visible="false"></canvas></td></tr>
+    <tr><td><canvas id="myChart" height="50px" visible="false"></canvas></td></tr>
 </tr>
 
 
@@ -173,6 +171,7 @@
             timerFormovkaId = 0;
             document.getElementById("btnFormovkaOnOff").innerHTML = 'Включить автообновление';
             document.getElementById("formovka").innerHTML = '';
+            set_formovka_clear_chart();
         }
     }
     // Запросить и показать формовку за дату
@@ -215,9 +214,19 @@
         );
     }
 
+    var  set_formovka_clear_chart = function () {
+        var canvas = document.getElementById('myChart');
+        var ctx1 = canvas.getContext('2d');
+ //       ctx1.clearHitRegions(); //clearRect(0, 0, ctx1.width, ctx1.height);
+        ctx1.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.height = "5px";
+    }
+
     var  set_formovka_fcv_daily = function (reply)
     {
-        var ctx = document.getElementById('myChart').getContext('2d');
+        var canvas = document.getElementById('myChart');
+        var ctx = canvas.getContext('2d');
+//        document.getElementById("myChart").hidden = false;
 
 //        var x = toJSON(reply);
 
@@ -246,6 +255,8 @@
             options: {}
         });
 
+        canvas.style.height = "auto";
+        canvas.style.width = "100%";
 
 
     };
