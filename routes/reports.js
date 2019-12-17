@@ -215,6 +215,24 @@ router.post('/get_formovka_plan', function(req, res, next) {
 //  res.send('Здесь формовка за ' + dt+10000);
 
 });
+router.post('/rep_formovka_fcv_daily', function(req, res, next) {
+    var dtb = req.body.dtb;
+    var dte = req.body.dte;
+    var array_length = 0;
+
+    db.any(
+        "SELECT fc_v FROM rep_formovka_fcv_daily($1, $2)", [dtb, dte])
+        .then (function (data) {
+
+           res.send(data[1].fc_v);
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+
+//  res.send('Здесь формовка за ' + dt+10000);
+
+});
 
 //
 // // План-факт ЖБИ

@@ -45,11 +45,17 @@
     <div style='overflow: auto;'>
        <h2>Формовка</h2>
        <button id="btnFormovkaOnOff" type="button"  onclick="formovka_auto_on()">Включить автообновление</button>
+       <button id="btnFormovkaChartOnOff" type="button"  onclick="formovka_chart_onoff()">Показать график</button>
     </div>
       <br>
     <div id="formovka" align="left" style='float: left; overflow: auto;'></div>
+    </td>
 
-    </td></tr><tr class="reports"><td>
+    <tr><td><canvas id="myChart" height="30px" visible="false"></canvas></td></tr>
+</tr>
+
+
+    <tr class="reports"><td>
 
     <div style='overflow: auto;'>
         <h2>План-Факт ЖБИ</h2>
@@ -173,7 +179,7 @@
     var set_formovka = function (reply)
     {
         document.getElementById("formovka").innerHTML = reply;
-    }
+    };
     function get_formovka()
     {
 //        document.getElementById("formovka").innerHTML = '';
@@ -187,7 +193,13 @@
     var set_formovka_plan = function (reply)
     {
         document.getElementById("formovka").innerHTML = reply;
-    }
+
+        doQuery ("/reports/rep_formovka_fcv_daily", set_formovka_fcv_daily,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
+        );
+
+    };
     function get_formovka_plan()
     {
 //        document.getElementById("formovka").innerHTML = '';
@@ -202,6 +214,43 @@
 //        '&dt=' + encodeURIComponent(document.getElementById("dt").value.substr(0, 10))
         );
     }
+
+    var  set_formovka_fcv_daily = function (reply)
+    {
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+//        var x = toJSON(reply);
+
+         var x = reply.slice(1, -1).split(',');
+
+ //       alert(x[3]);
+
+//        return;
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+                    // The data for our dataset
+                    data: {
+//                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            labels: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+                    datasets: [{
+                label: 'Объем заформованных ЖБИ по дням в метрах кубических',
+//                    backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: x,
+            }]
+        },
+
+            // Configuration options go here
+            options: {}
+        });
+
+
+
+    };
+
+
 
 
     // План-факт ЖБИ
