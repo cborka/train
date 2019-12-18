@@ -367,9 +367,6 @@ router.post('/get_plan_fact_fcv', function(req, res, next) {
     var sum_plan = [];
     var sum_fact = [];
 
-
-
-
     var dt_now_year = dt_now.getFullYear();
     var dt_now_month = dt_now.getMonth() + 1;
     var dt_now_day = dt_now.getDate();
@@ -437,6 +434,105 @@ router.post('/get_plan_fact_fcv', function(req, res, next) {
             res.send('ОШИБКА get_plan_fact_fcv: '+error);
         });
 });
+
+// ЭФФЕКТИВНОСТЬ (ОБЩЕЗАВОДСКИЕ РЕСУРСЫ ПО ПРОМ.ПЛОЩАДКЕ №2)
+router.post('/get_eff', function(req, res, next) {
+    var dtb = req.body.dtb;
+    var dte = req.body.dte;
+    var array_length = 0;
+
+    db.any(
+        "SELECT res_name, res_num FROM rep_common_resourses_daily($1, $2) " +
+        "UNION " +
+        "SELECT 'Oбъемы' AS res_name, fc_v AS res_num FROM rep_formovka_fcv_daily($1, $2) " +
+        " WHERE sd_name = 'Объемы'" +
+        " ORDER BY 1", [dtb, dte])
+        .then (function (data) {
+
+            var charts = '';
+            var result = '';
+            result = result + 'Эффективность c <b>' + dtb + ' по ' + dte + '</b><br>';
+            result = result + '<br><table class="report" align="left">';
+
+            array_length = data[0].res_num.length;
+
+
+            result = result + '<thead><td  class="report left">' + data[0].res_name + '</td>';
+            for(let j = 0; j < array_length; j++)
+                result = result + '<td  class="report ">' + data[0].res_num[j] + '</td>';
+
+            result = result + '</thead>';
+
+            for (var i = 1; i < data.length; i++) {
+
+//        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+
+                result = result + '<tr><td  class="report left">' + data[i].res_name + '</td>';
+
+                for(let j = 0; j < array_length; j++) {
+                    if (data[i].res_num[j] === 0)  data[i].res_num[j] = '';
+
+                    result = result + '<td  class="report ">' + data[i].res_num[j] + '</td>';
+                }
+
+                result = result + '</tr>';
+                charts += ' <tr><td></td><td colspan="31"><canvas id="myChartEff'+i+'" height="30px" visible="false"></canvas></td></tr> ';
+            }
+            result = result + charts;
+            result = result +'</table>';
+
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+
+});
+// То же самое, только возвращаем данные для построения графиков
+router.post('/get_eff_data', function(req, res, next) {
+    var dtb = req.body.dtb;
+    var dte = req.body.dte;
+    var array_length = 0;
+
+    db.any(
+        "SELECT res_name, res_num FROM rep_common_resourses_daily($1, $2) " +
+        "UNION " +
+        "SELECT 'Oбъемы' AS res_name, fc_v AS res_num FROM rep_formovka_fcv_daily($1, $2) " +
+        " WHERE sd_name = 'Объемы'" +
+        " ORDER BY 1", [dtb, dte])
+        .then (function (data) {
+
+            var result = '';
+
+            array_length = data[0].res_num.length;
+
+            result = result + data[0].res_name + '!';
+            for(var j = 0; j < array_length; j++)
+                result = result +  data[0].res_num[j] + ':';
+
+            result = result + ';';
+
+            for (var i = 1; i < data.length; i++) {
+
+                result = result + data[i].res_name + '!';
+
+                for(var j = 0; j < array_length; j++) {
+                    if (data[i].res_num[j] == 0)  data[i].res_num[j] = '';
+
+                    result = result + data[i].res_num[j] + ':';
+                }
+
+                result = result + ';';
+            }
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+
+});
+
+
 
 
 //

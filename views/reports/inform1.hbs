@@ -68,6 +68,21 @@
     </tr>
 
     <tr class="reports"><td>
+
+        <div style='overflow: auto;'>
+            <h2>ЭФФЕКТИВНОСТЬ</h2>
+            <button id="btnEffOnOff" type="button" onclick="eff_auto_on()">Включить автообновление</button>
+        </div>
+        <br>
+        <div id="eff" align="left" style='float: left; overflow: auto;'></div>
+    </td>
+        <!--    <tr><td><canvas id="myChart2" height="30px" visible="false"></canvas></td></tr>-->
+
+    </tr>
+
+
+
+    <tr class="reports"><td>
     <div style='overflow: auto;'>
         <h2>СГП</h2>
         <button id="btnSkladFcOnOff" type="button"  onclick="sklad_fc_auto_on()">Включить автообновление</button>
@@ -129,6 +144,7 @@
     var timerId = 0;
     var timerFormovkaId = 0;
     var timerPlanFactFcId = 0;
+    var timerEffId = 0;
     var timerSkladFcId = 0;
     var timerSkladArmId = 0;
     var dtNow = new Date();;
@@ -353,6 +369,116 @@
 
 
     };
+
+//========
+    // ЭФФЕКТИВНОСТЬ
+    function eff_auto_on()
+    {
+        if (timerEffId <= 0) {
+            get_eff();
+            timerEffId = setInterval(get_eff, 60000);
+            document.getElementById("btnEffOnOff").innerHTML = 'Выключить автообновление';
+        }
+        else if (timerEffId > 0) {
+            clearInterval(timerEffId);
+            timerEffId = 0;
+            document.getElementById("btnEffOnOff").innerHTML = 'Включить автообновление';
+            document.getElementById("eff").innerHTML = '';
+        }
+    }
+    var set_eff = function (reply)
+    {
+        document.getElementById("eff").innerHTML = reply;
+
+        doQuery ("/reports/get_eff_data", set_eff_chart,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
+        );
+    };
+    function get_eff()
+    {
+        doQuery ("/reports/get_eff", set_eff,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
+        );
+    }
+
+    // Построение диаграммы: объемы формовки по дням
+    var  set_eff_chart = function (reply)
+    {
+        let x = reply.split(';');
+
+        for (let i=1; i < x.length; i++) {
+            let z = x[i].split('!');
+
+            let canvas = document.getElementById('myChartEff'+(i));
+            let ctx = canvas.getContext('2d');
+
+            let chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: {
+                    //                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                    labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                    datasets: [
+                        {
+                            label: z[0],
+                            borderColor: '#00a650',
+                            data: z[1].split(':'),
+                        }
+                    ]
+                },
+
+                // Configuration options go here
+                options: {}
+            });
+
+        }
+
+
+
+
+/*
+        let canvas = document.getElementById('myChartEff');
+        let ctx = canvas.getContext('2d');
+        let chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                //                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                datasets: [
+                    {
+                        label: 'Объем ФАКТ',
+                        borderColor: 'blue',
+                        data: fact,
+                    },
+                    {
+                        label: 'Объем ПЛАН',
+                        borderColor: '#262626',
+                        data: plan,
+                    }
+                ]
+            },
+
+            // Configuration options go here
+            options: {}
+        });
+
+        // Показываю после очистки и уменьшения размера
+        canvas.style.height = "auto";
+        canvas.style.width = "100%";
+
+*/
+    };
+
+
+
+
 
 
     // СГП (склад ЖБИ)
