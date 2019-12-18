@@ -204,6 +204,7 @@ router.post('/get_formovka_plan', function(req, res, next) {
 
          result = result + '</tr>';
       }
+        result = result + ' <tr><td></td><td></td><td colspan="31"><canvas id="myChart" height="50px" visible="false"></canvas></td></tr> ';
       result = result +'</table>';
 
       res.send(result);
@@ -235,7 +236,7 @@ router.post('/rep_formovka_fcv_daily', function(req, res, next) {
 });
 
 //
-// // План-факт ЖБИ
+// План-факт ЖБИ
 //
 router.post('/get_plan_fact_fc', function(req, res, next) {
   var plan = req.body.plan;
@@ -347,6 +348,7 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
         }
 //        result = result + '<td  class="report right">' + data[i].num_free + '</td></tr>';
       }
+      result = result + ' <tr><td></td><td></td><td></td><td></td><td></td><td colspan="31"><canvas id="myChart2" height="50px" visible="false"></canvas></td></tr> ';
       result = result +'</table>';
 
       res.send(result);
@@ -354,6 +356,86 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
     .catch(function (error) {
       res.send('ОШИБКА: '+error);
     });
+});
+
+// Возвратить ежедневные объемы формавки и плана для построения диаграммы
+router.post('/get_plan_fact_fcv', function(req, res, next) {
+    var plan = req.body.plan;
+    var day_plan = req.body.day_plan; // Выводим за день или накопительно на План-месяц
+    var dt_now = new Date();
+
+    var sum_plan = [];
+    var sum_fact = [];
+
+
+
+
+    var dt_now_year = dt_now.getFullYear();
+    var dt_now_month = dt_now.getMonth() + 1;
+    var dt_now_day = dt_now.getDate();
+    var is_current_month = ((+plan.substr(0, 4) == dt_now_year) && (+plan.substr(5, 2) == dt_now_month));
+
+    var s = '';
+    for (let j = 1; j <= 31; j++) {
+        s += 'SUM(nums_fact['+j+'] * fc.fc_v), ';
+    }
+    for (let j = 1; j <= 30; j++) {
+        s += 'SUM(nums_plan['+j+'] * fc.fc_v), ';
+    }
+    s += 'SUM(nums_plan[31] * fc.fc_v) ';
+//    res.send(s);
+//    return;
+    db.any(
+        "SELECT pp.sd_rf, item.item_name, nums_fact, nums_plan, fc.fc_v " +
+        " FROM ((plan_plan pp " +
+        "   LEFT JOIN item_list item ON pp.item_rf = item.item_id) " +
+        "   LEFT JOIN fc_s fc ON pp.item_rf = fc.fc_rf) " +
+        " WHERE item.spr_rf = 9 " + // ЖБИ
+        "   AND pp.item_rf IN (13, 112, 279, 635) " + // Пока работаем только с этими ЖБИ
+        "   AND plan_rf = (SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1)" +
+        " ", [plan])
+        .then (function (data) {
+
+            for (let j = 0; j <= 30; j++) {
+                sum_fact[j] = 0;
+                sum_plan[j] = 0;
+            }
+
+            if (day_plan === 'Day')
+                for (let i = 0; i < data.length; i++) {
+                    for (let j = 0; j <= 30; j++) {
+                        if (data[i].nums_fact[j])
+                           sum_fact[j] += data[i].nums_fact[j] * data[i].fc_v;
+
+                        if (data[i].nums_plan[j])
+                           sum_plan[j] += data[i].nums_plan[j] * data[i].fc_v;
+                }
+            }
+            else
+                for (let j = 0; j <= 30; j++) {
+
+                    if (j > 0) {
+                        sum_fact[j] = sum_fact[j-1];
+                        sum_plan[j] = sum_plan[j-1];
+                    }
+
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].nums_fact[j])
+                            sum_fact[j] += data[i].nums_fact[j] * data[i].fc_v;
+
+                        if (data[i].nums_plan[j])
+                            sum_plan[j] += data[i].nums_plan[j] * data[i].fc_v;
+                    }
+                }
+
+            var result = '';
+
+            res.send(sum_fact + ';' + sum_plan);
+//            res.send(result);
+        })
+        .catch(function (error) {
+            res.send('ОШИБКА get_plan_fact_fcv: '+error);
+        });
 });
 
 
