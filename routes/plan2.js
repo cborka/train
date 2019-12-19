@@ -1886,7 +1886,7 @@ router.post('/save_sd_fc_params', function(req, res, next) {
             "  kob=$4 " +
             " WHERE sd_rf=(SELECT item_id FROM item_list WHERE spr_rf = 8 AND item_name=$5) " +
             "   AND fc_rf=(SELECT item_id FROM item_list WHERE spr_rf = 9 AND item_name=$6) ",
-            [trk, forming_time, kob, trkk, sd_name, fc_name])
+            [trk, forming_time, trkk, kob, sd_name, fc_name])
             .then (function () {
                 res.send('OK');
             })
