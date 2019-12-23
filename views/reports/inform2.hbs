@@ -18,11 +18,12 @@
 
 <div class="left puls0">
     <span class="pfont0" id="puls_h12" onclick="get_puls_zakaz();">ЗАКАЗ</span>
-        <div class="puls1" id="puls_div12" style="display: none;" title="
+    <div class="puls1" id="puls_div12" style="display: none;" title="
             Максимальня, 100%, эффективность показывает сколько кубов ЖБИ могли сделать на текущий момент
             имея максимально возможное кол-во форм и работая круглосуточно с полной загрузкой.<br>
             Эффективность - это сколько процентов от этого кол-ва сделали фактически на текущий день месяца.
-">222</div>
+">222
+    </div>
 </div>
 
 <div class="left puls0">
@@ -38,6 +39,36 @@
 <br>
 <br>
 
+
+<table>
+    <tr class="reports">
+        <td>
+
+            <div style='overflow: auto;'>
+                <h2>ЭФФЕКТИВНОСТЬ</h2>
+                <button id="btnEffOnOff" type="button" onclick="eff_auto_on()">Включить автообновление</button>
+            </div>
+            <br>
+            <div id="eff" align="left" style='float: left; overflow: auto;'></div>
+        </td>
+        <!--    <tr><td><canvas id="myChart2" height="30px" visible="false"></canvas></td></tr>-->
+
+    </tr>
+
+    <tr class="reports">
+        <td>
+
+            <div style='overflow: auto;'>
+                <h2>ЭФФЕКТИВНОСТЬ ПОВРЕМЕННЫХ СЛУЖБ</h2>
+                <button id="btnEffPSOnOff" type="button" onclick="get_ps_efficiency()">Показать</button>
+            </div>
+            <br>
+            <div id="effps"></div>
+        </td>
+        <!--    <tr><td><canvas id="myChart2" height="30px" visible="false"></canvas></td></tr>-->
+
+    </tr>
+</table>
 <!--
 <a href="/reports/inform_any?action=show_arm_ost_daily" target="_blank">Показать прогноз по ежедневным остаткам металла</a>
 
@@ -121,6 +152,8 @@
 <script>
 
     var is_start = true;
+    var PlanName = toYYYYMM(new Date());
+
 
     // Показать, спрятать таблицу
     function show_hide(div_id) {
@@ -222,6 +255,215 @@
     function is_not_start() {
         is_start = false
     }
+
+    //==============================================================================================
+
+    // Эффективность работы повременных служб
+    function get_ps_efficiency()
+    {
+        doQuery ("/reports/get_ps_efficiency", set_ps_efficiency,
+                '&plan_name=' + encodeURIComponent(PlanName)
+        );
+    }
+
+    var  set_ps_efficiency = function (reply)
+    {
+//        alert(reply);
+
+        let div_ps = document.getElementById('effps');
+        let btn_ps = document.getElementById('btnEffPSOnOff');
+
+        if (div_ps.innerHTML === '') {
+            div_ps.innerHTML = 'Шкала слева показывать кол-во рабочих часов в сутки, 11 - это одна смена <br>' +
+                    'Шкала эффективности должна быть до 100%, но поскольку здесь максимальное значение шкалы 15, то 15 - это как бы 100% <br>' +
+                    '<canvas id="myChartEffPS" height="30px"  visible="true"></canvas>';
+            btn_ps.innerHTML = 'Спрятать';
+        }
+        else {
+            div_ps.innerHTML = '';
+            btn_ps.innerHTML = 'Показать';
+        }
+
+
+        let ds = [];
+        let colors = ["red", "green", "blue", "yellow"];
+
+        let canvas = document.getElementById('myChartEffPS');
+        let ctx = canvas.getContext('2d');
+
+        let x = reply.split(';');
+        let z = [];
+
+        //       for (let i = 0; i < 1; i++ ) {
+        for (let i = 0; i < x.length-1; i++ ) {
+            let y = x[i].split('!');
+            z[i] = y[1].split(':');
+//           alert(z[i]);
+            ds.push({label: y[0], borderColor: colors[i], steppedLine: true, data: z[i]});
+        }
+        //       alert(ds[1].data);
+        let n = x.length + 1;
+        z[n] = [];
+        for (let i = 0; i < 31; i++) {
+
+            z[n][i] = (+z[0][i] + +z[1][i]) / (+z[2][i] * 2) * 15;
+            // Последний множитель должен быть 100, то есть 100%, но сейчас шкала до 15, поэтому привел к текущей шкале
+        }
+//        alert(z[0]+z[1]+z[2]+z[n]);
+        ds.push({label: "Эффективность", borderColor: "magenta", steppedLine: true, data: z[n]});
+
+        let chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                //                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                datasets: ds
+            },
+
+            // Configuration options go here
+            options: {}
+        });
+
+
+    };
+
+
+
+    // ЭФФЕКТИВНОСТЬ
+    function eff_auto_on()
+    {
+        if (document.getElementById("eff").innerHTML === '') {
+            get_eff();
+            document.getElementById("btnEffOnOff").innerHTML = 'Спрятать';
+        }
+        else {
+            document.getElementById("btnEffOnOff").innerHTML = 'Показать';
+            document.getElementById("eff").innerHTML = '';
+        }
+    }
+    var set_eff = function (reply)
+    {
+        document.getElementById("eff").innerHTML = reply;
+
+        doQuery ("/reports/get_eff_data", set_eff_chart,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
+        );
+    };
+    function get_eff()
+    {
+        doQuery ("/reports/get_eff", set_eff,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
+        );
+    }
+
+    // Построение диаграммы: объемы формовки по дням
+    var  set_eff_chart = function (reply)
+    {
+        let colors = ["green","grey", "blue", "yellow", "orange"];
+        let y = [];
+        let eff = [];
+
+        let x = reply.split(';');
+
+        for (let i=1; i < x.length-1; i++) {
+//alert('x'+i+'='+x[i]);
+            let z = x[i].split('!');
+            y[i] = z[1].split(':');
+
+            let canvas = document.getElementById('myChartEff'+(i));
+            let ctx = canvas.getContext('2d');
+
+            let chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: {
+                    //                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                    labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                    datasets: [
+                        {
+                            label: z[0],
+                            borderColor: colors[i],
+                            data: y[i],
+                        }
+                    ]
+                },
+
+                // Configuration options go here
+                options: {}
+            });
+
+        }
+
+        let canvas2 = document.getElementById('myChartEffEff');
+        let ctx2 = canvas2.getContext('2d');
+
+        eff[1] = []; // Газ
+        eff[2] = []; // Электричество
+        for (let i = 0; i < 31; i++) {
+
+            eff[1][i] = (+y[1][i] === 0) ? 0 : ((+y[2][i] / +y[1][i]) );
+            eff[2][i] = (+y[1][i] === 0) ? 0 :  ((+y[4][i] / +y[1][i]));
+
+            //
+        }
+
+        let chart2 = new Chart(ctx2, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                //                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                datasets: [
+                    {
+                        label: 'Газ',
+                        borderColor: colors[2],
+                        data: eff[1],
+                    },
+                    {
+                        label: 'Электричество',
+                        borderColor: colors[4],
+                        data: eff[2],
+                    }
+                ]
+            },
+
+            // Configuration options go here
+            options: {}
+        });
+
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     get_puls_zakaz();
     get_puls_mat(); //document.getElementById("puls_div13").style.display = 'none';

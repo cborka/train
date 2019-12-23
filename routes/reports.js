@@ -478,6 +478,8 @@ router.post('/get_eff', function(req, res, next) {
                 result = result + '</tr>';
                 charts += ' <tr><td></td><td colspan="31"><canvas id="myChartEff'+i+'" height="30px" visible="false"></canvas></td></tr> ';
             }
+            charts += ' <tr><td></td><td colspan="31">Кол-во газа и электричества на куб ЖБИ' +
+                '<canvas id="myChartEffEff" height="50px" visible="false"></canvas>.</td></tr> ';
             result = result + charts;
             result = result +'</table>';
 
