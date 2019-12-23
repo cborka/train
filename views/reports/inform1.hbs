@@ -431,7 +431,7 @@
             z[n][i] = (+z[0][i] + +z[1][i]) / (+z[2][i] * 2) * 12;
             // Последний множитель должен быть 100, то есть 100%, но сейчас шкала до 12, поэтому привел к текущей шкале
         }
-        alert(z[0]+z[1]+z[2]+z[n]);
+//        alert(z[0]+z[1]+z[2]+z[n]);
         ds.push({label: "Эффективность", borderColor: "magenta", steppedLine: false, data: z[n]});
 
         let chart = new Chart(ctx, {
