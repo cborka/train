@@ -533,6 +533,36 @@ router.post('/get_eff_data', function(req, res, next) {
 });
 
 
+// Эффективность работы повременных служб
+router.post('/get_ps_efficiency', function(req, res, next) {
+    var plan_name = req.body.plan_name;
+    var array_length = 0;
+
+    db.any(
+        "select sd_name, hour_num from rep_ps_efficiency_daily($1) ", [plan_name])
+        .then (function (data) {
+
+            var result = '';
+
+            for (let i = 1; i < data.length; i++) {
+
+                result = result + data[i].sd_name + '!';
+
+                for(let j = 0; j < 31; j++) {
+                    if (data[i].hour_num[j] == 0)  data[i].hour_num[j] = '';
+
+                    result = result + data[i].hour_num[j] + ':';
+                }
+
+                result = result + ';';
+            }
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+
+});
 
 
 //
