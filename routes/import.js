@@ -414,13 +414,13 @@ router.post('/clear_doc2', function (req, res, next) {
     id1c = id1c.trim();
 
     db.one(
-        "SELECT count(*) AS cnt FROM " + table_name + " WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER)", [id1c])
+        "SELECT count(*) AS cnt FROM " + table_name + " WHERE trim(leading from id1c, '0') = trim(leading from $1, '0')", [id1c])
         .then(function (data) {
             if (data.cnt == '0') {
                 res.send('Документа (' + id1c + ') нет в таблице ' + table_name + '<br>');
             } else {
                 db.none(
-                    " DELETE FROM " + table_name + " WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER)", [id1c])
+                    " DELETE FROM " + table_name + " WHERE trim(leading from id1c, '0') = trim(leading from $1, '0')", [id1c])
                     .then(function (data2) {
                         res.send('Очищено ' + data.cnt + ' строк документа (' + id1c + ') из таблицы ' + table_name + '<br>');
                     })
@@ -431,7 +431,7 @@ router.post('/clear_doc2', function (req, res, next) {
         })
         .catch(function (error) {
 
-            res.send('clear_doc: ОШИБКА SELECT SQL: ' + error);
+            res.send('clear_doc: ОШИБКА SELECT SQL: ' + error+'---'+id1c);
         });
 });
 
@@ -445,7 +445,7 @@ router.post('/load_doc', function (req, res, next) {
     id1c = id1c.trim();
 
     db.one(
-        "SELECT count(*) AS cnt FROM docs_1c WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER) AND doc_name = $2", [id1c, table_name])
+        "SELECT count(*) AS cnt FROM docs_1c WHERE trim(leading from id1c, '0') = trim(leading from $1, '0') AND doc_name = $2", [id1c, table_name])
         .then(function (data) {
             if (data.cnt == '0') {
                 db.none(
@@ -458,7 +458,7 @@ router.post('/load_doc', function (req, res, next) {
                     });
             } else {
                 db.none(
-                    " UPDATE docs_1c SET dt = now() WHERE CAST(id1c AS INTEGER) = CAST($1 AS INTEGER) AND doc_name = $2", [id1c, table_name])
+                    " UPDATE docs_1c SET dt = now() WHERE trim(leading from id1c, '0') = trim(leading from $1, '0') AND doc_name = $2", [id1c, table_name])
                     .then(function (data2) {
                         res.send('load_doc: Обновлена строка документа ' + id1c + ', ' + table_name + ' таблицы docs_1c, cnt = ' + data.cnt + ' <br>');
                     })
