@@ -348,7 +348,9 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
         }
 //        result = result + '<td  class="report right">' + data[i].num_free + '</td></tr>';
       }
-      result = result + ' <tr><td></td><td></td><td></td><td></td><td></td><td colspan="31"><canvas id="myChart2" height="50px" visible="false"></canvas></td></tr> ';
+      result = result + ' <tr><td>2 площадка</td><td></td><td></td><td></td><td></td><td colspan="31"><canvas id="myChart2" height="50px" visible="false"></canvas></td></tr> ';
+      result = result + ' <tr><td>Пролет 33</td><td></td><td></td><td></td><td></td><td colspan="31"><canvas id="myChart33" height="50px" visible="false"></canvas></td></tr> ';
+      result = result + ' <tr><td>Пролет 34</td><td></td><td></td><td></td><td></td><td colspan="31"><canvas id="myChart34" height="50px" visible="false"></canvas></td></tr> ';
       result = result +'</table>';
 
       res.send(result);
@@ -358,19 +360,26 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
     });
 });
 
-// Возвратить ежедневные объемы формавки и плана для построения диаграммы
+// Возвратить ежедневные объемы формовки и плана для построения диаграммы
 router.post('/get_plan_fact_fcv', function(req, res, next) {
     var plan = req.body.plan;
     var day_plan = req.body.day_plan; // Выводим за день или накопительно на План-месяц
+    var sd_rf = req.body.sd_rf;
     var dt_now = new Date();
 
-    var sum_plan = [];
+        var sum_plan = [];
     var sum_fact = [];
 
     var dt_now_year = dt_now.getFullYear();
     var dt_now_month = dt_now.getMonth() + 1;
     var dt_now_day = dt_now.getDate();
     var is_current_month = ((+plan.substr(0, 4) == dt_now_year) && (+plan.substr(5, 2) == dt_now_month));
+    var where_sd_rf = '';
+
+    if (sd_rf !== '0') {
+        where_sd_rf = 'AND sd_rf = ' + sd_rf;
+    }
+
 
     var s = '';
     for (let j = 1; j <= 31; j++) {
@@ -390,6 +399,7 @@ router.post('/get_plan_fact_fcv', function(req, res, next) {
         " WHERE item.spr_rf = 9 " + // ЖБИ
         "   AND pp.item_rf IN (13, 112, 279, 635) " + // Пока работаем только с этими ЖБИ
         "   AND plan_rf = (SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1)" +
+        where_sd_rf +
         " ", [plan])
         .then (function (data) {
 

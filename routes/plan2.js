@@ -596,7 +596,7 @@ router.post('/plan_plan_d/update', function(req, res, next) {
                  res.redirect('/plan2/plan_plan_d2_s/'+spr_name+'/'+plan_name+'/'+sd_name);
           })
           .catch(function (error) {
-            res.send('ОШИБКА: /plan_plan_d/update INSERT ('+plan_name+','+ sd_name+','+item_name+','+ num_plan+','+ num_day+'): '+error);
+            res.send('ОШИБКА: /plan_plan_d/update INSERT ('+plan_name+','+ sd_name+','+item_name+','+ num_plan+','+ nps+'): '+error);
           });
       }
 

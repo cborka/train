@@ -158,12 +158,13 @@
     var timerEffId = 0;
     var timerSkladFcId = 0;
     var timerSkladArmId = 0;
-    var dtNow = new Date();;
+    var dtNow = new Date();
     var dtNowAsString= toYYYYMMDDHHMMSS(dtNow);
     var dtbAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 1));
     var dteAsString= toYYYYMMDDHHMMSS(new Date(2019, 0, 31));
     var PlanName = toYYYYMM(new Date());
     var DayPlan = 'Day';
+    var plan_fact_fcvChart = '';
 
     function auto_on()
     {
@@ -307,15 +308,6 @@
 //            clear_chart ('myChart2');
         }
     }
-    var set_plan_fact_fc = function (reply)
-    {
-        document.getElementById("plan_fact_fc").innerHTML = reply;
-
-        doQuery ("/reports/get_plan_fact_fcv", set_plan_fact_fcv,
-                '&plan=' + encodeURIComponent(PlanName)+
-                '&day_plan=' + encodeURIComponent(DayPlan)
-        );
-    };
     function get_plan_fact_fc()
     {
         doQuery ("/reports/get_plan_fact_fc", set_plan_fact_fc,
@@ -323,6 +315,23 @@
                 '&day_plan=' + encodeURIComponent(DayPlan)
         );
     }
+    var set_plan_fact_fc = function (reply)
+    {
+        document.getElementById("plan_fact_fc").innerHTML = reply;
+
+        plan_fact_fcvChart = 'myChart2';
+        doQuery ("/reports/get_plan_fact_fcv", set_plan_fact_fcv,
+                '&plan=' + encodeURIComponent(PlanName)+
+                '&day_plan=' + encodeURIComponent(DayPlan)+
+                '&sd_rf=' + encodeURIComponent('0')
+        );
+
+
+
+
+
+
+    };
     // Переключение вида показа День или План
     function day_or_plan() {
         if (DayPlan === 'Plan') {
@@ -341,7 +350,8 @@
     {
 //        alert(reply);
 
-        let canvas = document.getElementById('myChart2');
+        let canvas = document.getElementById(plan_fact_fcvChart);
+//        let canvas = document.getElementById('myChart2');
         let ctx = canvas.getContext('2d');
 
         let x = reply.split(';');
@@ -377,6 +387,26 @@
         // Показываю после очистки и уменьшения размера
         canvas.style.height = "auto";
         canvas.style.width = "100%";
+
+        if (plan_fact_fcvChart === 'myChart2') {
+            plan_fact_fcvChart = 'myChart33';
+            doQuery ("/reports/get_plan_fact_fcv", set_plan_fact_fcv,
+                    '&plan=' + encodeURIComponent(PlanName)+
+                    '&day_plan=' + encodeURIComponent(DayPlan)+
+                    '&sd_rf=' + encodeURIComponent('300') // Пролет 33
+            );
+        }
+        else if (plan_fact_fcvChart === 'myChart33') {
+            plan_fact_fcvChart = 'myChart34';
+            doQuery ("/reports/get_plan_fact_fcv", set_plan_fact_fcv,
+                    '&plan=' + encodeURIComponent(PlanName)+
+                    '&day_plan=' + encodeURIComponent(DayPlan)+
+                    '&sd_rf=' + encodeURIComponent('14') // Пролет 34
+            );
+        }
+
+
+
 
 
     };

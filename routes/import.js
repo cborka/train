@@ -661,12 +661,12 @@ router.post('/1c8filenames2', function (req, res, next) {
         // Цикл по файлам каталога
         for (let i = 0; i < data.length; i++) {
             if ((data[i].substring(17) === 'приход БСУ.txt')
-             || (data[i].substring(0, 5) === '2019.')
+             || (data[i].substring(0, 5) === '2020.')
             ) {
                 let txt = fs.readFileSync(DIR + '\\' + data[i]);
 
                 // Если файл из программы БСУ, то надо перекодировать
-                if (data[i].substring(0, 5) === '2019.')
+                if (data[i].substring(0, 5) === '2020.')
                    txt = iconv.encode(iconv.decode(txt, "cp1251"), "utf8");
 
 //                res.send(DIR + '\\' + data[i] + '-' + data.length+'<br>' + message);

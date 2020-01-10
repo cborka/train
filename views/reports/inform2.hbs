@@ -8,6 +8,10 @@
     <br>
 <button id="btnRefreshData" type="button" onclick="show_hide('puls_div13')">Обновить данные</button>
 -->
+<div>
+    <span id="plan_name"></span>
+</div>
+
 <br>
 <div class="left puls0">
     <span class="pfont0" id="puls_h11" onclick="show_hide('puls_div11');">КОНТРОЛЬ</span>
@@ -462,8 +466,7 @@
 
 
 
-
-
+    document.getElementById("plan_name").innerHTML = PlanName;
 
     get_puls_zakaz();
     get_puls_mat(); //document.getElementById("puls_div13").style.display = 'none';
