@@ -42,15 +42,31 @@
 
 <br>
 <br>
-
-
+<br>
+<br>
+<br>
+<br>
 <table>
     <tr class="reports">
         <td>
 
             <div style='overflow: auto;'>
-                <h2>ЭФФЕКТИВНОСТЬ</h2>
-                <button id="btnEffOnOff" type="button" onclick="eff_auto_on()">Включить автообновление</button>
+
+                <button id="btnEffOnOff2" type="button" onclick="eff_fcv_auto_on()"><b>ЭФФЕКТИВНОСТЬ ФОРМОВКИ ПО ПРОЛЁТАМ</b></button>
+            </div>
+
+            <br>
+            <div id="eff_fcv" align="left" style='float: left; overflow: auto;'></div>
+        </td>
+        <!--    <tr><td><canvas id="myChart2" height="30px" visible="false"></canvas></td></tr>-->
+
+    </tr>
+
+    <tr class="reports">
+        <td>
+
+            <div style='overflow: auto;'>
+                <button id="btnEffOnOff" type="button" onclick="eff_auto_on()"><b>ГАЗ и ЭЛЕКТРИЧЕСТВО</b></button>
             </div>
             <br>
             <div id="eff" align="left" style='float: left; overflow: auto;'></div>
@@ -63,8 +79,7 @@
         <td>
 
             <div style='overflow: auto;'>
-                <h2>ЭФФЕКТИВНОСТЬ ПОВРЕМЕННЫХ СЛУЖБ</h2>
-                <button id="btnEffPSOnOff" type="button" onclick="get_ps_efficiency()">Показать</button>
+                <button id="btnEffPSOnOff" type="button" onclick="get_ps_efficiency()"><b>ЭФФЕКТИВНОСТЬ ПОВРЕМЕННЫХ СЛУЖБ</b></button>
             </div>
             <br>
             <div id="effps"></div>
@@ -281,11 +296,11 @@
             div_ps.innerHTML = 'Шкала слева показывать кол-во рабочих часов в сутки, 11 - это одна смена <br>' +
                     'Шкала эффективности должна быть до 100%, но поскольку здесь максимальное значение шкалы 15, то 15 - это как бы 100% <br>' +
                     '<canvas id="myChartEffPS" height="30px"  visible="true"></canvas>';
-            btn_ps.innerHTML = 'Спрятать';
+//            btn_ps.innerHTML = 'Спрятать';
         }
         else {
             div_ps.innerHTML = '';
-            btn_ps.innerHTML = 'Показать';
+//            btn_ps.innerHTML = 'Показать';
         }
 
 
@@ -341,10 +356,10 @@
     {
         if (document.getElementById("eff").innerHTML === '') {
             get_eff();
-            document.getElementById("btnEffOnOff").innerHTML = 'Спрятать';
+//            document.getElementById("btnEffOnOff").innerHTML = 'Спрятать';
         }
         else {
-            document.getElementById("btnEffOnOff").innerHTML = 'Показать';
+ //           document.getElementById("btnEffOnOff").innerHTML = 'Показать';
             document.getElementById("eff").innerHTML = '';
         }
     }
@@ -449,8 +464,187 @@
 
 
 
+    // ЭФФЕКТИВНОСТЬ ФОРМОВКИ
+    function eff_fcv_auto_on()
+    {
+        if (document.getElementById("eff_fcv").innerHTML === '') {
+            get_eff_fcv();
+//            document.getElementById("btnEffOnOff2").innerHTML = 'Спрятать';
+        }
+        else {
+//            document.getElementById("btnEffOnOff2").innerHTML = 'Показать';
+            document.getElementById("eff_fcv").innerHTML = '';
+        }
+    }
+    var set_eff_fcv = function (reply)
+    {
+        document.getElementById("eff_fcv").innerHTML = reply;
+
+        doQuery ("/reports/get_eff_fcv_data", set_eff_fcv_chart,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
+        );
+    };
+    function get_eff_fcv()
+    {
+        doQuery ("/reports/get_eff_fcv", set_eff_fcv,
+                '&dtb=' + encodeURIComponent(PlanFirstDateAsSting(PlanName))+
+                '&dte=' + encodeURIComponent(PlanLastDateAsSting(PlanName))
+        );
+    }
 
 
+
+    // Построение диаграммы: эффективность формовки по дням
+    var  set_eff_fcv_chart = function (reply)
+    {
+        let colors = ["green","grey", "blue", "yellow", "orange"];
+        let y = [];
+        let label = [];
+        let eff = [];
+        let sumv = [0,0,0,0,0];
+
+        let x = reply.split(';');
+
+        for (let i=1; i < x.length-1; i++) {
+//alert('x'+i+'='+x[i]);
+            let z = x[i].split('!');
+            y[i] = z[1].split(':');
+            label[i] = z[0];
+        }
+
+        eff[1] = []; // Пролет 33
+        eff[2] = []; // Пролет 34
+        for (let i = 0; i < 31; i++) {
+
+            sumv[1] += +y[1][i];
+            sumv[2] += +y[2][i];
+            sumv[3] += +y[3][i];
+            sumv[4] += +y[4][i];
+
+//            eff[1][i] = (+sumv[1] === 0) ? 0 : ((+sumv[2] / +sumv[1]) * 100 );
+            eff[1][i] = (+sumv[1] === 0) ? 0 : ((+sumv[2] / +sumv[1]) * +y[1][i] );
+            eff[2][i] = (+sumv[3] === 0) ? 0 : ((+sumv[4] / +sumv[3]) * +y[3][i] );
+
+//            alert(sumv[1] +',' + sumv[2]+','+ eff[1][i]);
+
+//            eff[2][i] = (+y[1][i] === 0) ? 0 :  ((+y[4][i] / +y[1][i]));
+//            eff[1][i] = (+y[1][i] === 0) ? 0 : ((+y[2][i] / +y[1][i]) );
+//            eff[2][i] = (+y[1][i] === 0) ? 0 :  ((+y[4][i] / +y[1][i]));
+
+            //
+        }
+
+
+        let canvas = document.getElementById('myChartEffFcv2');
+            let ctx = canvas.getContext('2d');
+
+            let chart = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: {
+                    //                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                    labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                    datasets: [
+                        {
+                            label: label[1],
+                            borderColor: colors[1],
+                            data: y[1],
+                        },
+                        {
+                            label: label[2],
+                            borderColor: colors[2],
+                            data: y[2],
+                        },
+                        {
+                            label: 'Эффективность',
+                            borderColor: colors[3],
+                            data: eff[1],
+                        },
+                    ]
+                },
+
+                // Configuration options go here
+                options: {}
+            });
+
+         canvas = document.getElementById('myChartEffFcv4');
+         ctx = canvas.getContext('2d');
+
+        chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                //                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                datasets: [
+                    {
+                        label: label[3],
+                        borderColor: colors[1],
+                        data: y[3],
+                    },
+                    {
+                        label: label[4],
+                        borderColor: colors[2],
+                        data: y[4]
+                    },
+                    {
+                        label: 'Эффективность',
+                        borderColor: colors[3],
+                        data: eff[2],
+                    }
+                ]
+            },
+
+            // Configuration options go here
+            options: {}
+        });
+
+/*
+        let canvas2 = document.getElementById('myChartEffEff');
+        let ctx2 = canvas2.getContext('2d');
+
+        eff[1] = []; // Газ
+        eff[2] = []; // Электричество
+        for (let i = 0; i < 31; i++) {
+
+            eff[1][i] = (+y[1][i] === 0) ? 0 : ((+y[2][i] / +y[1][i]) );
+            eff[2][i] = (+y[1][i] === 0) ? 0 :  ((+y[4][i] / +y[1][i]));
+
+            //
+        }
+
+        let chart2 = new Chart(ctx2, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                //                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                datasets: [
+                    {
+                        label: 'Газ',
+                        borderColor: colors[2],
+                        data: eff[1],
+                    },
+                    {
+                        label: 'Электричество',
+                        borderColor: colors[4],
+                        data: eff[2],
+                    }
+                ]
+            },
+
+            // Configuration options go here
+            options: {}
+        });
+*/
+    };
 
 
 

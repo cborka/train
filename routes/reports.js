@@ -545,6 +545,124 @@ router.post('/get_eff_data', function(req, res, next) {
 });
 
 
+
+// Эффективность формовки по пролетам 33 и 34
+router.post('/get_eff_fcv', function(req, res, next) {
+    var dtb = req.body.dtb;
+    var dte = req.body.dte;
+    var array_length = 0;
+
+    db.any(
+        "SELECT sd_name AS res_name, fc_v AS res_num FROM rep_formovka_fc_eff_daily($1, $2) " +
+        "", [dtb, dte])
+        .then (function (data) {
+
+            var charts = '';
+            var result = '';
+            result = result + 'Эффективность формовки c <b>' + dtb + ' по ' + dte + '</b><br>';
+            result = result + '<p>Желтым показана эффективность с начала месяца до указанной даты. Она не в абсолютных значениях, а масштабирована к значениям показанных объемов формовки,'+
+                '<br> то есть 100% это когда достигаем максимальной эффективности, серая линия сверху.</p>';
+            result = result + '<br><table class="report" align="left">';
+
+            array_length = data[0].res_num.length;
+
+
+            result = result + '<thead><td  class="report left">' + data[0].res_name + '</td>';
+            for(let j = 0; j < array_length; j++)
+                result = result + '<td  class="report ">' + data[0].res_num[j] + '</td>';
+
+            result = result + '</thead>';
+
+            for (var i = 2; i < data.length; i += 2) {
+
+//        data[i].fc_num = Math.round(data[i].fc_num * 1000) / 1000 ;
+
+                result = result + '<tr><td  class="report left">' + data[i].res_name + '</td>';
+
+                for(let j = 0; j < array_length; j++) {
+                    if (data[i].res_num[j] === 0)  data[i].res_num[j] = '';
+
+                    result = result + '<td  class="report ">' + data[i].res_num[j] + '</td>';
+                }
+
+                result = result + '</tr>';
+                charts += ' <tr><td></td><td colspan="31"><canvas id="myChartEffFcv'+i+'" height="30px" visible="false"></canvas></td></tr> ';
+            }
+            result = result + charts;
+            result = result +'</table>';
+
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+
+});
+// То же самое, только возвращаем данные для построения графиков
+router.post('/get_eff_fcv_data', function(req, res, next) {
+    var dtb = req.body.dtb;
+    var dte = req.body.dte;
+    var array_length = 0;
+
+    db.any(
+        "SELECT sd_name AS res_name, fc_v AS res_num FROM rep_formovka_fc_eff_daily($1, $2) " +
+        " ", [dtb, dte])
+        .then (function (data) {
+
+            var result = '';
+
+            array_length = data[0].res_num.length;
+
+            result = result + data[0].res_name + '!';
+            for(var j = 0; j < array_length; j++)
+                result = result +  data[0].res_num[j] + ':';
+
+            result = result + ';';
+
+            for (var i = 1; i < data.length; i++) {
+
+                result = result + data[i].res_name + '!';
+
+                for(var j = 0; j < array_length; j++) {
+                    if (data[i].res_num[j] == 0)  data[i].res_num[j] = '';
+
+                    result = result + data[i].res_num[j] + ':';
+                }
+
+                result = result + ';';
+            }
+            res.send(result);
+        })
+        .catch(function (error) {
+            res.send(error);
+        });
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Эффективность работы повременных служб
 router.post('/get_ps_efficiency', function(req, res, next) {
     var plan_name = req.body.plan_name;
