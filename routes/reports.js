@@ -560,8 +560,8 @@ router.post('/get_eff_fcv', function(req, res, next) {
             var charts = '';
             var result = '';
             result = result + 'Эффективность формовки c <b>' + dtb + ' по ' + dte + '</b><br>';
-            result = result + '<p>Желтым показана эффективность с начала месяца до указанной даты. Она не в абсолютных значениях, а масштабирована к значениям показанных объемов формовки,'+
-                '<br> то есть 100% это когда достигаем максимальной эффективности, серая линия сверху.</p>';
+            result = result + '<p>Красным показана эффективность с начала месяца до указанной даты. Она не в абсолютных значениях, а масштабирована к значениям показанных объемов формовки,'+
+                '<br> то есть 100% это когда достигаем максимальной эффективности (серая линия сверху).</p>';
             result = result + '<br><table class="report" align="left">';
 
             array_length = data[0].res_num.length;
@@ -586,7 +586,7 @@ router.post('/get_eff_fcv', function(req, res, next) {
                 }
 
                 result = result + '</tr>';
-                charts += ' <tr><td></td><td colspan="31"><canvas id="myChartEffFcv'+i+'" height="30px" visible="false"></canvas></td></tr> ';
+                charts += ' <tr><td></td><td colspan="31"><canvas id="myChartEffFcv'+i+'" height="50px" visible="false"></canvas></td></tr> ';
             }
             result = result + charts;
             result = result +'</table>';

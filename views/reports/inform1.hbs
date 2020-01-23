@@ -38,13 +38,12 @@
     </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
-        <h2>Итоги</h2>
-        <a href="/reports/svod" > Образец итоговой таблицы </a>
+
+        <a href="/reports/svod" ><h1>Итоги</h1> </a>
     </div>
 
     <div style='overflow: auto;'>
-       <h2>Формовка</h2>
-       <button id="btnFormovkaOnOff" type="button"  onclick="formovka_auto_on()">Включить автообновление</button>
+        <button id="btnFormovkaOnOff" type="button"  onclick="formovka_auto_on()"><h2>Формовка</h2></button>
     </div>
       <br>
     <div id="formovka" align="left" style='float: left; overflow: auto;'></div>
@@ -56,8 +55,8 @@
     <tr class="reports"><td>
 
     <div style='overflow: auto;'>
-        <h2>План-Факт ЖБИ</h2>
-        <button id="btnPlanFactFcOnOff" type="button" onclick="plan_fact_fc_auto_on()">Включить автообновление</button>
+
+        <button id="btnPlanFactFcOnOff" type="button" onclick="plan_fact_fc_auto_on()"><h2>План-Факт ЖБИ</h2></button>
         <button id="btnDayPlan" type="button" disabled onclick="day_or_plan()"><b>День</b>/План  </button>
     </div>
     <br>
@@ -95,8 +94,8 @@
 
     <tr class="reports"><td>
     <div style='overflow: auto;'>
-        <h2>СГП</h2>
-        <button id="btnSkladFcOnOff" type="button"  onclick="sklad_fc_auto_on()">Включить автообновление</button>
+
+        <button id="btnSkladFcOnOff" type="button"  onclick="sklad_fc_auto_on()"><h2>СГП</h2></button>
     </div>
     <br>
     <div id="sklad_fc" align="left" style='float: left; overflow: auto;'></div>
@@ -104,8 +103,8 @@
     </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
-        <h2>Склад металла</h2>
-        <button id="btnSkladArmOnOff" type="button"  onclick="sklad_arm_auto_on()">Включить автообновление</button>
+
+        <button id="btnSkladArmOnOff" type="button"  onclick="sklad_arm_auto_on()"><h2>Склад металла</h2></button>
     </div>
     <br>
     <div id="sklad_arm" align="left" style='float: left; overflow: auto;'></div>
@@ -114,8 +113,8 @@
     </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
-        <h2>На сколько дней хватит металла</h2>
-        <button id="btnArmOstDaily" type="button"  onclick="arm_ost_daily_on()">Посмотреть</button>
+
+        <button id="btnArmOstDaily" type="button"  onclick="arm_ost_daily_on()"><h2>На сколько дней хватит металла</h2></button>
     </div>
     <br>
     <div id="arm_ost_daily" align="left" style='float: left; overflow: auto;'></div>
@@ -123,8 +122,8 @@
     </td></tr><tr class="reports"><td>
 
     <div style='overflow: auto;'>
-        <h2>На сколько дней хватит инертных материалов</h2>
-        <button id="btnBetOstDaily" type="button"  onclick="bet_ost_daily_on()">Посмотреть</button>
+
+        <button id="btnBetOstDaily" type="button"  onclick="bet_ost_daily_on()"><h2>На сколько дней хватит инертных материалов</h2></button>
     </div>
     <br>
     <div id="bet_ost_daily" align="left" style='float: left; overflow: auto;'></div>
@@ -146,8 +145,10 @@
 -->
 
 
+<!--
 <button id="btn_tst" type="button" onclick="tst()">ТЕСТ</button>
 <div id="tst"></div>
+-->
 
 
 
@@ -201,12 +202,12 @@
         if (timerFormovkaId <= 0) {
             get_formovka_plan();
             timerFormovkaId = setInterval(get_formovka_plan, 60000);
-            document.getElementById("btnFormovkaOnOff").innerHTML = 'Выключить автообновление';
+//            document.getElementById("btnFormovkaOnOff").innerHTML = 'Выключить автообновление';
         }
         else if (timerFormovkaId > 0) {
             clearInterval(timerFormovkaId);
             timerFormovkaId = 0;
-            document.getElementById("btnFormovkaOnOff").innerHTML = 'Включить автообновление';
+//            document.getElementById("btnFormovkaOnOff").innerHTML = 'Включить автообновление';
             document.getElementById("formovka").innerHTML = '';
  //           clear_chart ('myChart');
         }
@@ -296,13 +297,13 @@
         if (timerPlanFactFcId <= 0) {
             get_plan_fact_fc();
             timerPlanFactFcId = setInterval(get_plan_fact_fc, 60000);
-            document.getElementById("btnPlanFactFcOnOff").innerHTML = 'Выключить автообновление';
+//            document.getElementById("btnPlanFactFcOnOff").innerHTML = 'Выключить автообновление';
             document.getElementById("btnDayPlan").disabled = false;
         }
         else if (timerPlanFactFcId > 0) {
             clearInterval(timerPlanFactFcId);
             timerPlanFactFcId = 0;
-            document.getElementById("btnPlanFactFcOnOff").innerHTML = 'Включить автообновление';
+//            document.getElementById("btnPlanFactFcOnOff").innerHTML = 'Включить автообновление';
             document.getElementById("btnDayPlan").disabled = true;
             document.getElementById("plan_fact_fc").innerHTML = '';
 //            clear_chart ('myChart2');
@@ -493,12 +494,12 @@
         if (timerEffId <= 0) {
             get_eff();
             timerEffId = setInterval(get_eff, 60000);
-            document.getElementById("btnEffOnOff").innerHTML = 'Выключить автообновление';
+//            document.getElementById("btnEffOnOff").innerHTML = 'Выключить автообновление';
         }
         else if (timerEffId > 0) {
             clearInterval(timerEffId);
             timerEffId = 0;
-            document.getElementById("btnEffOnOff").innerHTML = 'Включить автообновление';
+//            document.getElementById("btnEffOnOff").innerHTML = 'Включить автообновление';
             document.getElementById("eff").innerHTML = '';
         }
     }
@@ -568,12 +569,12 @@
         if (timerSkladFcId <= 0) {
             get_sklad_fc();
             timerSkladFcId = setInterval(get_sklad_fc, 60000);
-            document.getElementById("btnSkladFcOnOff").innerHTML = 'Выключить автообновление';
+//            document.getElementById("btnSkladFcOnOff").innerHTML = 'Выключить автообновление';
         }
         else if (timerSkladFcId > 0) {
             clearInterval(timerSkladFcId);
             timerSkladFcId = 0;
-            document.getElementById("btnSkladFcOnOff").innerHTML = 'Включить автообновление';
+//            document.getElementById("btnSkladFcOnOff").innerHTML = 'Включить автообновление';
             document.getElementById("sklad_fc").innerHTML = '';
         }
     }
@@ -598,12 +599,12 @@
         if (timerSkladArmId <= 0) {
             get_sklad_arm();
             timerSkladArmId = setInterval(get_sklad_arm, 60000);
-            document.getElementById("btnSkladArmOnOff").innerHTML = 'Выключить автообновление';
+//            document.getElementById("btnSkladArmOnOff").innerHTML = 'Выключить автообновление';
         }
         else if (timerSkladArmId > 0) {
             clearInterval(timerSkladArmId);
             timerSkladArmId = 0;
-            document.getElementById("btnSkladArmOnOff").innerHTML = 'Включить автообновление';
+//            document.getElementById("btnSkladArmOnOff").innerHTML = 'Включить автообновление';
             document.getElementById("sklad_arm").innerHTML = '';
         }
     }
@@ -628,11 +629,11 @@
     {
         if (document.getElementById("arm_ost_daily").innerHTML == '') {
             get_arm_ost_daily();
-            document.getElementById("btnArmOstDaily").innerHTML = 'Очистить';
+//            document.getElementById("btnArmOstDaily").innerHTML = 'Очистить';
         }
         else {
             document.getElementById("arm_ost_daily").innerHTML = '';
-            document.getElementById("btnArmOstDaily").innerHTML = 'Посмотреть';
+//            document.getElementById("btnArmOstDaily").innerHTML = 'Посмотреть';
         }
     }
     var set_arm_ost_daily = function (reply)
@@ -654,11 +655,11 @@
     {
         if (document.getElementById("bet_ost_daily").innerHTML == '') {
             get_bet_ost_daily();
-            document.getElementById("btnBetOstDaily").innerHTML = 'Очистить';
+//            document.getElementById("btnBetOstDaily").innerHTML = 'Очистить';
         }
         else {
             document.getElementById("bet_ost_daily").innerHTML = '';
-            document.getElementById("btnBetOstDaily").innerHTML = 'Посмотреть';
+//            document.getElementById("btnBetOstDaily").innerHTML = 'Посмотреть';
         }
     }
     var set_bet_ost_daily = function (reply)
