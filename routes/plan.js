@@ -438,7 +438,7 @@ router.get('/plan_pro_calc33/:plan_rf/:sd_rf', function(req, res, next) {
     "   LEFT JOIN item_list fc ON fc.spr_rf = 9 AND pp.item_rf = fc.item_id) " +
     "   LEFT JOIN sd_fc sdf ON pp.item_rf = sdf.fc_rf) " +
     " WHERE pp.plan_rf = $1 AND pp.sd_rf = $2 " +
-    "   AND item_rf IN (13, 112, 279) " +
+    "   AND item_rf IN (13, 112, 279, 635, 2887, 2889, 2890) " +
     " ORDER BY fc.item_name " +
     " LIMIT 1 ",
     [plan_rf, sd_rf])

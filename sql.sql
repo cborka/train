@@ -213,7 +213,7 @@ BEGIN
     LEFT JOIN item_list fc ON t.fc_rf = fc.item_id)
   WHERE h.dt >= dtb
         AND h.dt <= dte
-        AND t.fc_rf IN (13, 112)  -- Пока работаем только с двумя ЖБИ
+        AND t.fc_rf IN (13, 112, 279, 635, 2887, 2889, 2890)  -- Пока работаем только с двумя ЖБИ
   ORDER BY 3, 4
   LOOP
     sd_name = r.sd_name;
