@@ -259,6 +259,7 @@ router.post('/get_plan_fact_fc', function(req, res, next) {
     " WHERE item.spr_rf = 9 " + // ЖБИ
     "   AND pp.item_rf IN (13, 112, 279, 635, 2887, 2889, 2890) " + // Пока работаем только с двумя ЖБИ
     "   AND plan_rf = (SELECT item_id FROM item_list WHERE spr_rf= 6 AND item_name=$1)" +
+    "   AND pp.num_plan > 0 " +
     " ORDER BY sd.item_name, item.item_name ", [plan])
     .then (function (data) {
 
