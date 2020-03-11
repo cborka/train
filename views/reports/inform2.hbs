@@ -201,8 +201,10 @@
         var min_days1 = +document.getElementById("mindays1").innerHTML;
 
         if (min_days1 >= 20) d14.className = 'pfont0 green';
-        else if (min_days1 >= 15) d14.className = 'pfont0 yellow';
+        else if (min_days1 >= 5) d14.className = 'pfont0 yellow';
         else d14.className = 'pfont0 red';
+
+        d14.className = 'pfont0 yellow'; // Всегда желтое для показа демо
     };
 
     function get_puls_zakaz() {
