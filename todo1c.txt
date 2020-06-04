@@ -184,7 +184,7 @@ move /Y %SRC%\20*.txt %DEST2%    >>%DIR%\xcopy_log.txt
 
 Файл login.bat
 
-set PG_CONNECT=postgresql://postgres:zxcv123@x321.ru:5432/zkpde
+set PG_CONNECT=postgresql://postgres:password@x321.ru:5432/zkpde
 
 cd c:\cborka\train
 

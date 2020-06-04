@@ -313,7 +313,7 @@ Putty
 
 В домашнем каталоге /users/bor создал файл login.bat
 #
-set PG_CONNECT=postgresql://postgres:zxcv123@x321.ru:5432/zkpde
+set PG_CONNECT=postgresql://postgres:password@x321.ru:5432/zkpde
 cd c:\cborka\Train
 #npm start
 # последняя строка - напоминание как запускать программу )
