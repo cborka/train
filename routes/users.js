@@ -268,7 +268,7 @@ router.post('/isValidUser', function(req, res, next) {
 router.post('/test_reply', function(req, res, next) {
   var login = req.body.login;
   var password = req.body.password;
-  res.send(login+','+password);
+  res.send(login+','+md5(password));
 });
 
 
