@@ -268,7 +268,15 @@ router.post('/isValidUser', function(req, res, next) {
 router.post('/test_reply', function(req, res, next) {
   var login = req.body.login;
   var password = req.body.password;
-  res.send(login+','+md5(password));
+  db.one("SELECT count(*) AS cnt FROM user_list" )
+      .then (function (data) {
+        res.send(data.cnt);
+      })
+      .catch(function (error) {
+        res.send('ОШИБКА isValidUser: '+error);
+      });
+
+//  res.send(login+','+md5(password));
 });
 
 
