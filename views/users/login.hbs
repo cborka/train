@@ -96,7 +96,7 @@
     {
        info("Пароль ="+userlogin.password.value+".");
 
-        doQuery ("/users/test_reply", test_reply,
+        doQuery ("/users/test_reply",  test_reply,
                 "&login=" + encodeURIComponent(userlogin.login.value)+
                 "&password=" + encodeURIComponent(userlogin.password.value)
         );
