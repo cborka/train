@@ -265,6 +265,14 @@ router.post('/isValidUser', function(req, res, next) {
     });
 });
 
+router.post('/test_reply', function(req, res, next) {
+  var login = req.body.login;
+  var password = req.body.password;
+  res.send(login+','+password);
+});
+
+
+
 //
 // Сформировать и возвратить БОКОВОЕ МЕНЮ ПОЛЬЗОВАТЕЛЯ на основе имеющихся у него ПРАВ
 //
