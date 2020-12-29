@@ -120,7 +120,7 @@ router.post('/reg', function(req, res, next) {
 });
 
 //
-// Вход в систему
+//  Вход в систему
 //
 // Вводим логин и пароль
 router.get('/login', function(req, res, next) {
