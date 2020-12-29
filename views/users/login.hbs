@@ -19,6 +19,7 @@
             <td></td>
             <td>
                 <button name="button_submit" type="button" onclick="check_data()">Вход</button>
+                <button name="button_test" type="button" onclick="test()">test</button>
             </td>
         </tr>
         <tr>
@@ -83,6 +84,13 @@
     function info(str)
     {
         document.getElementById("hint").innerHTML=str;
+    }
+
+
+    function test()
+    {
+       info("Пароль ="+userlogin.password.value+".");
+       return false;
     }
 
 </script>
