@@ -6,19 +6,19 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "chart.js": "^2.9.3",
-    "cookie-parser": "~1.4.3",
+    "chart.js": "^2.9.4",
+    "cookie-parser": "^1.4.5",
     "crypto-md5": "^1.0.0",
     "debug": "~2.6.9",
     "express": "~4.16.1",
-    "express-session": "^1.17.0",
-    "hbs": "^4.0.6",
+    "express-session": "^1.17.1",
+    "hbs": "^4.1.1",
     "http-errors": "~1.6.2",
-    "iconv-lite": "^0.5.0",
-    "jquery": "^3.3.1",
+    "iconv-lite": "^0.5.2",
+    "jquery": "^3.5.1",
     "morgan": "~1.9.0",
-    "nodemon": "^2.0.1",
-    "pg-promise": "^8.4.4"
+    "nodemon": "^2.0.6",
+    "pg-promise": "^10.8.6"
   },
   "devDependencies": {
     "eslint-plugin-promise": "^4.2.1"
