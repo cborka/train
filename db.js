@@ -1,5 +1,6 @@
 var pgp = require("pg-promise")(/*options*/);
 
+console.log("Режим запуска: "+process.env);
 console.log("Режим запуска: "+process.env.PG_CONNECT);
 var db = pgp(process.env.PG_CONNECT);
 
